@@ -41,8 +41,8 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <h1 class="font-black text-xl tracking-tight text-white">PhoneStore <span class="text-indigo-400">Pro</span></h1>
-                            <span id="cloud-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Cloud Active
+                            <span id="cloud-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Offline/Guest
                             </span>
                         </div>
                         <p class="text-xs text-slate-400 font-medium">Quản lý kho, IMEI & Doanh thu tự động</p>
@@ -68,11 +68,11 @@
                 <!-- User Profile & Auth Widget -->
                 <div class="flex items-center space-x-2 ml-auto md:ml-0">
                     <div id="user-badge" class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
-                            ?
+                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-slate-600 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
+                            <i class="fa-solid fa-user"></i>
                         </div>
                         <div class="text-left hidden sm:block">
-                            <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[110px] truncate">Đang tải...</p>
+                            <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[110px] truncate">Chưa đăng nhập</p>
                             <span id="user-role-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider">
                                 CHỦ
                             </span>
@@ -623,7 +623,7 @@
     <!-- APPLICATION LOGIC & FIREBASE INTEGRATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global variables provided by environment
@@ -654,29 +654,33 @@
         let products = [];
         let currentTab = 'inventory';
         let confirmCallback = null;
+        let unsubscribeSnapshot = null;
 
         // Path rule: /artifacts/{appId}/public/data/{collectionName}
         const PRODUCTS_COLLECTION_PATH = collection(db, 'artifacts', appId, 'public', 'data', 'products');
 
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.warn("Auth initialization fallback:", err);
-            }
-
+        function initAuth() {
+            // Listen to auth state changes without anonymous auth fallback
             onAuthStateChanged(auth, (user) => {
                 currentUser = user;
                 updateUserUI();
-                setupSnapshotListener();
+                
+                if (user) {
+                    setupSnapshotListener();
+                } else {
+                    if (unsubscribeSnapshot) {
+                        unsubscribeSnapshot();
+                        unsubscribeSnapshot = null;
+                    }
+                    if (products.length === 0) {
+                        products = [...SAMPLE_PRODUCTS];
+                        renderApp();
+                    }
+                }
             });
 
             setTimeout(() => {
-                if (products.length === 0) {
+                if (!currentUser && products.length === 0) {
                     products = [...SAMPLE_PRODUCTS];
                     renderApp();
                 }
@@ -690,18 +694,27 @@
             const roleNoticeText = document.getElementById('role-notice-text');
             const roleNoticeDesc = document.getElementById('role-notice-desc');
             const authBtn = document.getElementById('btn-auth-action');
+            const cloudStatus = document.getElementById('cloud-status');
 
             const isOwner = userRole === 'owner';
 
-            if (currentUser && !currentUser.isAnonymous) {
-                const name = currentUser.displayName || currentUser.email || 'Người dùng';
+            if (currentUser) {
+                const name = currentUser.displayName || currentUser.email || 'Google User';
                 if (avatarEl) avatarEl.innerText = name.charAt(0).toUpperCase();
                 if (nameEl) nameEl.innerText = name;
                 if (authBtn) authBtn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline ml-1">Đăng xuất</span>`;
+                if (cloudStatus) {
+                    cloudStatus.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5";
+                    cloudStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Cloud Sync Active`;
+                }
             } else {
-                if (avatarEl) avatarEl.innerText = isOwner ? 'C' : 'NV';
-                if (nameEl) nameEl.innerText = isOwner ? 'Chủ Cửa Hàng' : 'Nhân Viên';
+                if (avatarEl) avatarEl.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                if (nameEl) nameEl.innerText = 'Chưa đăng nhập';
                 if (authBtn) authBtn.innerHTML = `<i class="fa-brands fa-google"></i><span class="hidden sm:inline ml-1">Google Auth</span>`;
+                if (cloudStatus) {
+                    cloudStatus.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5";
+                    cloudStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Offline / Guest`;
+                }
             }
 
             if (isOwner) {
@@ -729,12 +742,12 @@
         };
 
         window.handleAuthClick = async function() {
-            if (currentUser && !currentUser.isAnonymous) {
+            if (currentUser) {
                 try {
                     await signOut(auth);
-                    await signInAnonymously(auth);
                     showToast('Đã đăng xuất tài khoản Google');
                 } catch (err) {
+                    console.error("Sign out error:", err);
                     showToast('Lỗi đăng xuất: ' + err.message, 'error');
                 }
             } else {
@@ -742,23 +755,21 @@
                     const provider = new GoogleAuthProvider();
                     await signInWithPopup(auth, provider);
                     showToast('Đăng nhập Google thành công!');
-                } catch (err) {
-                    console.warn('Google Auth popup fallback:', err);
-                    showToast('Chế độ xem trước (Anonymous Auth Mode)', 'info');
+                } catch (error) {
+                    console.error("Google Auth error:", error);
+                    showToast("Đăng nhập thất bại: " + error.message, "error");
                 }
             }
         };
 
         function setupSnapshotListener() {
-            if (!currentUser) {
-                if (products.length === 0) {
-                    products = [...SAMPLE_PRODUCTS];
-                    renderApp();
-                }
-                return;
+            if (!currentUser) return;
+
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
             }
 
-            onSnapshot(PRODUCTS_COLLECTION_PATH, (snapshot) => {
+            unsubscribeSnapshot = onSnapshot(PRODUCTS_COLLECTION_PATH, (snapshot) => {
                 const loaded = [];
                 snapshot.forEach(doc => {
                     loaded.push({ id: doc.id, ...doc.data() });
@@ -775,7 +786,7 @@
                 }
                 renderApp();
             }, (error) => {
-                console.warn("Firestore snapshot error callback triggered:", error);
+                console.error("Firestore snapshot error:", error);
                 if (products.length === 0) {
                     products = [...SAMPLE_PRODUCTS];
                     renderApp();
@@ -1163,7 +1174,7 @@
                         customerPhone: product.customerPhone
                     });
                 } catch (err) {
-                    console.warn('Update doc fallback to local state:', err);
+                    console.error('Update doc error:', err);
                 }
             }
 
@@ -1187,7 +1198,7 @@
                         const docRef = doc(PRODUCTS_COLLECTION_PATH, id);
                         await deleteDoc(docRef);
                     } catch (err) {
-                        console.warn('Delete doc fallback:', err);
+                        console.error('Delete doc error:', err);
                     }
                 }
                 products = products.filter(p => p.id !== id);
@@ -1308,7 +1319,7 @@
                     const docRef = doc(PRODUCTS_COLLECTION_PATH, productId);
                     await setDoc(docRef, productData, { merge: true });
                 } catch (err) {
-                    console.warn('Set doc fallback to local memory state:', err);
+                    console.error('Set doc error:', err);
                 }
             }
 
@@ -1332,7 +1343,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('sell-date').value = todayStr;
 
-            const defaultSeller = (currentUser && !currentUser.isAnonymous && currentUser.displayName) ? currentUser.displayName : '';
+            const defaultSeller = (currentUser && currentUser.displayName) ? currentUser.displayName : '';
             document.getElementById('sell-seller-name').value = defaultSeller;
             document.getElementById('sell-customer-name').value = '';
             document.getElementById('sell-customer-phone').value = '';
