@@ -1395,8 +1395,7 @@
                             id: data.user.id,
                             email: email,
                             full_name: name,
-                            role: role,
-                            updated_at: new Date().toISOString()
+                            role: role
                         });
                     } catch(errProfile) {
                         console.warn("Ghi nhận bảng profiles:", errProfile);
@@ -1433,14 +1432,20 @@
             if (!tbody) return;
 
             try {
+                // Lấy toàn bộ danh sách profiles mà không bắt buộc phải có cột updated_at
                 const { data, error } = await supabaseClient
                     .from('profiles')
-                    .select('*')
-                    .order('updated_at', { ascending: false });
+                    .select('*');
 
                 if (error) throw error;
 
-                const usersList = data || [];
+                // Sắp xếp an toàn trong JavaScript (nếu có updated_at hoặc created_at thì dùng, không thì xếp theo tên)
+                const usersList = (data || []).sort((a, b) => {
+                    if (a.updated_at && b.updated_at) return new Date(b.updated_at) - new Date(a.updated_at);
+                    if (a.created_at && b.created_at) return new Date(b.created_at) - new Date(a.created_at);
+                    return (a.full_name || '').localeCompare(b.full_name || '');
+                });
+
                 if (countBadge) countBadge.innerText = `${usersList.length} tài khoản`;
 
                 if (usersList.length === 0) {
@@ -1495,7 +1500,7 @@
             try {
                 const { error } = await supabaseClient
                     .from('profiles')
-                    .update({ role: newRole, updated_at: new Date().toISOString() })
+                    .update({ role: newRole })
                     .eq('id', userId);
 
                 if (error) throw error;
