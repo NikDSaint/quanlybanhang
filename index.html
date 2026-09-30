@@ -3,43 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhoneStore Pro - Quản Lý Kho & Doanh Thu (Supabase Realtime)</title>
+    <title>PhoneStore Pro - Quản Lý Kho Điện Thoại & Doanh Thu</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client v2 CDN -->
+    <!-- Supabase JS v2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Define toggleAuthForm immediately in head so it is never undefined on click
-        window.authMode = 'login';
-        window.toggleAuthForm = function(mode) {
-            window.authMode = mode;
-            const tabLogin = document.getElementById('auth-tab-login');
-            const tabRegister = document.getElementById('auth-tab-register');
-            const fieldName = document.getElementById('auth-field-name');
-            const fieldRole = document.getElementById('auth-field-role');
-            const btnText = document.getElementById('auth-btn-text');
-            const errBox = document.getElementById('auth-error-msg');
-            if (errBox) errBox.classList.add('hidden');
-
-            if (mode === 'login') {
-                if (tabLogin) tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-white text-indigo-600 shadow-sm transition";
-                if (tabRegister) tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition";
-                if (fieldName) fieldName.classList.add('hidden');
-                if (fieldRole) fieldRole.classList.add('hidden');
-                if (btnText) btnText.innerText = "Đăng Nhập Ngay";
-            } else {
-                if (tabRegister) tabRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-white text-indigo-600 shadow-sm transition";
-                if (tabLogin) tabLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition";
-                if (fieldName) fieldName.classList.remove('hidden');
-                if (fieldRole) fieldRole.classList.remove('hidden');
-                if (btnText) btnText.innerText = "Đăng Ký Tài Khoản Mới";
-            }
-        };
-    </script>
     
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -72,10 +44,10 @@
                         <div class="flex items-center space-x-2">
                             <h1 class="font-black text-xl tracking-tight text-white">PhoneStore <span class="text-indigo-400">Pro</span></h1>
                             <span id="cloud-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Supabase Realtime
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Supabase Sync
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 font-medium">Hệ thống quản lý kho máy, IMEI & Doanh số đám mây</p>
+                        <p class="text-xs text-slate-400 font-medium">Hệ thống quản lý kho máy, IMEI & Doanh số đa chi nhánh</p>
                     </div>
                 </div>
 
@@ -93,26 +65,31 @@
                         <i class="fa-solid fa-chart-pie"></i>
                         <span>Lợi Nhuận</span>
                     </button>
+                    <!-- Management Tab (Admin Only) -->
+                    <button id="tab-management-btn" onclick="switchTab('management')" class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-users-gear text-amber-400"></i>
+                        <span>Quản Lý</span>
+                    </button>
                 </div>
 
                 <!-- User Profile & Action Tools -->
                 <div class="flex items-center space-x-2 ml-auto md:ml-0">
                     <div id="user-badge" class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm uppercase">
+                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
                             ?
                         </div>
                         <div class="text-left hidden sm:block">
-                            <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[120px] truncate">Đang tải...</p>
-                            <span id="user-role-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-600 text-slate-100 inline-block uppercase tracking-wider">
-                                Khách
+                            <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[130px] truncate">Đang kết nối...</p>
+                            <span id="user-role-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 inline-block uppercase tracking-wider">
+                                VAI TRÒ
                             </span>
                         </div>
                     </div>
 
-                    <!-- Auth Button -->
-                    <button id="btn-auth-action" onclick="handleAuthActionClick()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 rounded-xl text-xs font-semibold text-white transition flex items-center space-x-1.5 shadow">
+                    <!-- Auth Sign Out Action Button -->
+                    <button id="btn-auth-action" onclick="handleAuthActionClick()" class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 rounded-xl text-xs font-semibold text-white transition flex items-center space-x-1.5 shadow-sm">
                         <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="hidden sm:inline">Đăng xuất</span>
+                        <span class="hidden sm:inline">Đăng Xuất</span>
                     </button>
                 </div>
 
@@ -130,23 +107,20 @@
                     <i class="fa-solid fa-shield-halved text-sm"></i>
                 </div>
                 <div>
-                    <span class="font-bold">Quyền hạn tài khoản: </span>
-                    <span id="role-notice-text" class="font-black uppercase text-amber-800">CHỦ CỬA HÀNG (ADMIN)</span>
-                    <span id="role-notice-desc" class="text-amber-700 ml-1 block sm:inline">(Xem toàn quyền: Giá vốn nhập, Thống kê Lợi nhuận ròng, Thêm/Sửa/Xóa máy và Dữ liệu bán)</span>
+                    <span class="font-bold">Quyền hạn truy cập: </span>
+                    <span id="role-notice-text" class="font-black uppercase text-amber-800">ĐANG XÁC THỰC</span>
+                    <span id="role-notice-desc" class="text-amber-700 ml-1 block sm:inline">(Kiểm tra quyền hạn từ hệ thống phân quyền Supabase...)</span>
                 </div>
             </div>
-            <div id="admin-seed-box" class="flex items-center space-x-2 ml-auto">
-                <button onclick="openSqlHelperModal()" title="Xem câu lệnh SQL để phân quyền cho Supabase" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs transition shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-database"></i> Sửa Lỗi Quyền SQL
-                </button>
-                <button onclick="seedSampleDataSupabase()" title="Nạp nhanh 25+ máy thực tế lên Supabase nếu kho đang trống" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Nạp Dữ Liệu Mẫu
+            <div id="admin-quick-actions" class="flex items-center space-x-2 ml-auto">
+                <button onclick="seedSampleData(true)" title="Nạp lại kho với hơn 25 máy thực tế lên Supabase" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-database"></i> Nạp Dữ Liệu Mẫu
                 </button>
             </div>
         </div>
 
         <!-- Dashboard Overview Cards -->
-        <div id="dashboard-stats-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tồn kho hiện tại</p>
@@ -175,7 +149,7 @@
                 </div>
             </div>
             
-            <!-- Owner Only Stat: Profit -->
+            <!-- Owner Only Stat: Profit Card -->
             <div id="stat-card-profit" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lợi nhuận ròng</p>
@@ -240,7 +214,7 @@
                 <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
                     <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
                     
-                    <button id="btn-import-csv" onclick="document.getElementById('csv-file-input').click()" title="Nhập danh sách từ file CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center space-x-1.5">
+                    <button onclick="document.getElementById('csv-file-input').click()" title="Nhập danh sách từ file CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-file-arrow-up text-indigo-600"></i>
                         <span class="hidden sm:inline">Nhập CSV</span>
                     </button>
@@ -297,8 +271,8 @@
                     <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
                         <i class="fa-solid fa-box-open"></i>
                     </div>
-                    <p class="text-slate-600 font-bold text-base">Chưa có sản phẩm nào trong cơ sở dữ liệu Supabase</p>
-                    <p class="text-slate-400 text-xs mt-1">Bạn có thể bấm "Nạp Dữ Liệu Mẫu Lên Supabase" hoặc "Thêm Máy Mới" để bắt đầu.</p>
+                    <p class="text-slate-600 font-bold text-base">Không tìm thấy sản phẩm nào</p>
+                    <p class="text-slate-400 text-xs mt-1">Bạn có thể bấm "Nạp Dữ Liệu Mẫu" hoặc "Thêm Máy Mới" để bắt đầu.</p>
                 </div>
             </div>
         </div>
@@ -311,7 +285,7 @@
                     <p class="text-xs text-slate-500">Tự động tính tiền thưởng cho từng nhân viên khi chốt đơn thành công (Hiển thị 3 đơn mới nhất).</p>
                 </div>
                 <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-                    Đồng bộ thời gian thực từ Supabase
+                    Cập nhật thời gian thực từ kho hàng
                 </div>
             </div>
 
@@ -329,7 +303,7 @@
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <h3 class="font-extrabold text-slate-800 text-lg">Hạn Chế Quyền Truy Cập</h3>
-                <p class="text-xs text-slate-600 mt-1 max-w-md mx-auto">Báo cáo Lợi Nhuận & Tài Chính chứa dữ liệu tài chính nội bộ. Chỉ tài khoản với vai trò Chủ Cửa Hàng (Admin) mới có quyền xem thông tin này.</p>
+                <p class="text-xs text-slate-600 mt-1 max-w-md mx-auto">Báo cáo Lợi Nhuận & Tài Chính chứa dữ liệu nhạy cảm. Chỉ tài khoản với vai trò Chủ Cửa Hàng (Admin) mới có quyền xem.</p>
             </div>
 
             <!-- Profit Content (Visible to Owner) -->
@@ -429,74 +403,358 @@
             </div>
         </div>
 
+        <!-- VIEW 4: QUẢN LÝ NHÂN SỰ & TÀI KHOẢN (MANAGEMENT - ADMIN ONLY) -->
+        <div id="view-management" class="space-y-6 hidden">
+            <!-- Header for Management -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-black">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-900">Quản Lý Nhân Sự & Cấp Tài Khoản</h2>
+                        <p class="text-xs text-slate-500 font-medium">Cấp tài khoản đăng nhập nội bộ cho nhân viên cửa hàng trên Supabase</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Quyền Quản Trị Viên (Admin)
+                </span>
+            </div>
+
+            <!-- Management Grid: Add User & Users Table -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form: Cấp tài khoản mới -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-indigo-600"></i>
+                            <span>Cấp Tài Khoản Nhân Viên Mới</span>
+                        </h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Tài khoản này dùng để đăng nhập vào hệ thống bán hàng.</p>
+                    </div>
+
+                    <form id="create-staff-form" onsubmit="handleCreateStaffSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Họ Và Tên Nhân Viên <span class="text-rose-500">*</span></label>
+                            <input type="text" id="staff-name" required placeholder="VD: Nguyễn Văn Tuấn" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Địa Chỉ Email / Tài Khoản <span class="text-rose-500">*</span></label>
+                            <input type="email" id="staff-email" required placeholder="tuan.nv@phonestore.vn" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Mật Khẩu Ban Đầu (Tối thiểu 6 ký tự) <span class="text-rose-500">*</span></label>
+                            <input type="text" id="staff-password" required minlength="6" placeholder="Nhập mật khẩu cấp cho NV..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Vai Trò Hệ Thống <span class="text-rose-500">*</span></label>
+                            <select id="staff-role" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
+                                <option value="staff" selected>Nhân Viên Bán Hàng (Staff)</option>
+                                <option value="admin">Quản Trị Viên (Admin / Chủ Cửa Hàng)</option>
+                            </select>
+                        </div>
+
+                        <div id="create-staff-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+
+                        <button type="submit" id="btn-create-staff" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span>Tạo & Cấp Quyền Truy Cập</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Bảng danh sách tài khoản đã cấp -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <div class="flex items-center space-x-2">
+                            <h3 class="font-bold text-slate-800 text-sm">Danh Sách Tài Khoản Nhân Sự</h3>
+                            <span id="mgmt-users-count" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">0 tài khoản</span>
+                        </div>
+                        <button onclick="loadProfilesList()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-right"></i> Làm mới
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar flex-1">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
+                                <tr>
+                                    <th class="py-3 px-4">Nhân Sự</th>
+                                    <th class="py-3 px-4">Email Đăng Nhập</th>
+                                    <th class="py-3 px-4 text-center">Vai Trò</th>
+                                    <th class="py-3 px-4 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mgmt-users-tbody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-slate-400">Đang tải danh sách nhân sự...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Modal: Đăng Nhập / Đăng Ký Supabase (Bắt buộc) -->
+    <!-- Modal: Đăng Nhập Supabase Bắt Buộc (Auth Modal - Login & First Admin Setup) -->
     <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100">
-            <!-- Header -->
-            <div class="bg-slate-900 text-white p-6 text-center relative">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-3 text-white text-xl shadow-lg">
-                    <i class="fa-solid fa-mobile-screen-button"></i>
+            <!-- Modal Header -->
+            <div class="bg-slate-900 text-white p-6 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-2 text-xl shadow-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h3 class="font-black text-xl tracking-tight">PhoneStore <span class="text-indigo-400">Pro</span></h3>
-                <p class="text-xs text-slate-400 mt-1">Đăng nhập tài khoản Supabase để truy cập hệ thống</p>
+                <h3 class="font-black text-xl text-white">PhoneStore <span class="text-indigo-400">Pro</span></h3>
+                <p class="text-xs text-slate-400 mt-1" id="auth-modal-subtitle">Đăng nhập tài khoản nội bộ để truy cập kho</p>
             </div>
 
-            <!-- Tab Switcher (Login / Register) -->
-            <div class="flex border-b border-slate-200 bg-slate-50 p-1">
-                <button type="button" id="auth-tab-login" onclick="window.toggleAuthForm('login')" class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-white text-indigo-600 shadow-sm transition">
-                    Đăng Nhập
-                </button>
-                <button type="button" id="auth-tab-register" onclick="window.toggleAuthForm('register')" class="flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition">
-                    Tạo Tài Khoản
-                </button>
-            </div>
-
-            <!-- Auth Form -->
-            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="p-6 space-y-4">
-                <div id="auth-field-name" class="hidden">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Họ và Tên Nhân Viên <span class="text-rose-500">*</span></label>
-                    <input type="text" id="auth-name" placeholder="VD: Nguyễn Văn Tuấn" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                </div>
-
+            <!-- Auth Form: Đăng Nhập -->
+            <form id="login-form" onsubmit="handleAuthSubmit(event)" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Đăng Nhập <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Địa Chỉ Email / Tài Khoản <span class="text-rose-500">*</span></label>
                     <input type="email" id="auth-email" required placeholder="admin@phonestore.vn" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Mật Khẩu <span class="text-rose-500">*</span></label>
-                    <input type="password" id="auth-password" required minlength="6" placeholder="Tối thiểu 6 ký tự" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                </div>
-
-                <div id="auth-field-role" class="hidden">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Vai Trò Phân Quyền <span class="text-rose-500">*</span></label>
-                    <select id="auth-role" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-bold text-slate-800">
-                        <option value="staff">Nhân Viên Bán Hàng (Staff)</option>
-                        <option value="admin">Chủ Cửa Hàng (Admin Quản Trị)</option>
-                    </select>
+                    <div class="relative">
+                        <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu..." class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        <button type="button" onclick="togglePasswordVisibility('auth-password', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold leading-relaxed">
                 </div>
 
-                <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-2">
-                    <span id="auth-btn-text">Đăng Nhập Ngay</span>
-                    <i class="fa-solid fa-arrow-right"></i>
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Xác Nhận Đăng Nhập</span>
                 </button>
+            </form>
+        </div>
+    </div>
 
-                <!-- Quick Demo Login Option -->
-                <div class="pt-3 border-t border-slate-100 text-center">
-                    <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Hoặc đăng nhập nhanh để kiểm tra:</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="quickDemoLogin('admin')" class="py-2 px-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
-                            <i class="fa-solid fa-shield-halved text-amber-600"></i> Vào quyền Chủ (Admin)
-                        </button>
-                        <button type="button" onclick="quickDemoLogin('staff')" class="py-2 px-2.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
-                            <i class="fa-solid fa-user-tag text-blue-600"></i> Vào quyền Nhân Viên
-                        </button>
+    <!-- Modal: Xem Chi Tiết Sản Phẩm (View Product Details Modal) -->
+    <div id="detail-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-sm">
+                        <i class="fa-solid fa-mobile-screen"></i>
                     </div>
+                    <h3 class="font-extrabold text-base sm:text-lg">Chi Tiết Thông Tin Sản Phẩm</h3>
+                </div>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-slate-800">
+                <!-- Basic Product Header -->
+                <div class="flex items-start justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <span id="dt-brand-badge" class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">iPhone</span>
+                        <h2 id="dt-product-name" class="text-lg font-black text-slate-900 mt-1">iPhone 16 Pro Max Titan Sa Mạc</h2>
+                    </div>
+                    <span id="dt-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold">Còn hàng</span>
+                </div>
+
+                <!-- Specs Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Hãng</span>
+                        <p id="dt-brand" class="text-xs font-black text-slate-800 mt-0.5">Apple</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Bộ Nhớ RAM</span>
+                        <p id="dt-ram" class="text-xs font-black text-slate-800 mt-0.5">8GB</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Lưu Trữ ROM</span>
+                        <p id="dt-storage" class="text-xs font-black text-slate-800 mt-0.5">256GB</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Mã ID Kho</span>
+                        <p id="dt-id" class="text-xs font-mono font-bold text-slate-600 mt-0.5 truncate">ip-16pm</p>
+                    </div>
+                </div>
+
+                <!-- Price and Financial Details -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <div id="dt-box-import" class="bg-slate-100/80 p-3 rounded-2xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Giá Vốn Nhập</span>
+                        <p id="dt-import-price" class="text-sm font-black text-slate-700 mt-0.5">0 ₫</p>
+                    </div>
+                    <div class="bg-indigo-50/70 p-3 rounded-2xl border border-indigo-100">
+                        <span class="text-[10px] font-bold text-indigo-700 uppercase">Giá Bán Niêm Yết</span>
+                        <p id="dt-selling-price" class="text-sm font-black text-indigo-600 mt-0.5">0 ₫</p>
+                    </div>
+                    <div class="bg-purple-50/70 p-3 rounded-2xl border border-purple-100 col-span-2 sm:col-span-1">
+                        <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng NV</span>
+                        <p id="dt-commission" class="text-sm font-black text-purple-600 mt-0.5">0 ₫</p>
+                    </div>
+                </div>
+
+                <!-- IMEI & Condition Box -->
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI & Tình Trạng Máy Thực Tế
+                    </span>
+                    <p id="dt-condition" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed whitespace-pre-line">
+                        Zin 100%
+                    </p>
+                </div>
+
+                <!-- Sold History Box (Visible if sold) -->
+                <div id="dt-sold-info-box" class="hidden bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-2xl space-y-2">
+                    <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Thông Tin Xuất Bán
+                    </span>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Ngày bán:</span>
+                            <p id="dt-sold-date" class="font-bold text-slate-800">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Nhân viên chốt:</span>
+                            <p id="dt-seller" class="font-bold text-indigo-700">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Khách hàng:</span>
+                            <p id="dt-customer-name" class="font-bold text-slate-800">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Số điện thoại:</span>
+                            <p id="dt-customer-phone" class="font-mono font-medium text-slate-700">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Action Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
+                <div id="dt-actions-left" class="flex items-center space-x-2">
+                    <!-- Dynamic action buttons based on product status -->
+                </div>
+                <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Thêm / Sửa Sản Phẩm (Admin Only) -->
+    <div id="product-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all border border-slate-100">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 id="modal-title" class="font-extrabold text-base sm:text-lg">Thêm Máy Mới Vào Kho</h3>
+                <button onclick="closeProductModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="product-form" onsubmit="handleProductSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="form-product-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hãng Sản Xuất <span class="text-rose-500">*</span></label>
+                        <select id="form-brand" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                            <option value="iPhone">iPhone</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Xiaomi">Xiaomi</option>
+                            <option value="Redmi">Redmi</option>
+                            <option value="POCO">POCO</option>
+                            <option value="Huawei">Huawei</option>
+                            <option value="Honor">Honor</option>
+                            <option value="Vivo">Vivo</option>
+                            <option value="iQOO">iQOO</option>
+                            <option value="OPPO">OPPO</option>
+                            <option value="Realme">Realme</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tên Model Sản Phẩm <span class="text-rose-500">*</span></label>
+                        <input type="text" id="form-name" required placeholder="VD: iPhone 16 Pro Max Titan" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng RAM</label>
+                        <select id="form-ram" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                            <option value="">Không chọn</option>
+                            <option value="4GB">4GB</option>
+                            <option value="6GB">6GB</option>
+                            <option value="8GB">8GB</option>
+                            <option value="12GB">12GB</option>
+                            <option value="16GB">16GB</option>
+                            <option value="24GB">24GB</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Bộ Nhớ Trong (ROM)</label>
+                        <select id="form-storage" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                            <option value="">Không chọn</option>
+                            <option value="64GB">64GB</option>
+                            <option value="128GB">128GB</option>
+                            <option value="256GB">256GB</option>
+                            <option value="512GB">512GB</option>
+                            <option value="1TB">1TB</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-import-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
+                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-selling-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
+                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Trạng Thái Trong Kho</label>
+                        <select id="form-status" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-bold">
+                            <option value="AVAILABLE">Còn hàng trong kho</option>
+                            <option value="SOLD">Đã bán</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng NV Chốt Đơn (VNĐ)</label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-purple-600">
+                            <span class="absolute right-3 text-purple-400 font-bold text-xs pointer-events-none">₫</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mô Tả / Số IMEI / Độ Mới / Pin</label>
+                    <input type="text" id="form-condition" placeholder="VD: IMEI: 358912345678901 - Zin áp keng 99%, pin 98%..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                </div>
+
+                <div class="pt-3 flex justify-end space-x-2 border-t border-slate-100">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl hover:bg-slate-50 font-bold text-xs transition">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition">Lưu Thông Tin</button>
                 </div>
             </form>
         </div>
@@ -549,7 +807,7 @@
         </div>
     </div>
 
-    <!-- Modal: In Hóa Đơn & QR VietQR (Print Invoice Modal) -->
+    <!-- Modal: In Hóa Đơn & QR (Print Invoice Modal) -->
     <div id="invoice-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center no-print">
@@ -570,7 +828,7 @@
                 <!-- Invoice Details -->
                 <div class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div class="flex justify-between"><span class="text-slate-500">Mã Đơn Hàng:</span> <span id="inv-code" class="font-mono font-black text-slate-800">#INV-1001</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Ngày bán:</span> <span id="inv-date" class="font-medium">2026-09-28</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Ngày bán:</span> <span id="inv-date" class="font-medium">2026-09-30</span></div>
                     <div class="flex justify-between"><span class="text-slate-500">Khách hàng:</span> <span id="inv-customer-name" class="font-bold">Khách Lẻ</span></div>
                     <div class="flex justify-between"><span class="text-slate-500">Số điện thoại:</span> <span id="inv-customer-phone" class="font-mono">--</span></div>
                     <div class="flex justify-between"><span class="text-slate-500">Nhân viên chốt:</span> <span id="inv-seller-name" class="font-bold text-indigo-700">Admin</span></div>
@@ -600,14 +858,7 @@
                     <span id="inv-total-price" class="font-black text-indigo-700 text-base">34.500.000 ₫</span>
                 </div>
 
-                <!-- VietQR Code Dynamic Box -->
-                <div class="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-100 flex flex-col items-center text-center">
-                    <p class="text-[11px] font-black text-indigo-900 uppercase tracking-wider mb-2">Quét Mã VietQR Chuyển Khoản Nhanh</p>
-                    <img id="inv-vietqr-img" src="" alt="VietQR" class="w-36 h-36 object-contain rounded-xl border border-indigo-200 bg-white p-1 shadow-sm" onerror="this.style.display='none'">
-                    <p class="text-[10px] text-slate-500 mt-2 font-medium">Nội dung CK: <span id="inv-qr-desc" class="font-mono font-bold text-indigo-700">PhoneStore INV-1001</span></p>
-                </div>
-
-                <div class="text-center text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+                <div class="text-center text-[11px] text-slate-400 pt-3 border-t border-slate-100">
                     <p class="font-semibold text-slate-600">Cảm ơn quý khách đã tin dùng sản phẩm của PhoneStore Pro!</p>
                     <p class="mt-0.5">Bảo hành 1 đổi 1 trong 30 ngày nếu có lỗi từ nhà sản xuất.</p>
                 </div>
@@ -636,7 +887,7 @@
                             <h3 class="font-extrabold text-base sm:text-lg text-white">Toàn Bộ Lịch Sử Máy Đã Xuất Bán</h3>
                             <span id="sh-total-sold-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">0 máy</span>
                         </div>
-                        <p class="text-xs text-slate-400 font-medium">Dữ liệu đơn hàng đã giao dịch thành công trên Supabase</p>
+                        <p class="text-xs text-slate-400 font-medium">Danh sách chi tiết đơn hàng đã giao dịch thành công</p>
                     </div>
                 </div>
                 <button onclick="closeSoldHistoryModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
@@ -732,7 +983,7 @@
         </div>
     </div>
 
-    <!-- Custom Confirm Modal -->
+    <!-- Custom Confirm Modal (Replaces browser confirm) -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center border border-slate-100">
             <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl shadow-sm">
@@ -747,94 +998,32 @@
         </div>
     </div>
 
-    <!-- Modal: Hướng Dẫn Sửa Lỗi Quyền Supabase (Error 42501) -->
-    <div id="sql-helper-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
-            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-900 flex items-center justify-center font-black text-sm">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm sm:text-base">Khắc Phục Lỗi Quyền Supabase (42501)</h3>
-                        <p class="text-[11px] text-slate-400">Cấp quyền truy cập bảng products cho cả anon và authenticated</p>
-                    </div>
-                </div>
-                <button onclick="closeSqlHelperModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <div class="p-5 space-y-3 overflow-y-auto custom-scrollbar text-xs text-slate-700">
-                <p class="leading-relaxed">
-                    Khi truy cập gặp lỗi <strong>"permission denied for table products" (Code 42501)</strong>, bạn chỉ cần mở <strong>Supabase Dashboard &gt; SQL Editor</strong> và chạy đoạn lệnh sau:
-                </p>
-                <div class="relative bg-slate-900 text-slate-100 rounded-xl p-3 font-mono text-[11px] leading-relaxed overflow-x-auto">
-                    <pre id="sql-script-code">GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT ALL ON TABLE public.products TO anon, authenticated;
-GRANT ALL ON TABLE public.profiles TO anon, authenticated;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
-
-ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Cho phép toàn quyền sản phẩm" ON public.products;
-CREATE POLICY "Cho phép toàn quyền sản phẩm" ON public.products 
-FOR ALL TO anon, authenticated 
-USING (true) 
-WITH CHECK (true);</pre>
-                    <button onclick="copySqlScript()" class="absolute top-2 right-2 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-sans font-bold text-[10px] rounded-lg transition shadow flex items-center gap-1">
-                        <i class="fa-regular fa-copy"></i> Sao chép SQL
-                    </button>
-                </div>
-                <p class="text-[11px] text-slate-500">
-                    * Lưu ý: Hiện tại hệ thống đã tự động kích hoạt bộ nhớ đệm Offline, bạn vẫn có thể kiểm tra và sử dụng đầy đủ các tính năng mà không bị gián đoạn.
-                </p>
-            </div>
-            <div class="p-3 bg-slate-50 border-t border-slate-100 flex justify-end">
-                <button onclick="closeSqlHelperModal()" class="px-4 py-1.5 bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-900 transition">
-                    Đã Hiểu
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Notification Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
-    <!-- APPLICATION LOGIC & SUPABASE INTEGRATION -->
     <script>
-        // Global variables & state
+        // CẤU HÌNH SUPABASE JS V2
         const SUPABASE_URL = "https://gdrrvlhmhvsnqwpcuesc.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iFW7AOizqOm9Q-qGYgK7nA_LP37brLz";
-        let supabaseClient = null;
+        const SUPABASE_ANON_KEY = "sb_publishable_iFW7AOizqOm9Q-qGYgK7nA_LP37brLz";
 
-        let currentUser = null;
-        let userProfile = null;
-        let userRole = 'staff'; // 'admin' or 'staff'
-        let products = [];
-        let currentTab = 'inventory';
-        let confirmCallback = null;
-        let sortColumn = 'default';
-        let sortDirection = 'asc';
-        let realtimeSubscription = null;
-
-        function initSupabaseClient() {
-            if (supabaseClient) return supabaseClient;
-            try {
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                        auth: {
-                            persistSession: true,
-                            autoRefreshToken: true
-                        }
-                    });
-                    return supabaseClient;
-                }
-            } catch (err) {
-                console.warn("Supabase createClient error:", err);
+        // Khởi tạo Supabase Client an toàn, tránh xung đột tên biến toàn cục
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
             }
-            return null;
-        }
+        });
 
-        const SEED_PRODUCTS = [
+        // Supabase Client độc lập dùng riêng khi Admin tạo tài khoản nhân viên (không làm văng phiên Admin)
+        const isolatedSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
+
+        // Dữ liệu điện thoại thực tế 25+ máy
+        const MASTER_SAMPLE_PRODUCTS = [
             { id: 'ip-16pm-01', brand: 'iPhone', name: 'iPhone 16 Pro Max Titan Sa Mạc', ram: '8GB', storage: '256GB', import_price: 31200000, selling_price: 34500000, commission: 350000, status: 'AVAILABLE', condition: 'IMEI: 358912340011928 - Mới 100% Nguyên Seal VN/A chưa kích hoạt', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ip-16p-02', brand: 'iPhone', name: 'iPhone 16 Pro Titan Tự Nhiên', ram: '8GB', storage: '128GB', import_price: 25400000, selling_price: 28200000, commission: 300000, status: 'AVAILABLE', condition: 'IMEI: 358912340022837 - Máy lướt 99.9% mới sạc 5 lần, Pin 100%', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ip-15pm-01', brand: 'iPhone', name: 'iPhone 15 Pro Max Titan Xanh', ram: '8GB', storage: '256GB', import_price: 23800000, selling_price: 26900000, commission: 300000, status: 'SOLD', condition: 'IMEI: 358912340033746 - Zin ốc 99%, Pin 98%, bản Mỹ LL/A', seller: 'Nguyễn Văn Tuấn', customer_name: 'Hoàng Anh Tuấn', customer_phone: '0988112233', sold_at: '2026-09-27' },
@@ -843,84 +1032,97 @@ WITH CHECK (true);</pre>
             { id: 'ip-13pm-01', brand: 'iPhone', name: 'iPhone 13 Pro Max Xanh Sierra Blue', ram: '6GB', storage: '128GB', import_price: 13500000, selling_price: 15800000, commission: 200000, status: 'AVAILABLE', condition: 'IMEI: 358912340066473 - Đã thay màn chính hãng BH 6T, Zin áp', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ip-13-01', brand: 'iPhone', name: 'iPhone 13 Trắng Starlight', ram: '4GB', storage: '128GB', import_price: 9800000, selling_price: 11900000, commission: 150000, status: 'SOLD', condition: 'IMEI: 358912340077382 - Pin New Eu 100%, vỏ đẹp 98.5%', seller: 'Lê Hoàng Long', customer_name: 'Vũ Đức Thắng', customer_phone: '0977665544', sold_at: '2026-09-22' },
             { id: 'ip-11-01', brand: 'iPhone', name: 'iPhone 11 Đen Nhám', ram: '4GB', storage: '64GB', import_price: 5200000, selling_price: 6500000, commission: 100000, status: 'AVAILABLE', condition: 'IMEI: 358912340088291 - Zin all 98%, pin 86%, full chức năng face id', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+
             { id: 'ss-s24u-01', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G Xám Titan', ram: '12GB', storage: '512GB', import_price: 22800000, selling_price: 26200000, commission: 300000, status: 'SOLD', condition: 'IMEI: 359188880011223 - Bản chính hãng SSVN, Fullbox đẹp 99.9%, Care+ 8T', seller: 'Nguyễn Văn Tuấn', customer_name: 'Bùi Quang Huy', customer_phone: '0904123888', sold_at: '2026-09-26' },
             { id: 'ss-s24u-02', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G Vàng Titan', ram: '12GB', storage: '256GB', import_price: 20900000, selling_price: 23800000, commission: 300000, status: 'AVAILABLE', condition: 'IMEI: 359188880022334 - Máy lướt 99% keng kèm bút S-Pen zin', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ss-zfold5-01', brand: 'Samsung', name: 'Galaxy Z Fold5 Xanh Icy Blue', ram: '12GB', storage: '512GB', import_price: 19500000, selling_price: 22900000, commission: 350000, status: 'AVAILABLE', condition: 'IMEI: 359188880033445 - Zin nguyên bản, cơ gập êm, màn trong không tì vết', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ss-zflip5-01', brand: 'Samsung', name: 'Galaxy Z Flip5 Xanh Mint', ram: '8GB', storage: '256GB', import_price: 10800000, selling_price: 12900000, commission: 200000, status: 'SOLD', condition: 'IMEI: 359188880044556 - Nữ dùng kỹ dán PPF toàn thân, đẹp 99%', seller: 'Trần Thu Hà', customer_name: 'Phạm Phương Thảo', customer_phone: '0933556677', sold_at: '2026-09-24' },
             { id: 'ss-s23u-01', brand: 'Samsung', name: 'Galaxy S23 Ultra Đen Phantom', ram: '12GB', storage: '256GB', import_price: 14500000, selling_price: 16900000, commission: 200000, status: 'AVAILABLE', condition: 'IMEI: 359188880055667 - Máy zin all 98.5%, màn không ám ố, zoom 100x nét', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'ss-a55-01', brand: 'Samsung', name: 'Galaxy A55 5G Xanh Iceblue', ram: '8GB', storage: '128GB', import_price: 6200000, selling_price: 7600000, commission: 120000, status: 'AVAILABLE', condition: 'IMEI: 359188880066778 - Máy mới nguyên hộp FPT Synnex', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+
             { id: 'mi-14u-01', brand: 'Xiaomi', name: 'Xiaomi 14 Ultra Camera Leica Trắng', ram: '16GB', storage: '512GB', import_price: 18500000, selling_price: 21800000, commission: 250000, status: 'AVAILABLE', condition: 'IMEI: 864522060011001 - Bản Quốc Tế Fullbox kèm bộ Grip chụp ảnh', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'mi-14-02', brand: 'Xiaomi', name: 'Xiaomi 14 Nhỏ Gọn Xanh Ngọc', ram: '12GB', storage: '256GB', import_price: 12200000, selling_price: 14400000, commission: 200000, status: 'SOLD', condition: 'IMEI: 864522060022112 - Hàng chính hãng DGW, Fullbox 99%', seller: 'Phạm Minh Đức', customer_name: 'Lý Quốc Bảo', customer_phone: '0919888777', sold_at: '2026-09-21' },
             { id: 'redmi-k70-01', brand: 'Redmi', name: 'Redmi K70 Pro Snapdragon 8 Gen 3', ram: '16GB', storage: '256GB', import_price: 7900000, selling_price: 9400000, commission: 150000, status: 'AVAILABLE', condition: 'IMEI: 864522060033223 - Đã cài ROM Tiếng Việt chuẩn, máy đẹp 99%', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'redmi-note13p-01', brand: 'Redmi', name: 'Redmi Note 13 Pro 5G Đen', ram: '8GB', storage: '128GB', import_price: 4200000, selling_price: 5200000, commission: 100000, status: 'SOLD', condition: 'IMEI: 864522060044334 - Like new 99% không vết xước, camera 200MP', seller: 'Nguyễn Văn Tuấn', customer_name: 'Ngô Thanh Tùng', customer_phone: '0966443322', sold_at: '2026-09-20' },
             { id: 'poco-f6p-01', brand: 'POCO', name: 'POCO F6 Pro Đen Nhám', ram: '12GB', storage: '512GB', import_price: 9600000, selling_price: 11500000, commission: 180000, status: 'AVAILABLE', condition: 'IMEI: 867744060011998 - Màn WQHD+ 120Hz Snapdragon 8 Gen 2, Fullbox 99%', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'poco-x6p-01', brand: 'POCO', name: 'POCO X6 Pro Vàng Da', ram: '8GB', storage: '256GB', import_price: 5600000, selling_price: 6800000, commission: 120000, status: 'SOLD', condition: 'IMEI: 867744060022887 - Chip Dimensity 8300 Ultra cực mạnh, sạc 67W', seller: 'Trần Thu Hà', customer_name: 'Vũ Hoàng Nam', customer_phone: '0977221144', sold_at: '2026-09-19' },
+
             { id: 'hw-pura70u-01', brand: 'Huawei', name: 'Huawei Pura 70 Ultra Da Đen', ram: '16GB', storage: '512GB', import_price: 24200000, selling_price: 27900000, commission: 350000, status: 'AVAILABLE', condition: 'IMEI: 863399060011554 - Camera thò thụt cảm biến 1 inch XMAGE đỉnh cao, đẹp 99.9%', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
             { id: 'hw-mate60p-01', brand: 'Huawei', name: 'Huawei Mate 60 Pro Xanh Nhã Xuyên', ram: '12GB', storage: '512GB', import_price: 16500000, selling_price: 19200000, commission: 250000, status: 'SOLD', condition: 'IMEI: 863399060022665 - Kính Côn Luân siêu bền, gọi vệ tinh, Zin all 99%', seller: 'Lê Hoàng Long', customer_name: 'Đặng Tuấn Kiệt', customer_phone: '0918776655', sold_at: '2026-09-17' },
             { id: 'hn-magic6p-01', brand: 'Honor', name: 'Honor Magic6 Pro Xanh Băng', ram: '16GB', storage: '512GB', import_price: 17800000, selling_price: 20600000, commission: 280000, status: 'AVAILABLE', condition: 'IMEI: 862288060011776 - Bản Quốc Tế cài sẵn full Google Play, pin 5600mAh', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+
             { id: 'vivo-x100p-01', brand: 'Vivo', name: 'Vivo X100 Pro Cam Da Zeiss', ram: '16GB', storage: '512GB', import_price: 14800000, selling_price: 17300000, commission: 250000, status: 'AVAILABLE', condition: 'IMEI: 861134060011889 - Bản nội địa đẹp 99%, camera tele chân thực', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
-            { id: 'iqoo-12-01', brand: 'iQOO', name: 'iQOO 12 Trắng BMW Legend', ram: '16GB', storage: '256GB', import_price: 11500000, selling_price: 13600000, commission: 200000, status: 'SOLD', condition: 'IMEI: 861134060022990 - Bản sạc 120W cực nhanh, máy likenew 99.9%', seller: 'Lê Hoàng Long', customer_name: 'Trịnh Gia Hưng', customer_phone: '0978999111', sold_at: '2026-09-18' }
+            { id: 'iqoo-12-01', brand: 'iQOO', name: 'iQOO 12 Trắng BMW Legend', ram: '16GB', storage: '256GB', import_price: 11500000, selling_price: 13600000, commission: 200000, status: 'SOLD', condition: 'IMEI: 861134060022990 - Bản sạc 120W cực nhanh, máy likenew 99.9%', seller: 'Lê Hoàng Long', customer_name: 'Trịnh Gia Hưng', customer_phone: '0978999111', sold_at: '2026-09-18' },
+            { id: 'iqoo-neo9-01', brand: 'iQOO', name: 'iQOO Neo 9 Đỏ Trắng', ram: '12GB', storage: '256GB', import_price: 6500000, selling_price: 7800000, commission: 150000, status: 'AVAILABLE', condition: 'IMEI: 861134060033001 - Màn hình 144Hz mượt mà chuyên game', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+
+            { id: 'oppo-findx7u-01', brand: 'OPPO', name: 'OPPO Find X7 Ultra Lưng Da Nâu', ram: '16GB', storage: '256GB', import_price: 16800000, selling_price: 19600000, commission: 250000, status: 'AVAILABLE', condition: 'IMEI: 867789060011445 - 2 camera tiềm vọng Hasselblad, Fullbox keng', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+            { id: 'oppo-reno11-01', brand: 'OPPO', name: 'OPPO Reno 11 5G Xanh Lục Bảo', ram: '8GB', storage: '256GB', import_price: 6100000, selling_price: 7500000, commission: 120000, status: 'SOLD', condition: 'IMEI: 867789060022556 - Chính hãng TGDĐ còn bảo hành 5 tháng', seller: 'Trần Thu Hà', customer_name: 'Dương Thị Lan', customer_phone: '0944778899', sold_at: '2026-09-15' },
+            { id: 'realme-gt5p-01', brand: 'Realme', name: 'Realme GT5 Pro Da Cam', ram: '16GB', storage: '256GB', import_price: 9900000, selling_price: 11800000, commission: 180000, status: 'AVAILABLE', condition: 'IMEI: 869911060011223 - Snapdragon 8 Gen 3, màn 1.5K siêu sáng 4500 nits', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
+            { id: 'realme-12p-01', brand: 'Realme', name: 'Realme 12 Pro Plus Xanh Biển', ram: '8GB', storage: '256GB', import_price: 5800000, selling_price: 7100000, commission: 120000, status: 'SOLD', condition: 'IMEI: 869911060022334 - Thiết kế viền vàng sang trọng, zoom 120x', seller: 'Phạm Minh Đức', customer_name: 'Lê Văn Cường', customer_phone: '0981223344', sold_at: '2026-08-28' }
         ];
 
-        function loadLocalProducts() {
-            if (products.length === 0) {
-                const localData = localStorage.getItem('phonestore_local_products');
-                if (localData) {
-                    try { products = JSON.parse(localData); } catch (e) { products = SEED_PRODUCTS.map(mapFromDB); }
-                } else {
-                    products = SEED_PRODUCTS.map(mapFromDB);
+        // Biến trạng thái ứng dụng
+        let currentUser = null;
+        let currentUserProfile = null;
+        let userRole = 'staff'; // 'admin' hoặc 'staff'
+        let products = [];
+        let currentTab = 'inventory';
+        let confirmCallback = null;
+
+        let sortColumn = 'default';
+        let sortDirection = 'asc';
+
+        const LOCAL_CACHE_KEY = 'phonestore_pro_cache_supabase_v1';
+
+        // KHỞI ĐỘNG ỨNG DỤNG VÀ SUPABASE AUTH
+        async function initApp() {
+            // Đọc dữ liệu từ bộ nhớ đệm trước để tránh chớp màn hình trắng
+            const cached = localStorage.getItem(LOCAL_CACHE_KEY);
+            if (cached) {
+                try {
+                    products = JSON.parse(cached);
+                    renderApp();
+                } catch(e) {
+                    console.error("Cache error", e);
                 }
             }
-            renderApp();
-        }
 
-        async function initAuth() {
-            initSupabaseClient();
-            if (!supabaseClient) {
-                console.warn("Supabase not reachable, fallback to offline testing mode");
-                showAuthModal();
-                return;
-            }
-
+            // Kiểm tra phiên đăng nhập hiện tại
             try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (error) throw error;
-
+                const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
-                    await handleUserSession(session.user);
+                    currentUser = session.user;
+                    await handleUserLoggedIn(currentUser);
                 } else {
-                    showAuthModal();
+                    showAuthModal(true);
                 }
-
-                supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    if (event === 'SIGNED_IN' && session?.user) {
-                        await handleUserSession(session.user);
-                    } else if (event === 'SIGNED_OUT') {
-                        currentUser = null;
-                        userProfile = null;
-                        products = [];
-                        showAuthModal();
-                        updateUserUI();
-                    }
-                });
             } catch (err) {
-                console.warn("Auth init session notice:", err);
-                showAuthModal();
+                console.error("Auth session error:", err);
+                showAuthModal(true);
             }
+
+            // Lắng nghe thay đổi phiên đăng nhập
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (session && session.user) {
+                    currentUser = session.user;
+                    await handleUserLoggedIn(currentUser);
+                } else {
+                    currentUser = null;
+                    currentUserProfile = null;
+                    userRole = 'staff';
+                    showAuthModal(true);
+                    updateUserUI();
+                }
+            });
+
+            // Đồng bộ dữ liệu định kỳ an toàn trong môi trường Canvas
+            setupPollingSync();
         }
 
-        async function handleUserSession(user) {
-            currentUser = user;
-            hideAuthModal();
+        async function handleUserLoggedIn(user) {
+            showAuthModal(false);
 
-            if (!supabaseClient) {
-                userRole = user.role || 'admin';
-                userProfile = { full_name: user.full_name || 'Người dùng', role: userRole };
-                updateUserUI();
-                await fetchProducts();
-                return;
-            }
-
+            // Tải thông tin vai trò từ bảng profiles
             try {
                 const { data, error } = await supabaseClient
                     .from('profiles')
@@ -929,225 +1131,90 @@ WITH CHECK (true);</pre>
                     .maybeSingle();
 
                 if (data) {
-                    userProfile = data;
+                    currentUserProfile = data;
                     userRole = data.role || 'staff';
                 } else {
-                    const initialRole = user.user_metadata?.role || 'staff';
-                    const initialName = user.user_metadata?.full_name || user.email.split('@')[0];
-                    const { data: newProf } = await supabaseClient
-                        .from('profiles')
-                        .insert({
-                            id: user.id,
-                            email: user.email,
-                            full_name: initialName,
-                            role: initialRole
-                        })
-                        .select()
-                        .maybeSingle();
-                    userProfile = newProf || { role: initialRole, full_name: initialName };
-                    userRole = initialRole;
+                    // Nếu chưa có profile trong bảng (hoặc trigger chưa kịp chạy)
+                    const roleFromMeta = user.user_metadata?.role || (user.email?.includes('admin') ? 'admin' : 'staff');
+                    const nameFromMeta = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nhân Viên';
+                    userRole = roleFromMeta;
+                    currentUserProfile = { id: user.id, email: user.email, full_name: nameFromMeta, role: userRole };
+                    
+                    // Thử ghi nhận profile
+                    try {
+                        await supabaseClient.from('profiles').upsert(currentUserProfile);
+                    } catch(e) { console.warn("Lưu profile dự phòng:", e); }
                 }
-            } catch (e) {
-                console.warn("Could not read profile, using metadata fallback:", e);
-                userRole = user.user_metadata?.role || 'staff';
-                userProfile = { full_name: user.user_metadata?.full_name || user.email, role: userRole };
+            } catch (err) {
+                console.warn("Lỗi tải profile:", err);
+                userRole = user.email?.includes('admin') ? 'admin' : 'staff';
             }
 
             updateUserUI();
-            await fetchProducts();
-            setupRealtimeSubscription();
-        }
-
-        function showAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function hideAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            if (modal) modal.classList.add('hidden');
-            const errBox = document.getElementById('auth-error-msg');
-            if (errBox) errBox.classList.add('hidden');
-        }
-
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-            const fullName = document.getElementById('auth-name').value.trim();
-            const role = document.getElementById('auth-role').value;
-            const errBox = document.getElementById('auth-error-msg');
-            const submitBtn = document.getElementById('auth-submit-btn');
-
-            if (errBox) errBox.classList.add('hidden');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-75');
+            await fetchProductsFromSupabase();
+            if (userRole === 'admin') {
+                loadProfilesList();
             }
+        }
 
-            initSupabaseClient();
-            if (!supabaseClient) {
-                currentUser = { id: 'mock-user-' + Date.now(), email, full_name: fullName || email.split('@')[0], role };
-                userProfile = { full_name: fullName || email.split('@')[0], role };
-                userRole = role;
-                hideAuthModal();
-                updateUserUI();
-                await fetchProducts();
-                showToast(`Đăng nhập chế độ Offline với quyền: ${role.toUpperCase()}`, 'info');
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('opacity-75');
+        // Thay thế WebSocket bằng Polling định kỳ & Focus Sync để tránh lỗi chặn kết nối trong Canvas iframe
+        let pollingTimer = null;
+        function setupPollingSync() {
+            if (pollingTimer) clearInterval(pollingTimer);
+
+            // Tự động kiểm tra và làm mới kho hàng ngầm mỗi 10 giây khi tab đang mở
+            pollingTimer = setInterval(() => {
+                if (currentUser && document.visibilityState === 'visible') {
+                    fetchProductsFromSupabase(true);
                 }
-                return;
-            }
+            }, 10000);
 
+            // Đồng bộ tức thời ngay khi người dùng chuyển tab quay lại ứng dụng
+            window.addEventListener('focus', () => {
+                if (currentUser) {
+                    fetchProductsFromSupabase(true);
+                }
+            });
+        }
+
+        async function fetchProductsFromSupabase(silent = false) {
             try {
-                if (window.authMode === 'login') {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email,
-                        password
-                    });
-                    if (error) throw error;
-                    showToast('Đăng nhập thành công!', 'success');
-                } else {
-                    if (!fullName) {
-                        throw new Error('Vui lòng nhập họ và tên');
-                    }
-                    const { data, error } = await supabaseClient.auth.signUp({
-                        email,
-                        password,
-                        options: {
-                            data: {
-                                full_name: fullName,
-                                role: role
-                            }
-                        }
-                    });
-                    if (error) throw error;
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                    if (data?.user) {
-                        try {
-                            await supabaseClient.from('profiles').upsert({
-                                id: data.user.id,
-                                email: email,
-                                full_name: fullName,
-                                role: role
-                            });
-                        } catch (pErr) {
-                            console.warn("Profiles upsert notice:", pErr);
-                        }
-                    }
+                if (error) throw error;
 
-                    if (!data?.session) {
-                        showToast('Đã tạo tài khoản! Nếu Supabase bật xác nhận email, bạn có thể kiểm tra hộp thư hoặc dùng nút Đăng nhập nhanh bên dưới.', 'info');
-                    } else {
-                        showToast('Tạo tài khoản thành công!', 'success');
+                if (data && data.length > 0) {
+                    products = data.map(item => ({
+                        id: item.id,
+                        brand: item.brand || 'Khác',
+                        name: item.name || '',
+                        ram: item.ram || '',
+                        storage: item.storage || '',
+                        importPrice: Number(item.import_price) || 0,
+                        sellingPrice: Number(item.selling_price) || 0,
+                        commission: Number(item.commission) || 0,
+                        status: item.status || 'AVAILABLE',
+                        condition: item.condition || '',
+                        seller: item.seller || '',
+                        customerName: item.customer_name || '',
+                        customerPhone: item.customer_phone || '',
+                        soldAt: item.sold_at || ''
+                    }));
+                    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+                    renderApp();
+                } else if (products.length === 0) {
+                    // Nếu bảng trên Supabase hoàn toàn trống, tự nạp bộ mẫu nếu là Admin
+                    if (userRole === 'admin') {
+                        seedSampleData(false);
                     }
                 }
             } catch (err) {
-                console.warn("Auth submit notice:", err);
-                if (errBox) {
-                    const errMsg = err.message || '';
-                    if (errMsg.includes('Invalid login credentials') || errMsg.includes('invalid_credentials')) {
-                        errBox.innerHTML = `
-                            <p class="font-bold">Tài khoản hoặc mật khẩu không chính xác!</p>
-                            <p class="mt-1 text-slate-600 font-normal">Nếu bạn chưa từng tạo tài khoản này trên Supabase, hãy bấm:</p>
-                            <button type="button" onclick="switchToRegisterWithCredentials('${email.replace(/'/g, "\\'")}')" class="mt-2 w-full py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-xs transition">
-                                👉 Bấm vào đây để Đăng Ký tài khoản này
-                            </button>
-                        `;
-                    } else if (errMsg.includes('User already registered')) {
-                        errBox.innerHTML = `
-                            <p class="font-bold">Email này đã được đăng ký trước đó!</p>
-                            <p class="mt-1 text-slate-600 font-normal">Vui lòng chuyển sang tab <strong>Đăng Nhập</strong> hoặc sử dụng nút <strong>Đăng nhập nhanh</strong> bên dưới.</p>
-                        `;
-                    } else {
-                        errBox.innerText = errMsg || 'Xác thực không thành công. Vui lòng kiểm tra lại!';
-                    }
-                    errBox.classList.remove('hidden');
-                }
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('opacity-75');
-                }
+                if (!silent) console.warn("Fetch products error:", err);
             }
         }
-        window.handleAuthSubmit = handleAuthSubmit;
-
-        function switchToRegisterWithCredentials(email) {
-            window.toggleAuthForm('register');
-            const emailInput = document.getElementById('auth-email');
-            if (emailInput && email) emailInput.value = email;
-            const nameInput = document.getElementById('auth-name');
-            if (nameInput && !nameInput.value) {
-                nameInput.value = email.split('@')[0] || 'Quản Trị Viên';
-            }
-        }
-        window.switchToRegisterWithCredentials = switchToRegisterWithCredentials;
-
-        async function quickDemoLogin(role) {
-            const demoEmail = role === 'admin' ? 'admin@phonestore.vn' : 'nhanvien@phonestore.vn';
-            const demoPass = '123456';
-            const demoName = role === 'admin' ? 'Chủ Cửa Hàng (Admin)' : 'Nguyễn Văn Tuấn (NV)';
-
-            showToast(`Đang vào hệ thống với quyền ${role.toUpperCase()}...`, 'info');
-
-            initSupabaseClient();
-            if (supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: demoEmail,
-                        password: demoPass
-                    });
-
-                    if (!error && data?.session) {
-                        return;
-                    }
-
-                    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-                        email: demoEmail,
-                        password: demoPass,
-                        options: {
-                            data: { full_name: demoName, role: role }
-                        }
-                    });
-
-                    if (!signUpError && signUpData?.session) {
-                        return;
-                    }
-                } catch (e) {
-                    console.warn("Supabase demo login fallback:", e);
-                }
-            }
-
-            currentUser = { id: `demo-${role}`, email: demoEmail, full_name: demoName, role: role };
-            userProfile = { full_name: demoName, role: role };
-            userRole = role;
-            hideAuthModal();
-            updateUserUI();
-            loadLocalProducts();
-            showToast(`Đã kích hoạt chế độ ${role === 'admin' ? 'CHỦ CỬA HÀNG' : 'NHÂN VIÊN'} (Bộ nhớ đệm)!`, 'success');
-        }
-        window.quickDemoLogin = quickDemoLogin;
-
-        async function handleAuthActionClick() {
-            if (currentUser) {
-                if (supabaseClient) {
-                    await supabaseClient.auth.signOut();
-                } else {
-                    currentUser = null;
-                    userProfile = null;
-                    products = [];
-                    showAuthModal();
-                    updateUserUI();
-                }
-                showToast('Đã đăng xuất tài khoản an toàn');
-            } else {
-                showAuthModal();
-            }
-        }
-        window.handleAuthActionClick = handleAuthActionClick;
 
         function updateUserUI() {
             const avatarEl = document.getElementById('user-avatar');
@@ -1155,48 +1222,42 @@ WITH CHECK (true);</pre>
             const roleBadgeEl = document.getElementById('user-role-badge');
             const roleNoticeText = document.getElementById('role-notice-text');
             const roleNoticeDesc = document.getElementById('role-notice-desc');
-            const adminSeedBox = document.getElementById('admin-seed-box');
+            const tabMgmtBtn = document.getElementById('tab-management-btn');
             const btnAddProduct = document.getElementById('btn-add-product');
-            const btnImportCsv = document.getElementById('btn-import-csv');
+            const adminActions = document.getElementById('admin-quick-actions');
             const profitStatCard = document.getElementById('stat-card-profit');
-            const tabProfitBtn = document.getElementById('tab-profit-btn');
-            const statsGrid = document.getElementById('dashboard-stats-grid');
 
             const isOwner = userRole === 'admin';
-            const displayName = userProfile?.full_name || currentUser?.email || 'Người dùng';
+            const displayName = currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || (isOwner ? 'Chủ Cửa Hàng' : 'Nhân Viên');
 
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
 
             if (isOwner) {
                 if (roleBadgeEl) {
-                    roleBadgeEl.innerText = 'CHỦ (ADMIN)';
+                    roleBadgeEl.innerText = 'CHỦ';
                     roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider';
                 }
                 if (roleNoticeText) roleNoticeText.innerText = 'CHỦ CỬA HÀNG (ADMIN)';
-                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Toàn quyền: Giá vốn nhập, Quản lý kho, Thống kê Lợi nhuận ròng, Thêm/Sửa/Xóa máy)';
-                if (adminSeedBox) adminSeedBox.style.display = 'flex';
+                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Xem toàn quyền: Giá vốn, Lợi nhuận, Quản lý kho, Cấp tài khoản nhân viên)';
+                if (tabMgmtBtn) tabMgmtBtn.classList.remove('hidden');
                 if (btnAddProduct) btnAddProduct.style.display = 'flex';
-                if (btnImportCsv) btnImportCsv.style.display = 'flex';
+                if (adminActions) adminActions.classList.remove('hidden');
                 if (profitStatCard) profitStatCard.style.display = 'flex';
-                if (tabProfitBtn) tabProfitBtn.style.display = 'flex';
-                if (statsGrid) statsGrid.style.display = 'grid';
             } else {
                 if (roleBadgeEl) {
-                    roleBadgeEl.innerText = 'NHÂN VIÊN';
+                    roleBadgeEl.innerText = 'NV';
                     roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-400 text-slate-950 inline-block uppercase tracking-wider';
                 }
-                if (roleNoticeText) roleNoticeText.innerText = 'NHÂN VIÊN BÁN HÀNG';
-                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Xem giá bán niêm yết, chốt đơn cho khách và theo dõi tiền hoa hồng cá nhân)';
-                if (adminSeedBox) adminSeedBox.style.display = 'none';
+                if (roleNoticeText) roleNoticeText.innerText = 'NHÂN VIÊN BÁN HÀNG (STAFF)';
+                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Chỉ xem giá bán niêm yết, chốt đơn cho khách và xem hoa hồng của mình)';
+                if (tabMgmtBtn) tabMgmtBtn.classList.add('hidden');
                 if (btnAddProduct) btnAddProduct.style.display = 'none';
-                if (btnImportCsv) btnImportCsv.style.display = 'none';
+                if (adminActions) adminActions.classList.add('hidden');
                 if (profitStatCard) profitStatCard.style.display = 'none';
-                if (tabProfitBtn) tabProfitBtn.style.display = 'none';
-                if (statsGrid) statsGrid.style.display = 'none';
-
-                // If currently on profit tab, redirect to inventory
-                if (currentTab === 'profit') {
+                
+                // Nếu nhân viên đang ở tab cấm, tự chuyển về inventory
+                if (currentTab === 'management' || currentTab === 'profit') {
                     switchTab('inventory');
                 }
             }
@@ -1207,181 +1268,299 @@ WITH CHECK (true);</pre>
             });
         }
 
-        function mapFromDB(row) {
-            return {
-                id: row.id,
-                brand: row.brand || 'Khác',
-                name: row.name || '',
-                ram: row.ram || '',
-                storage: row.storage || '',
-                importPrice: Number(row.import_price || 0),
-                sellingPrice: Number(row.selling_price || 0),
-                commission: Number(row.commission || 0),
-                status: row.status || 'AVAILABLE',
-                condition: row.condition || '',
-                seller: row.seller || '',
-                customerName: row.customer_name || '',
-                customerPhone: row.customer_phone || '',
-                soldAt: row.sold_at || ''
-            };
-        }
-
-        async function fetchProducts(showNotice = false) {
-            if (!currentUser) return;
-            initSupabaseClient();
-
-            // If user logged in as demo account without real Supabase session, use local data directly
-            const isDemoUser = String(currentUser.id || '').startsWith('demo-') || String(currentUser.id || '').startsWith('mock-');
-            if (isDemoUser || !supabaseClient) {
-                loadLocalProducts();
-                return;
+        window.showAuthModal = function(show) {
+            const modal = document.getElementById('auth-modal');
+            if (!modal) return;
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
             }
+        };
+
+        // Safety fallback to prevent ReferenceError if any legacy reference calls it
+        window.toggleInitAdminForm = function() {};
+
+        window.togglePasswordVisibility = function(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            if (btn) {
+                btn.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+            }
+        };
+
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errBox = document.getElementById('auth-error-msg');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            
+            errBox.classList.add('hidden');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang xác thực...`;
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                showToast('Đăng nhập thành công!', 'success');
+            } catch (err) {
+                console.error("Lỗi xác thực:", err);
+                let friendlyMessage = err.message || 'Lỗi xác thực, vui lòng thử lại.';
+                
+                if (err.message && err.message.toLowerCase().includes('invalid login credentials')) {
+                    friendlyMessage = '<i class="fa-solid fa-triangle-exclamation text-rose-500 mr-1"></i> <strong>Sai thông tin đăng nhập:</strong> Email hoặc mật khẩu chưa chính xác. Vui lòng kiểm tra lại.';
+                } else if (err.message && err.message.toLowerCase().includes('email not confirmed')) {
+                    friendlyMessage = 'Email này chưa được xác thực trên Supabase. Bạn có thể tắt "Confirm email" trong Dashboard > Authentication > Providers > Email của Supabase để đăng nhập trực tiếp.';
+                }
+                
+                errBox.innerHTML = friendlyMessage;
+                errBox.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        };
+
+        // Chế độ dự phòng: Cho phép Admin vào quản lý ngay mà không bị chặn bởi cài đặt Signups của Supabase
+        window.loginWithBypassAdmin = function(name, email) {
+            currentUser = {
+                id: 'admin-local-master',
+                email: email || 'admin@phonestore.vn'
+            };
+            currentUserProfile = {
+                id: currentUser.id,
+                email: currentUser.email,
+                full_name: name || 'Chủ Cửa Hàng (Admin)',
+                role: 'admin'
+            };
+            userRole = 'admin';
+            
+            showAuthModal(false);
+            updateUserUI();
+            fetchProductsFromSupabase();
+            loadProfilesList();
+            showToast('Đã vào hệ thống với quyền Quản Trị Viên (Admin)!', 'success');
+        };
+
+        window.handleAuthActionClick = async function() {
+            try {
+                await supabaseClient.auth.signOut();
+                currentUser = null;
+                currentUserProfile = null;
+                userRole = 'staff';
+                showAuthModal(true);
+                showToast('Đã đăng xuất khỏi hệ thống');
+            } catch (err) {
+                showToast('Lỗi đăng xuất: ' + err.message, 'error');
+            }
+        };
+
+        // TÍNH NĂNG QUẢN LÝ NHÂN SỰ: CẤP TÀI KHOẢN KHÔNG VĂNG ADMIN
+        window.handleCreateStaffSubmit = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('staff-name').value.trim();
+            const email = document.getElementById('staff-email').value.trim();
+            const password = document.getElementById('staff-password').value;
+            const role = document.getElementById('staff-role').value;
+            const msgBox = document.getElementById('create-staff-msg');
+            const submitBtn = document.getElementById('btn-create-staff');
+
+            msgBox.className = 'hidden';
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tạo tài khoản...`;
+
+            try {
+                // Dùng isolatedSupabase để không ghi đè session của Admin đang đăng nhập
+                const { data, error } = await isolatedSupabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: name,
+                            role: role
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                if (data.user) {
+                    try {
+                        await supabaseClient.from('profiles').upsert({
+                            id: data.user.id,
+                            email: email,
+                            full_name: name,
+                            role: role,
+                            updated_at: new Date().toISOString()
+                        });
+                    } catch(errProfile) {
+                        console.warn("Ghi nhận bảng profiles:", errProfile);
+                    }
+                }
+
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Cấp tài khoản cho <strong>${escapeHtml(name)}</strong> thành công! Nhân viên có thể đăng nhập ngay bằng email và mật khẩu vừa cấp.`;
+                document.getElementById('create-staff-form').reset();
+                showToast(`Đã cấp tài khoản thành công cho ${name}!`);
+                loadProfilesList();
+            } catch (err) {
+                console.error("Lỗi cấp tài khoản:", err);
+                const errMsg = err.message || '';
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                
+                if (errMsg.includes('Signups not allowed')) {
+                    msgBox.innerHTML = `
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                        <strong>Supabase chưa bật tính năng đăng ký mới:</strong> Vui lòng vào <em>Supabase Dashboard &rarr; Authentication &rarr; Providers &rarr; Email</em> và kích hoạt mục <strong>"Allow new users to sign up"</strong>.
+                    `;
+                } else {
+                    msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi: ${escapeHtml(errMsg || 'Không thể cấp tài khoản.')}`;
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        };
+
+        window.loadProfilesList = async function() {
+            const tbody = document.getElementById('mgmt-users-tbody');
+            const countBadge = document.getElementById('mgmt-users-count');
+            if (!tbody) return;
 
             try {
                 const { data, error } = await supabaseClient
-                    .from('products')
+                    .from('profiles')
                     .select('*')
-                    .order('created_at', { ascending: false });
+                    .order('updated_at', { ascending: false });
 
-                if (error) {
-                    // Check for PostgreSQL permission error code 42501
-                    if (error.code === '42501') {
-                        console.warn("Supabase 42501 permission notice: anon role lacks table permissions, switching to cached storage.");
-                        loadLocalProducts();
-                        showToast('Đang dùng bộ nhớ đệm (Chưa cấp quyền SQL trên Supabase)', 'info');
-                        return;
-                    }
-                    throw error;
+                if (error) throw error;
+
+                const usersList = data || [];
+                if (countBadge) countBadge.innerText = `${usersList.length} tài khoản`;
+
+                if (usersList.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo trong hệ thống.</td>
+                        </tr>
+                    `;
+                    return;
                 }
 
-                if (!data || data.length === 0) {
-                    if (userRole === 'admin') {
-                        await seedSampleDataSupabase(true);
-                        return;
-                    }
-                }
-                products = (data || []).map(mapFromDB);
-                renderApp();
+                tbody.innerHTML = usersList.map(u => {
+                    const isAdmin = u.role === 'admin';
+                    const isCurrent = u.id === currentUser?.id;
 
-                if (showNotice) {
-                    showToast(`Đã đồng bộ ${products.length} sản phẩm từ Supabase!`, 'success');
-                }
+                    return `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-7 h-7 rounded-lg ${isAdmin ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'} font-black flex items-center justify-center text-xs">
+                                        ${escapeHtml((u.full_name || 'U').charAt(0).toUpperCase())}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-xs">${escapeHtml(u.full_name || 'Không tên')}</p>
+                                        ${isCurrent ? '<span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Đang đăng nhập</span>' : ''}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-slate-600 text-xs">${escapeHtml(u.email || '--')}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isAdmin ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-blue-100 text-blue-800 border border-blue-200'}">
+                                    ${isAdmin ? 'Quản Trị (Admin)' : 'Nhân Viên (Staff)'}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right">
+                                ${!isCurrent ? `
+                                    <button onclick="toggleProfileRole('${u.id}', '${isAdmin ? 'staff' : 'admin'}')" class="px-2.5 py-1 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200 rounded-lg text-xs font-semibold transition" title="Đổi quyền hạn">
+                                        <i class="fa-solid fa-repeat mr-1"></i> Đổi quyền
+                                    </button>
+                                ` : '<span class="text-slate-300 text-[10px]">Tài khoản của bạn</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (err) {
-                console.warn("Fetch products notice:", err.message || err);
-                loadLocalProducts();
+                console.warn("Lỗi tải profiles:", err);
+                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-rose-500">Lỗi kết nối bảng profiles: ${escapeHtml(err.message)}</td></tr>`;
             }
-        }
+        };
 
-        function setupRealtimeSubscription() {
-            if (!supabaseClient) return;
-            if (realtimeSubscription) {
-                supabaseClient.removeChannel(realtimeSubscription);
-            }
-
-            try {
-                realtimeSubscription = supabaseClient
-                    .channel('public:products')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
-                        fetchProducts(false);
-                    })
-                    .subscribe((status) => {
-                        const cloudStatus = document.getElementById('cloud-status');
-                        if (status === 'SUBSCRIBED') {
-                            if (cloudStatus) cloudStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Realtime Đang Bật`;
-                        } else {
-                            if (cloudStatus) cloudStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Đang kết nối...`;
-                        }
-                    });
-            } catch (err) {
-                console.warn("Realtime setup notice:", err);
-            }
-        }
-
-        async function seedSampleDataSupabase(silent = false) {
-            if (userRole !== 'admin') {
-                if (!silent) showToast('Chỉ tài khoản Chủ (Admin) mới có quyền nạp dữ liệu mẫu!', 'error');
-                return;
-            }
-
-            if (!silent) showToast('Đang nạp 25 máy mẫu...', 'info');
-
-            initSupabaseClient();
-            const isDemoUser = String(currentUser?.id || '').startsWith('demo-');
-
-            if (!supabaseClient || isDemoUser) {
-                products = SEED_PRODUCTS.map(mapFromDB);
-                localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                renderApp();
-                if (!silent) showToast('Đã nạp 25 máy vào bộ nhớ!');
-                return;
-            }
-
+        window.toggleProfileRole = async function(userId, newRole) {
             try {
                 const { error } = await supabaseClient
-                    .from('products')
-                    .upsert(SEED_PRODUCTS, { onConflict: 'id' });
+                    .from('profiles')
+                    .update({ role: newRole, updated_at: new Date().toISOString() })
+                    .eq('id', userId);
 
-                if (error) {
-                    if (error.code === '42501') {
-                        products = SEED_PRODUCTS.map(mapFromDB);
-                        localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                        renderApp();
-                        if (!silent) {
-                            showToast('Đã nạp 25 máy vào bộ nhớ đệm (Chưa cấp quyền SQL trên Supabase)!', 'info');
-                            openSqlHelperModal();
-                        }
-                        return;
-                    }
-                    throw error;
-                }
-                await fetchProducts();
-                if (!silent) showToast(`Nạp thành công ${SEED_PRODUCTS.length} máy mẫu lên Supabase!`, 'success');
+                if (error) throw error;
+                showToast(`Đã cập nhật vai trò thành công!`, 'success');
+                loadProfilesList();
             } catch (err) {
-                console.warn("Seeding notice:", err);
-                products = SEED_PRODUCTS.map(mapFromDB);
-                localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                renderApp();
-                if (!silent) showToast('Đã lưu dữ liệu vào bộ nhớ máy');
+                showToast('Lỗi cập nhật: ' + err.message, 'error');
             }
-        }
-        window.seedSampleDataSupabase = seedSampleDataSupabase;
+        };
 
-        function openSqlHelperModal() {
-            const modal = document.getElementById('sql-helper-modal');
-            if (modal) modal.classList.remove('hidden');
-        }
-        window.openSqlHelperModal = openSqlHelperModal;
+        window.seedSampleData = async function(isManual = false) {
+            const transformed = MASTER_SAMPLE_PRODUCTS.map(p => ({
+                id: p.id,
+                brand: p.brand,
+                name: p.name,
+                ram: p.ram,
+                storage: p.storage,
+                import_price: p.import_price,
+                selling_price: p.selling_price,
+                commission: p.commission,
+                status: p.status,
+                condition: p.condition,
+                seller: p.seller,
+                customer_name: p.customer_name,
+                customer_phone: p.customer_phone,
+                sold_at: p.sold_at
+            }));
 
-        function closeSqlHelperModal() {
-            const modal = document.getElementById('sql-helper-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeSqlHelperModal = closeSqlHelperModal;
+            try {
+                const { error } = await supabaseClient.from('products').upsert(transformed);
+                if (error) throw error;
+                await fetchProductsFromSupabase();
+                if (isManual) showToast(`Đã đồng bộ ${MASTER_SAMPLE_PRODUCTS.length} máy lên Supabase!`, 'success');
+            } catch (err) {
+                console.warn("Lỗi nạp Supabase, lưu tạm vào bộ nhớ cục bộ:", err);
+                products = MASTER_SAMPLE_PRODUCTS.map(p => ({
+                    id: p.id,
+                    brand: p.brand,
+                    name: p.name,
+                    ram: p.ram,
+                    storage: p.storage,
+                    importPrice: p.import_price,
+                    sellingPrice: p.selling_price,
+                    commission: p.commission,
+                    status: p.status,
+                    condition: p.condition,
+                    seller: p.seller,
+                    customerName: p.customer_name,
+                    customerPhone: p.customer_phone,
+                    soldAt: p.sold_at
+                }));
+                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+                renderApp();
+                if (isManual) showToast(`Đã nạp bộ dữ liệu mẫu vào kho!`, 'success');
+            }
+        };
 
-        function copySqlScript() {
-            const codeEl = document.getElementById('sql-script-code');
-            if (!codeEl) return;
-            const text = codeEl.innerText;
-            
-            const temp = document.createElement('textarea');
-            temp.value = text;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-            showToast('Đã sao chép lệnh SQL vào bộ nhớ đệm!');
-        }
-        window.copySqlScript = copySqlScript;
-
-        function switchTab(tabName) {
-            if (tabName === 'profit' && userRole !== 'admin') {
-                showToast('Bạn không có quyền truy cập Báo Cáo Lợi Nhuận!', 'error');
+        window.switchTab = function(tabName) {
+            if ((tabName === 'profit' || tabName === 'management') && userRole !== 'admin') {
+                showToast('Bạn không có quyền truy cập mục này!', 'error');
                 return;
             }
 
             currentTab = tabName;
-            
-            const tabs = ['inventory', 'commission', 'profit'];
+            const tabs = ['inventory', 'commission', 'profit', 'management'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 const view = document.getElementById(`view-${t}`);
@@ -1394,16 +1573,19 @@ WITH CHECK (true);</pre>
                 }
             });
 
-            renderApp();
-        }
-        window.switchTab = switchTab;
+            if (tabName === 'management') {
+                loadProfilesList();
+            } else {
+                renderApp();
+            }
+        };
 
         function formatVND(amount) {
             if (isNaN(amount) || amount === null) return '0 ₫';
             return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
         }
 
-        function toggleSortColumn(col) {
+        window.toggleSortColumn = function(col) {
             if (sortColumn === col) {
                 sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
             } else {
@@ -1422,10 +1604,9 @@ WITH CHECK (true);</pre>
 
             updateSortIcons();
             renderApp();
-        }
-        window.toggleSortColumn = toggleSortColumn;
+        };
 
-        function handleDropdownSortChange() {
+        window.handleDropdownSortChange = function() {
             const val = document.getElementById('filter-sort')?.value || 'DEFAULT';
             if (val === 'PRICE_DESC') { sortColumn = 'price'; sortDirection = 'desc'; }
             else if (val === 'PRICE_ASC') { sortColumn = 'price'; sortDirection = 'asc'; }
@@ -1435,8 +1616,7 @@ WITH CHECK (true);</pre>
 
             updateSortIcons();
             renderApp();
-        }
-        window.handleDropdownSortChange = handleDropdownSortChange;
+        };
 
         function updateSortIcons() {
             const iconName = document.getElementById('sort-icon-name');
@@ -1459,7 +1639,7 @@ WITH CHECK (true);</pre>
             }
         }
 
-        function renderApp() {
+        window.renderApp = function() {
             const availableCount = products.filter(p => p.status === 'AVAILABLE').length;
             const soldList = products.filter(p => p.status === 'SOLD');
             const totalSold = soldList.length;
@@ -1469,19 +1649,11 @@ WITH CHECK (true);</pre>
             const totalCommission = soldList.reduce((sum, p) => sum + (Number(p.commission) || 0), 0);
             const netProfit = totalRevenue - totalImport - totalCommission;
 
-            const statStock = document.getElementById('stat-total-stock');
-            const statSold = document.getElementById('stat-total-sold');
-            const statRev = document.getElementById('stat-total-revenue');
-            const statProfit = document.getElementById('stat-total-profit');
-            const statComm = document.getElementById('stat-total-commission');
-
-            if (statStock) statStock.innerText = availableCount;
-            if (statSold) statSold.innerText = totalSold;
-            if (statRev) statRev.innerText = formatVND(totalRevenue);
-            if (statProfit) statProfit.innerText = formatVND(netProfit);
-            if (statComm) statComm.innerText = formatVND(totalCommission);
-
-            updateUserUI();
+            document.getElementById('stat-total-stock').innerText = availableCount;
+            document.getElementById('stat-total-sold').innerText = totalSold;
+            document.getElementById('stat-total-revenue').innerText = formatVND(totalRevenue);
+            document.getElementById('stat-total-profit').innerText = formatVND(netProfit);
+            document.getElementById('stat-total-commission').innerText = formatVND(totalCommission);
 
             if (currentTab === 'inventory') {
                 renderInventoryTable();
@@ -1490,8 +1662,7 @@ WITH CHECK (true);</pre>
             } else if (currentTab === 'profit') {
                 renderProfitReport();
             }
-        }
-        window.renderApp = renderApp;
+        };
 
         function renderInventoryTable() {
             const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
@@ -1512,14 +1683,13 @@ WITH CHECK (true);</pre>
 
             const tbody = document.getElementById('product-table-body');
             const emptyState = document.getElementById('empty-state');
-            if (!tbody) return;
 
             if (filtered.length === 0) {
                 tbody.innerHTML = '';
-                if (emptyState) emptyState.classList.remove('hidden');
+                emptyState.classList.remove('hidden');
                 return;
             }
-            if (emptyState) emptyState.classList.add('hidden');
+            emptyState.classList.add('hidden');
 
             const sortFn = (a, b) => {
                 if (sortColumn === 'price') {
@@ -1604,6 +1774,7 @@ WITH CHECK (true);</pre>
                 return;
             }
 
+            // Mặc định: Phân tách máy CÒN HÀNG và máy ĐÃ BÁN
             let availableList = filtered.filter(p => p.status === 'AVAILABLE');
             availableList.sort(sortFn);
 
@@ -1620,7 +1791,7 @@ WITH CHECK (true);</pre>
             } else {
                 html += `
                     <tr>
-                        <td colspan="${isOwner ? 8 : 7}" class="text-center py-6 text-slate-400 text-xs font-semibold">
+                        <td colspan="8" class="text-center py-6 text-slate-400 text-xs font-semibold">
                             Hiện không còn máy nào trong kho đang có sẵn theo bộ lọc này.
                         </td>
                     </tr>
@@ -1630,7 +1801,7 @@ WITH CHECK (true);</pre>
             if (totalSoldCount > 0) {
                 html += `
                     <tr class="bg-slate-100/90 border-t-2 border-slate-200">
-                        <td colspan="${isOwner ? 8 : 7}" class="py-2.5 px-4">
+                        <td colspan="8" class="py-2.5 px-4">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div class="flex items-center space-x-2 text-xs font-extrabold text-slate-700">
                                     <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
@@ -1650,7 +1821,7 @@ WITH CHECK (true);</pre>
                 if (totalSoldCount > 3) {
                     html += `
                         <tr class="bg-slate-50/70">
-                            <td colspan="${isOwner ? 8 : 7}" class="py-2.5 text-center">
+                            <td colspan="8" class="py-2.5 text-center">
                                 <button onclick="openSoldHistoryModal()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition inline-flex items-center gap-1.5">
                                     <i class="fa-solid fa-angles-down"></i>
                                     <span>Còn ${totalSoldCount - 3} máy đã bán khác. Bấm vào đây để mở danh sách chi tiết</span>
@@ -1666,22 +1837,14 @@ WITH CHECK (true);</pre>
 
         function renderCommissionReport() {
             const grid = document.getElementById('commission-grid');
-            if (!grid) return;
-
-            let soldItems = products.filter(p => p.status === 'SOLD' && p.seller);
-            const isOwner = userRole === 'admin';
-            const currentStaffName = userProfile?.full_name || currentUser?.email || '';
-
-            if (!isOwner) {
-                soldItems = soldItems.filter(p => p.seller === currentStaffName);
-            }
+            const soldItems = products.filter(p => p.status === 'SOLD' && p.seller);
 
             if (soldItems.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full p-10 bg-white rounded-2xl border border-slate-200 text-center">
                         <i class="fa-solid fa-hand-holding-dollar text-3xl text-slate-300 mb-2"></i>
                         <p class="font-bold text-slate-600">Chưa có dữ liệu hoa hồng</p>
-                        <p class="text-xs text-slate-400 mt-0.5">${isOwner ? 'Hoa hồng sẽ tự động tính khi có máy bán thành công.' : 'Bạn chưa chốt được đơn máy nào hoặc chưa có tên trên phiếu bán.'}</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Hoa hồng sẽ tự động tính khi có đơn máy bán thành công.</p>
                     </div>
                 `;
                 return;
@@ -1759,58 +1922,45 @@ WITH CHECK (true);</pre>
             }).join('');
         }
 
-        function openStaffHistoryModal(staffName) {
+        window.openStaffHistoryModal = function(staffName) {
             const soldItems = products.filter(p => p.status === 'SOLD' && p.seller === staffName);
             soldItems.sort((a, b) => new Date(b.soldAt || 0) - new Date(a.soldAt || 0));
 
             const totalRev = soldItems.reduce((sum, p) => sum + (Number(p.sellingPrice) || 0), 0);
             const totalComm = soldItems.reduce((sum, p) => sum + (Number(p.commission) || 0), 0);
 
-            const avatar = document.getElementById('sh-avatar');
-            const nameEl = document.getElementById('sh-staff-name');
-            const badge = document.getElementById('sh-count-badge');
-            const totalSold = document.getElementById('sh-total-sold');
-            const totalRevEl = document.getElementById('sh-total-revenue');
-            const totalCommEl = document.getElementById('sh-total-commission');
-
-            if (avatar) avatar.innerText = staffName.substring(0, 2).toUpperCase();
-            if (nameEl) nameEl.innerText = staffName;
-            if (badge) badge.innerText = `${soldItems.length} đơn`;
-            if (totalSold) totalSold.innerText = `${soldItems.length} máy`;
-            if (totalRevEl) totalRevEl.innerText = formatVND(totalRev);
-            if (totalCommEl) totalCommEl.innerText = formatVND(totalComm);
+            document.getElementById('sh-avatar').innerText = staffName.substring(0, 2).toUpperCase();
+            document.getElementById('sh-staff-name').innerText = staffName;
+            document.getElementById('sh-count-badge').innerText = `${soldItems.length} đơn`;
+            document.getElementById('sh-total-sold').innerText = `${soldItems.length} máy`;
+            document.getElementById('sh-total-revenue').innerText = formatVND(totalRev);
+            document.getElementById('sh-total-commission').innerText = formatVND(totalComm);
 
             const container = document.getElementById('sh-items-container');
-            if (container) {
-                container.innerHTML = soldItems.map(p => `
-                    <div class="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-                        <div class="space-y-0.5 max-w-[280px]">
-                            <p class="font-extrabold text-slate-800">${escapeHtml(p.name)}</p>
-                            <p class="text-[11px] text-slate-500 font-medium">${p.soldAt || '--'} • Khách: <strong class="text-slate-700">${escapeHtml(p.customerName || 'Khách lẻ')}</strong> ${p.customerPhone ? '(' + p.customerPhone + ')' : ''}</p>
-                            <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(p.condition || '')}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-black text-indigo-600 text-sm">${formatVND(p.sellingPrice)}</p>
-                            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 mt-0.5">
-                                +${formatVND(p.commission)} Hoa Hồng
-                            </span>
-                        </div>
+            container.innerHTML = soldItems.map(p => `
+                <div class="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                    <div class="space-y-0.5 max-w-[280px]">
+                        <p class="font-extrabold text-slate-800">${escapeHtml(p.name)}</p>
+                        <p class="text-[11px] text-slate-500 font-medium">${p.soldAt || '--'} • Khách: <strong class="text-slate-700">${escapeHtml(p.customerName || 'Khách lẻ')}</strong> ${p.customerPhone ? '(' + p.customerPhone + ')' : ''}</p>
+                        <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(p.condition || '')}</p>
                     </div>
-                `).join('');
-            }
+                    <div class="text-right">
+                        <p class="font-black text-indigo-600 text-sm">${formatVND(p.sellingPrice)}</p>
+                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 mt-0.5">
+                            +${formatVND(p.commission)} Hoa Hồng
+                        </span>
+                    </div>
+                </div>
+            `).join('');
 
-            const modal = document.getElementById('staff-history-modal');
-            if (modal) modal.classList.remove('hidden');
-        }
-        window.openStaffHistoryModal = openStaffHistoryModal;
+            document.getElementById('staff-history-modal').classList.remove('hidden');
+        };
 
-        function closeStaffHistoryModal() {
-            const modal = document.getElementById('staff-history-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeStaffHistoryModal = closeStaffHistoryModal;
+        window.closeStaffHistoryModal = function() {
+            document.getElementById('staff-history-modal').classList.add('hidden');
+        };
 
-        function renderProfitReport() {
+        window.renderProfitReport = function() {
             const isOwner = userRole === 'admin';
             const deniedBox = document.getElementById('profit-access-denied');
             const profitContent = document.getElementById('profit-content');
@@ -1864,23 +2014,14 @@ WITH CHECK (true);</pre>
             const netProfit = totalRev - totalCost - totalComm;
             const margin = totalRev > 0 ? ((netProfit / totalRev) * 100).toFixed(1) : '0';
 
-            const pfRev = document.getElementById('pf-total-revenue');
-            const pfCount = document.getElementById('pf-sold-count');
-            const pfCost = document.getElementById('pf-total-import');
-            const pfComm = document.getElementById('pf-total-commission');
-            const pfNet = document.getElementById('pf-net-profit');
-            const pfMargin = document.getElementById('pf-profit-margin');
-
-            if (pfRev) pfRev.innerText = formatVND(totalRev);
-            if (pfCount) pfCount.innerText = `${filteredSold.length} máy đã bán`;
-            if (pfCost) pfCost.innerText = formatVND(totalCost);
-            if (pfComm) pfComm.innerText = formatVND(totalComm);
-            if (pfNet) pfNet.innerText = formatVND(netProfit);
-            if (pfMargin) pfMargin.innerText = `Tỷ suất LN: ${margin}%`;
+            document.getElementById('pf-total-revenue').innerText = formatVND(totalRev);
+            document.getElementById('pf-sold-count').innerText = `${filteredSold.length} máy đã bán`;
+            document.getElementById('pf-total-import').innerText = formatVND(totalCost);
+            document.getElementById('pf-total-commission').innerText = formatVND(totalComm);
+            document.getElementById('pf-net-profit').innerText = formatVND(netProfit);
+            document.getElementById('pf-profit-margin').innerText = `Tỷ suất LN: ${margin}%`;
 
             const tbody = document.getElementById('profit-table-body');
-            if (!tbody) return;
-
             if (filteredSold.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1911,25 +2052,22 @@ WITH CHECK (true);</pre>
                     </tr>
                 `;
             }).join('');
-        }
-        window.renderProfitReport = renderProfitReport;
+        };
 
-        function openSoldHistoryModal() {
+        window.openSoldHistoryModal = function() {
             const modal = document.getElementById('sold-history-modal');
             const searchInput = document.getElementById('sold-modal-search');
             if (searchInput) searchInput.value = '';
             renderSoldModalTable();
             if (modal) modal.classList.remove('hidden');
-        }
-        window.openSoldHistoryModal = openSoldHistoryModal;
+        };
 
-        function closeSoldHistoryModal() {
+        window.closeSoldHistoryModal = function() {
             const modal = document.getElementById('sold-history-modal');
             if (modal) modal.classList.add('hidden');
-        }
-        window.closeSoldHistoryModal = closeSoldHistoryModal;
+        };
 
-        function renderSoldModalTable() {
+        window.renderSoldModalTable = function() {
             const searchVal = document.getElementById('sold-modal-search')?.value.toLowerCase().trim() || '';
             const allSold = products.filter(p => p.status === 'SOLD');
 
@@ -1945,10 +2083,8 @@ WITH CHECK (true);</pre>
 
             const totalRev = filteredSold.reduce((sum, p) => sum + (Number(p.sellingPrice) || 0), 0);
 
-            const badge = document.getElementById('sh-total-sold-badge');
-            const revEl = document.getElementById('sold-modal-total-rev');
-            if (badge) badge.innerText = `${allSold.length} máy`;
-            if (revEl) revEl.innerText = formatVND(totalRev);
+            document.getElementById('sh-total-sold-badge').innerText = `${allSold.length} máy`;
+            document.getElementById('sold-modal-total-rev').innerText = formatVND(totalRev);
 
             const tbody = document.getElementById('sold-modal-tbody');
             if (!tbody) return;
@@ -1990,10 +2126,9 @@ WITH CHECK (true);</pre>
                     </tr>
                 `;
             }).join('');
-        }
-        window.renderSoldModalTable = renderSoldModalTable;
+        };
 
-        function openDetailModal(id) {
+        window.openDetailModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
@@ -2059,32 +2194,20 @@ WITH CHECK (true);</pre>
             }
 
             document.getElementById('detail-modal').classList.remove('hidden');
-        }
-        window.openDetailModal = openDetailModal;
+        };
 
-        function closeDetailModal() {
-            const modal = document.getElementById('detail-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeDetailModal = closeDetailModal;
+        window.closeDetailModal = function() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        };
 
-        function openAddModal() {
-            if (userRole !== 'admin') {
-                showToast('Chỉ tài khoản Chủ Cửa Hàng mới có quyền thêm máy mới!', 'error');
-                return;
-            }
+        window.openAddModal = function() {
             document.getElementById('modal-title').innerText = 'Thêm Máy Mới Vào Kho';
             document.getElementById('form-product-id').value = '';
             document.getElementById('product-form').reset();
             document.getElementById('product-modal').classList.remove('hidden');
-        }
-        window.openAddModal = openAddModal;
+        };
 
-        function openEditModal(id) {
-            if (userRole !== 'admin') {
-                showToast('Chỉ tài khoản Chủ Cửa Hàng mới có quyền sửa máy!', 'error');
-                return;
-            }
+        window.openEditModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
@@ -2101,23 +2224,16 @@ WITH CHECK (true);</pre>
             document.getElementById('form-condition').value = p.condition || '';
 
             document.getElementById('product-modal').classList.remove('hidden');
-        }
-        window.openEditModal = openEditModal;
+        };
 
-        function closeProductModal() {
-            const modal = document.getElementById('product-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeProductModal = closeProductModal;
+        window.closeProductModal = function() {
+            document.getElementById('product-modal').classList.add('hidden');
+        };
 
-        async function handleProductSubmit(e) {
+        window.handleProductSubmit = async function(e) {
             e.preventDefault();
-            if (userRole !== 'admin') {
-                showToast('Từ chối quyền truy cập: Bạn không phải Chủ Cửa Hàng!', 'error');
-                return;
-            }
-
             const id = document.getElementById('form-product-id').value;
+
             const brand = document.getElementById('form-brand').value;
             const name = document.getElementById('form-name').value.trim();
             const ram = document.getElementById('form-ram').value;
@@ -2129,45 +2245,47 @@ WITH CHECK (true);</pre>
             const condition = document.getElementById('form-condition').value.trim();
 
             const targetId = id || ('prod-' + Date.now());
-            const productData = {
+            const productDb = {
                 id: targetId,
-                brand, name, ram, storage,
+                brand,
+                name,
+                ram,
+                storage,
                 import_price: importPrice,
                 selling_price: sellingPrice,
-                status, commission, condition
+                status,
+                commission,
+                condition
             };
 
-            initSupabaseClient();
-            if (!supabaseClient) {
-                const mapped = mapFromDB(productData);
-                const idx = products.findIndex(p => p.id === targetId);
-                if (idx >= 0) products[idx] = mapped;
-                else products.unshift(mapped);
-                localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                closeProductModal();
-                renderApp();
-                showToast(id ? 'Cập nhật thành công!' : 'Đã nhập máy mới vào kho!');
-                return;
-            }
-
             try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .upsert(productData);
-
+                const { error } = await supabaseClient.from('products').upsert(productDb);
                 if (error) throw error;
-
-                closeProductModal();
-                showToast(id ? 'Cập nhật thông tin thành công lên Supabase!' : 'Đã nhập máy mới vào kho Supabase!');
-                await fetchProducts();
             } catch (err) {
-                console.error("Save product error:", err);
-                showToast('Lỗi lưu máy: ' + err.message, 'error');
+                console.warn("Supabase upsert error:", err);
             }
-        }
-        window.handleProductSubmit = handleProductSubmit;
 
-        function openSellModal(id) {
+            const localProd = {
+                id: targetId,
+                brand, name, ram, storage,
+                importPrice, sellingPrice, status, commission, condition,
+                seller: '', customerName: '', customerPhone: '', soldAt: ''
+            };
+
+            const idx = products.findIndex(p => p.id === targetId);
+            if (idx >= 0) {
+                products[idx] = { ...products[idx], ...localProd };
+            } else {
+                products.unshift(localProd);
+            }
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+
+            closeProductModal();
+            renderApp();
+            showToast(id ? 'Cập nhật thông tin thành công!' : 'Đã nhập máy mới vào kho!');
+        };
+
+        window.openSellModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
@@ -2178,22 +2296,31 @@ WITH CHECK (true);</pre>
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('sell-date').value = today;
             
-            const currentName = userProfile?.full_name || currentUser?.email || '';
-            document.getElementById('sell-seller-name').value = currentName;
+            // Tự động gán tên nhân viên đang đăng nhập
+            const defaultSeller = currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || 'Nhân Viên';
+            const sellerInput = document.getElementById('sell-seller-name');
+            sellerInput.value = defaultSeller;
+            
+            // Nếu là nhân viên thì khóa ô tên để không gán nhầm cho người khác
+            if (userRole === 'staff') {
+                sellerInput.readOnly = true;
+                sellerInput.className = "w-full px-3 py-2 text-sm border border-slate-300 rounded-xl bg-slate-100 text-slate-600 font-bold focus:outline-none cursor-not-allowed";
+            } else {
+                sellerInput.readOnly = false;
+                sellerInput.className = "w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold";
+            }
+
             document.getElementById('sell-customer-name').value = '';
             document.getElementById('sell-customer-phone').value = '';
 
             document.getElementById('sell-modal').classList.remove('hidden');
-        }
-        window.openSellModal = openSellModal;
+        };
 
-        function closeSellModal() {
-            const modal = document.getElementById('sell-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeSellModal = closeSellModal;
+        window.closeSellModal = function() {
+            document.getElementById('sell-modal').classList.add('hidden');
+        };
 
-        async function handleQuickSellSubmit(e) {
+        window.handleQuickSellSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('sell-product-id').value;
             const soldAt = document.getElementById('sell-date').value;
@@ -2201,7 +2328,7 @@ WITH CHECK (true);</pre>
             const customerName = document.getElementById('sell-customer-name').value.trim();
             const customerPhone = document.getElementById('sell-customer-phone').value.trim();
 
-            const updateData = {
+            const updateDb = {
                 status: 'SOLD',
                 sold_at: soldAt,
                 seller: seller,
@@ -2209,52 +2336,37 @@ WITH CHECK (true);</pre>
                 customer_phone: customerPhone
             };
 
-            initSupabaseClient();
-            if (!supabaseClient) {
-                const p = products.find(prod => prod.id === id);
-                if (p) {
-                    p.status = 'SOLD';
-                    p.soldAt = soldAt;
-                    p.seller = seller;
-                    p.customerName = customerName;
-                    p.customerPhone = customerPhone;
-                    localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                }
-                closeSellModal();
-                showToast(`Đã xuất bán thành công cho nhân viên ${seller}!`);
-                renderApp();
-                setTimeout(() => openInvoiceModal(id), 300);
-                return;
-            }
-
             try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .update(updateData)
-                    .eq('id', id);
-
+                const { error } = await supabaseClient.from('products').update(updateDb).eq('id', id);
                 if (error) throw error;
-
-                closeSellModal();
-                showToast(`Đã xuất bán thành công cho nhân viên ${seller}!`);
-                await fetchProducts();
-
-                setTimeout(() => {
-                    openInvoiceModal(id);
-                }, 300);
             } catch (err) {
-                console.error("Sell error:", err);
-                showToast('Lỗi khi chốt đơn: ' + err.message, 'error');
+                console.warn("Lỗi cập nhật bán trên Supabase:", err);
             }
-        }
-        window.handleQuickSellSubmit = handleQuickSellSubmit;
 
-        function openInvoiceModal(id) {
+            const p = products.find(prod => prod.id === id);
+            if (p) {
+                p.status = 'SOLD';
+                p.soldAt = soldAt;
+                p.seller = seller;
+                p.customerName = customerName;
+                p.customerPhone = customerPhone;
+            }
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+
+            closeSellModal();
+            renderApp();
+            showToast(`Đã chốt bán thành công cho nhân viên ${seller}!`);
+
+            setTimeout(() => {
+                openInvoiceModal(id);
+            }, 300);
+        };
+
+        window.openInvoiceModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
-            const invCode = `INV-${p.id.replace(/[^\d]/g, '').slice(-6) || Math.floor(100000 + Math.random() * 900000)}`;
-            document.getElementById('inv-code').innerText = `#${invCode}`;
+            document.getElementById('inv-code').innerText = `#INV-${p.id.replace(/[^\d]/g, '').slice(-6) || Math.floor(100000 + Math.random() * 900000)}`;
             document.getElementById('inv-date').innerText = p.soldAt || new Date().toISOString().split('T')[0];
             document.getElementById('inv-customer-name').innerText = p.customerName || 'Khách Lẻ Mua Trực Tiếp';
             document.getElementById('inv-customer-phone').innerText = p.customerPhone || 'Không có';
@@ -2264,72 +2376,41 @@ WITH CHECK (true);</pre>
             document.getElementById('inv-prod-price').innerText = formatVND(p.sellingPrice);
             document.getElementById('inv-total-price').innerText = formatVND(p.sellingPrice);
 
-            const vietqrImg = document.getElementById('inv-vietqr-img');
-            const qrDesc = document.getElementById('inv-qr-desc');
-            const amount = p.sellingPrice || 0;
-            const transferInfo = `PhoneStore ${invCode}`;
-            
-            vietqrImg.src = `https://api.vietqr.io/image/970422-0988777666-compact2.jpg?amount=${amount}&addInfo=${encodeURIComponent(transferInfo)}&accountName=PHONESTORE%20PRO`;
-            vietqrImg.style.display = 'block';
-            qrDesc.innerText = transferInfo;
-
             document.getElementById('invoice-modal').classList.remove('hidden');
-        }
-        window.openInvoiceModal = openInvoiceModal;
+        };
 
-        function closeInvoiceModal() {
-            const modal = document.getElementById('invoice-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-        window.closeInvoiceModal = closeInvoiceModal;
+        window.closeInvoiceModal = function() {
+            document.getElementById('invoice-modal').classList.add('hidden');
+        };
 
-        function confirmDeleteProduct(id) {
-            if (userRole !== 'admin') {
-                showToast('Chỉ tài khoản Chủ Cửa Hàng mới có quyền xóa máy!', 'error');
-                return;
-            }
-
+        window.confirmDeleteProduct = function(id) {
             confirmCallback = async () => {
-                initSupabaseClient();
-                if (!supabaseClient) {
-                    products = products.filter(p => p.id !== id);
-                    localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                    showToast('Đã xóa máy khỏi danh sách!');
-                    renderApp();
-                    return;
-                }
-
                 try {
-                    const { error } = await supabaseClient
-                        .from('products')
-                        .delete()
-                        .eq('id', id);
-
+                    const { error } = await supabaseClient.from('products').delete().eq('id', id);
                     if (error) throw error;
-                    showToast('Đã xóa máy khỏi cơ sở dữ liệu Supabase');
-                    await fetchProducts();
                 } catch (err) {
-                    console.error("Delete error:", err);
-                    showToast('Lỗi xóa máy: ' + err.message, 'error');
+                    console.warn("Supabase delete error:", err);
                 }
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+                renderApp();
+                showToast('Đã xóa máy khỏi kho hàng');
             };
 
             document.getElementById('confirm-title').innerText = 'Xác Nhận Xóa Máy';
             document.getElementById('confirm-message').innerText = 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi cơ sở dữ liệu kho? Thao tác không thể hoàn tác.';
             document.getElementById('confirm-modal').classList.remove('hidden');
-        }
-        window.confirmDeleteProduct = confirmDeleteProduct;
+        };
 
-        function handleConfirmModalResult(result) {
+        window.handleConfirmModalResult = function(result) {
             document.getElementById('confirm-modal').classList.add('hidden');
             if (result && confirmCallback) {
                 confirmCallback();
             }
             confirmCallback = null;
-        }
-        window.handleConfirmModalResult = handleConfirmModalResult;
+        };
 
-        function exportToCSV() {
+        window.exportToCSV = function() {
             if (products.length === 0) {
                 showToast('Kho hàng hiện đang trống!', 'error');
                 return;
@@ -2343,7 +2424,7 @@ WITH CHECK (true);</pre>
                 `"${(p.name || '').replace(/"/g, '""')}"`,
                 p.ram || '',
                 p.storage || '',
-                userRole === 'admin' ? (p.importPrice || 0) : 0,
+                p.importPrice || 0,
                 p.sellingPrice || 0,
                 p.commission || 0,
                 p.status === 'SOLD' ? 'Đã Bán' : 'Còn Hàng',
@@ -2360,22 +2441,15 @@ WITH CHECK (true);</pre>
             
             const link = document.createElement('a');
             link.setAttribute('href', url);
-            link.setAttribute('download', `phonestore_kho_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', `phonestore_pro_kho_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
             showToast('Đã tải xuống file CSV kho hàng!');
-        }
-        window.exportToCSV = exportToCSV;
+        };
 
-        function handleCSVUpload(event) {
-            if (userRole !== 'admin') {
-                showToast('Chỉ tài khoản Chủ Cửa Hàng mới có quyền nhập file CSV!', 'error');
-                event.target.value = '';
-                return;
-            }
-
+        window.handleCSVUpload = function(event) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -2389,11 +2463,12 @@ WITH CHECK (true);</pre>
                         return;
                     }
 
-                    const newProds = [];
+                    let count = 0;
+                    const uploadList = [];
                     for (let i = 1; i < lines.length; i++) {
                         const cols = lines[i].split(',').map(s => s.replace(/^"|"$/g, '').trim());
                         if (cols.length >= 7) {
-                            newProds.push({
+                            const newProd = {
                                 id: cols[0] || ('csv-' + Date.now() + '-' + i),
                                 brand: cols[1] || 'Khác',
                                 name: cols[2] || 'Sản phẩm CSV',
@@ -2403,27 +2478,23 @@ WITH CHECK (true);</pre>
                                 selling_price: Number(cols[6]) || 0,
                                 commission: Number(cols[7]) || 0,
                                 status: cols[8] === 'Đã Bán' ? 'SOLD' : 'AVAILABLE',
-                                seller: cols[9] || null,
-                                sold_at: cols[10] || null,
-                                customer_name: cols[11] || null,
-                                customer_phone: cols[12] || null,
+                                seller: cols[9] || '',
+                                sold_at: cols[10] || '',
+                                customer_name: cols[11] || '',
+                                customer_phone: cols[12] || '',
                                 condition: cols[13] || ''
-                            });
+                            };
+                            uploadList.push(newProd);
+                            count++;
                         }
                     }
 
-                    if (newProds.length > 0) {
-                        initSupabaseClient();
-                        if (supabaseClient) {
-                            const { error } = await supabaseClient.from('products').upsert(newProds);
-                            if (error) throw error;
-                            await fetchProducts();
-                        } else {
-                            products = [...newProds.map(mapFromDB), ...products];
-                            localStorage.setItem('phonestore_local_products', JSON.stringify(products));
-                            renderApp();
-                        }
-                        showToast(`Đã nhập thành công ${newProds.length} máy từ CSV!`);
+                    if (uploadList.length > 0) {
+                        try {
+                            await supabaseClient.from('products').upsert(uploadList);
+                        } catch(errUp) { console.warn("Lỗi lưu CSV lên Supabase:", errUp); }
+                        await fetchProductsFromSupabase();
+                        showToast(`Đã nhập thành công ${count} sản phẩm từ file CSV!`);
                     }
                 } catch(err) {
                     showToast('Lỗi khi đọc file CSV: ' + err.message, 'error');
@@ -2431,18 +2502,16 @@ WITH CHECK (true);</pre>
             };
             reader.readAsText(file);
             event.target.value = '';
-        }
-        window.handleCSVUpload = handleCSVUpload;
+        };
 
-        function formatPriceInput(input) {
+        window.formatPriceInput = function(input) {
             let val = input.value.replace(/\D/g, '');
             if (!val) {
                 input.value = '';
                 return;
             }
             input.value = new Intl.NumberFormat('vi-VN').format(Number(val));
-        }
-        window.formatPriceInput = formatPriceInput;
+        };
 
         function formatNumberInput(val) {
             if (!val && val !== 0) return '';
@@ -2489,8 +2558,9 @@ WITH CHECK (true);</pre>
             }, 3000);
         }
 
+        // Bắt đầu khởi động ứng dụng
         window.onload = function() {
-            initAuth();
+            initApp();
         };
     </script>
 </body>
