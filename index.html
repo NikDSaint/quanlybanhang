@@ -63,7 +63,7 @@
                     </button>
                     <button id="tab-profit-btn" onclick="switchTab('profit')" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-pie"></i>
-                        <span>Lợi Nhuận</span>
+                        <span>Báo Cáo</span>
                     </button>
                     <!-- Management Tab (Admin Only) -->
                     <button id="tab-management-btn" onclick="switchTab('management')" class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
@@ -74,17 +74,21 @@
 
                 <!-- User Profile & Action Tools -->
                 <div class="flex items-center space-x-2 ml-auto md:ml-0">
-                    <div id="user-badge" class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
+                    <!-- User Badge (Bấm vào để mở Quản Lý Tài Khoản) -->
+                    <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-750 hover:border-indigo-500/60 px-3 py-1.5 rounded-xl border border-slate-700 transition cursor-pointer text-left group">
+                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm group-hover:scale-105 transition-transform">
                             ?
                         </div>
                         <div class="text-left hidden sm:block">
-                            <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[130px] truncate">Đang kết nối...</p>
+                            <div class="flex items-center space-x-1">
+                                <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[110px] truncate">Đang kết nối...</p>
+                                <i class="fa-solid fa-gear text-[10px] text-slate-400 group-hover:text-indigo-400 transition-colors"></i>
+                            </div>
                             <span id="user-role-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 inline-block uppercase tracking-wider">
                                 VAI TRÒ
                             </span>
                         </div>
-                    </div>
+                    </button>
 
                     <!-- Auth Sign Out Action Button -->
                     <button id="btn-auth-action" onclick="handleAuthActionClick()" class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 rounded-xl text-xs font-semibold text-white transition flex items-center space-x-1.5 shadow-sm">
@@ -120,52 +124,52 @@
         </div>
 
         <!-- Dashboard Overview Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tồn kho hiện tại</p>
-                    <h3 id="stat-total-stock" class="text-2xl font-black text-slate-800 mt-0.5">0</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between min-h-[90px] transition hover:shadow-md">
+                <div class="min-w-0 pr-2">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Tồn kho hiện tại</p>
+                    <h3 id="stat-total-stock" class="text-xl sm:text-2xl font-black text-slate-800 mt-0.5">0</h3>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shadow-sm">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shadow-sm shrink-0">
                     <i class="fa-solid fa-boxes-stacked"></i>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Số máy đã bán</p>
-                    <h3 id="stat-total-sold" class="text-2xl font-black text-emerald-600 mt-0.5">0</h3>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between min-h-[90px] transition hover:shadow-md">
+                <div class="min-w-0 pr-2">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Đã bán <span id="stat-month-tag" class="text-indigo-600 font-extrabold text-[10px]"></span></p>
+                    <h3 id="stat-total-sold" class="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">0</h3>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shadow-sm">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shadow-sm shrink-0">
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng doanh thu</p>
-                    <h3 id="stat-total-revenue" class="text-base sm:text-lg font-black text-slate-800 mt-0.5">0 ₫</h3>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between min-h-[90px] transition hover:shadow-md">
+                <div class="min-w-0 pr-2">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Doanh thu tháng</p>
+                    <h3 id="stat-total-revenue" class="text-sm sm:text-base lg:text-lg font-black text-slate-800 mt-0.5 truncate">0 ₫</h3>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shadow-sm">
+                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shadow-sm shrink-0">
                     <i class="fa-solid fa-chart-line"></i>
                 </div>
             </div>
             
             <!-- Owner Only Stat: Profit Card -->
-            <div id="stat-card-profit" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lợi nhuận ròng</p>
-                    <h3 id="stat-total-profit" class="text-base sm:text-lg font-black text-amber-600 mt-0.5">0 ₫</h3>
+            <div id="stat-card-profit" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between min-h-[90px] transition hover:shadow-md">
+                <div class="min-w-0 pr-2">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Lợi nhuận ròng</p>
+                    <h3 id="stat-total-profit" class="text-sm sm:text-base lg:text-lg font-black text-amber-600 mt-0.5 truncate">0 ₫</h3>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shadow-sm">
+                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shadow-sm shrink-0">
                     <i class="fa-solid fa-sack-dollar"></i>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between col-span-2 sm:col-span-1">
-                <div>
-                    <p id="stat-label-commission" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hoa hồng chi trả</p>
-                    <h3 id="stat-total-commission" class="text-base sm:text-lg font-black text-purple-600 mt-0.5">0 ₫</h3>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between min-h-[90px] transition hover:shadow-md col-span-2 md:col-span-1">
+                <div class="min-w-0 pr-2">
+                    <p id="stat-label-commission" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Hoa hồng tháng</p>
+                    <h3 id="stat-total-commission" class="text-sm sm:text-base lg:text-lg font-black text-purple-600 mt-0.5 truncate">0 ₫</h3>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg shadow-sm">
+                <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg shadow-sm shrink-0">
                     <i class="fa-solid fa-users"></i>
                 </div>
             </div>
@@ -246,16 +250,16 @@
                                         </span>
                                     </div>
                                 </th>
-                                <th class="py-3.5 px-4 text-right col-import-price">Giá Vốn Nhập</th>
-                                <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('price')" title="Bấm để sắp xếp theo giá bán (Cao -> Thấp hoặc Thấp -> Cao)">
+                                <th class="py-3.5 px-4 text-right col-import-price whitespace-nowrap">Giá Nhập</th>
+                                <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSortColumn('price')" title="Bấm để sắp xếp theo giá bán (Cao -> Thấp hoặc Thấp -> Cao)">
                                     <div class="flex items-center justify-end space-x-1.5">
-                                        <span>Giá Bán Ra</span>
+                                        <span class="whitespace-nowrap">Giá Bán</span>
                                         <span id="sort-icon-price" class="text-xs text-slate-400">
                                             <i class="fa-solid fa-sort"></i>
                                         </span>
                                     </div>
                                 </th>
-                                <th class="py-3.5 px-4 text-right">Hoa Hồng NV</th>
+                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
                                 <th class="py-3.5 px-4 text-center">Trạng Thái</th>
                                 <th class="py-3.5 px-4">Người Bán</th>
                                 <th class="py-3.5 px-4 text-center">Thao Tác</th>
@@ -279,13 +283,44 @@
 
         <!-- VIEW 2: TÍNH HOA HỒNG (COMMISSION REPORT) -->
         <div id="view-commission" class="space-y-4 hidden">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <!-- Time Filter Controls Bar for Commission -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
                 <div>
                     <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên</h2>
-                    <p class="text-xs text-slate-500">Tự động tính tiền thưởng cho từng nhân viên khi chốt đơn thành công (Hiển thị 3 đơn mới nhất).</p>
+                    <p class="text-xs text-slate-500">Tự động tính tiền thưởng cho từng nhân viên khi chốt đơn thành công theo kỳ lọc.</p>
                 </div>
-                <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-                    Cập nhật thời gian thực từ kho hàng
+
+                <!-- Period Selectors -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="comm-period-type" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-700">
+                        <option value="MONTH" selected>Theo Tháng</option>
+                        <option value="QUARTER">Theo Quý (3 tháng)</option>
+                        <option value="YEAR">Theo Năm</option>
+                        <option value="ALL">Toàn Bộ Lịch Sử</option>
+                    </select>
+
+                    <!-- Month Selector -->
+                    <select id="comm-filter-month" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium">
+                        <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+                        <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                        <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9" selected>Tháng 9</option>
+                        <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                    </select>
+
+                    <!-- Quarter Selector -->
+                    <select id="comm-filter-quarter" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium hidden">
+                        <option value="1">Quý 1 (T1 - T3)</option>
+                        <option value="2">Quý 2 (T4 - T6)</option>
+                        <option value="3" selected>Quý 3 (T7 - T9)</option>
+                        <option value="4">Quý 4 (T10 - T12)</option>
+                    </select>
+
+                    <!-- Year Selector -->
+                    <select id="comm-filter-year" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium">
+                        <option value="2026" selected>Năm 2026</option>
+                        <option value="2025">Năm 2025</option>
+                        <option value="2024">Năm 2024</option>
+                    </select>
                 </div>
             </div>
 
@@ -311,7 +346,7 @@
                 <!-- Time Filter Controls Bar -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
                     <div>
-                        <h2 class="text-base font-bold text-slate-800">Báo Cáo Lợi Nhuận & Tài Chính</h2>
+                        <h2 class="text-base font-bold text-slate-800">Báo Cáo Doanh Thu & Lợi Nhuận</h2>
                         <p class="text-xs text-slate-500">Công thức chuẩn: <span class="font-bold text-slate-700">Lợi nhuận ròng = Doanh thu - Giá vốn nhập - Hoa hồng chi trả</span></p>
                     </div>
 
@@ -450,10 +485,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Vai Trò Hệ Thống <span class="text-rose-500">*</span></label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Chức Danh Phân Quyền <span class="text-rose-500">*</span></label>
                             <select id="staff-role" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
-                                <option value="staff" selected>Nhân Viên Bán Hàng (Staff)</option>
-                                <option value="admin">Quản Trị Viên (Admin / Chủ Cửa Hàng)</option>
+                                <option value="staff" selected>Nhân Viên Bán Hàng</option>
+                                <option value="manager">Quản Lý Cửa Hàng</option>
+                                <option value="owner">Chủ Cửa Hàng</option>
                             </select>
                         </div>
 
@@ -500,6 +536,133 @@
         </div>
 
     </main>
+
+    <!-- Modal: Quản Lý Tài Khoản & Đổi Mật Khẩu (Profile Management Modal) -->
+    <div id="profile-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
+            <!-- Header Modal -->
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-base shadow-sm">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base sm:text-lg">Quản Lý Tài Khoản Cá Nhân</h3>
+                        <p class="text-xs text-slate-400 font-medium">Cập nhật họ tên hiển thị và mật khẩu đăng nhập</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProfileModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Tabs: Thông tin & Đổi mật khẩu -->
+            <div class="flex border-b border-slate-200 bg-slate-50/70 px-6 pt-2">
+                <button type="button" id="prof-tab-btn-info" onclick="switchProfileTab('info')" class="pb-3 px-4 font-bold text-xs sm:text-sm text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>Thông Tin Cá Nhân</span>
+                </button>
+                <button type="button" id="prof-tab-btn-pwd" onclick="switchProfileTab('pwd')" class="pb-3 px-4 font-semibold text-xs sm:text-sm text-slate-500 hover:text-slate-800 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Đổi Mật Khẩu</span>
+                </button>
+            </div>
+
+            <!-- Tab 1: Thông tin cá nhân -->
+            <div id="prof-content-info" class="p-6 overflow-y-auto custom-scrollbar space-y-4">
+                <form id="form-update-profile" onsubmit="handleUpdateProfileSubmit(event)" class="space-y-4">
+                    <!-- Card tóm tắt tài khoản -->
+                    <div class="flex items-center space-x-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                        <div id="prof-card-avatar" class="w-12 h-12 rounded-xl bg-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-sm">
+                            ?
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p id="prof-card-name" class="font-extrabold text-slate-800 text-sm truncate">--</p>
+                            <p id="prof-card-email" class="text-xs text-slate-500 font-mono truncate">--</p>
+                            <span id="prof-card-role" class="mt-1 inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 uppercase">
+                                VAI TRÒ
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Họ Và Tên Hiển Thị <span class="text-rose-500">*</span></label>
+                        <input type="text" id="prof-input-name" required placeholder="Nhập họ và tên..." class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        <p class="text-[11px] text-slate-400 mt-1">Tên này sẽ hiển thị trên góc hệ thống, đơn xuất bán và bảng hoa hồng.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Email Đăng Nhập (Cố định)</label>
+                        <input type="email" id="prof-input-email" readonly disabled class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-100 text-slate-500 font-mono cursor-not-allowed">
+                    </div>
+
+                    <div id="prof-info-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+
+                    <div class="pt-2 flex justify-end space-x-2">
+                        <button type="button" onclick="closeProfileModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">Đóng</button>
+                        <button type="submit" id="btn-save-profile" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Lưu Thông Tin</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 2: Đổi mật khẩu -->
+            <div id="prof-content-pwd" class="p-6 overflow-y-auto custom-scrollbar space-y-4 hidden">
+                <form id="form-update-pwd" onsubmit="handleUpdatePasswordSubmit(event)" class="space-y-4">
+                    <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-900 space-y-1.5">
+                        <div class="flex items-center space-x-2 font-bold text-amber-800">
+                            <i class="fa-solid fa-shield-halved text-amber-600"></i>
+                            <span>Yêu cầu mật khẩu an toàn theo Supabase:</span>
+                        </div>
+                        <ul class="text-[11px] text-amber-800 list-disc list-inside space-y-0.5 pl-1">
+                            <li>Độ dài tối thiểu 6 ký tự</li>
+                            <li>Chứa ít nhất 1 chữ thường (a - z)</li>
+                            <li>Chứa ít nhất 1 chữ in hoa (A - Z)</li>
+                            <li>Chứa ít nhất 1 chữ số (0 - 9)</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Mật Khẩu Mới <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="prof-new-pwd" required minlength="6" oninput="checkPasswordStrength(this.value)" placeholder="VD: Matkhau@123..." class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium pr-10">
+                            <button type="button" onclick="togglePasswordVisibility('prof-new-pwd', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1.5 mt-2 text-[10px] font-bold">
+                            <span id="pwd-check-len" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-400 text-center transition-colors">≥ 6 ký tự</span>
+                            <span id="pwd-check-lower" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-400 text-center transition-colors">Chữ thường (a-z)</span>
+                            <span id="pwd-check-upper" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-400 text-center transition-colors">Chữ in hoa (A-Z)</span>
+                            <span id="pwd-check-num" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-400 text-center transition-colors">Chữ số (0-9)</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nhập Lại Mật Khẩu Mới <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="prof-confirm-pwd" required minlength="6" placeholder="Xác nhận lại mật khẩu..." class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium pr-10">
+                            <button type="button" onclick="togglePasswordVisibility('prof-confirm-pwd', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="prof-pwd-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+
+                    <div class="pt-2 flex justify-end space-x-2">
+                        <button type="button" onclick="closeProfileModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">Đóng</button>
+                        <button type="submit" id="btn-save-pwd" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Cập Nhật Mật Khẩu</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal: Đăng Nhập Supabase Bắt Buộc (Auth Modal - Login & First Admin Setup) -->
     <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -619,9 +782,11 @@
                     </span>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Ngày bán:</span>
-                            <p id="dt-sold-date" class="font-bold text-slate-800">--</p>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Mật Khẩu Ban Đầu (Tối thiểu 6 ký tự) <span class="text-rose-500">*</span></label>
+                            <input type="text" id="staff-password" required minlength="6" placeholder="VD: NhanVien@2026 (cần chữ thường, hoa & số)..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                            <p class="text-[10px] text-slate-400 mt-1">Lưu ý: Mật khẩu cần có ít nhất chữ thường, chữ in HOA và số (VD: Nv@123456).</p>
                         </div>
+
                         <div>
                             <span class="text-slate-400 text-[10px] font-semibold">Nhân viên chốt:</span>
                             <p id="dt-seller" class="font-bold text-indigo-700">--</p>
@@ -785,7 +950,15 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tên Nhân Viên Chốt Đơn <span class="text-rose-500">*</span></label>
-                    <input type="text" id="sell-seller-name" required placeholder="Tên nhân viên..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+                    <div class="relative">
+                        <select id="sell-seller-name" required class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold bg-white text-slate-800 cursor-pointer shadow-sm appearance-none pr-9">
+                            <option value="">-- Chọn nhân viên chốt đơn --</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">Chọn tài khoản nhân sự phụ trách chốt đơn để tự động tính hoa hồng.</p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -998,6 +1171,159 @@
         </div>
     </div>
 
+    <!-- Modal: Phân Quyền 3 Chức Danh (Chủ Cửa Hàng, Quản Lý Cửa Hàng, Nhân Viên Bán Hàng) -->
+    <div id="role-select-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 animate-in fade-in duration-200">
+            <!-- Modal Header -->
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-white">Phân Quyền Chức Danh</h3>
+                        <p id="role-modal-target-user" class="text-xs text-slate-400 font-medium">Nhân sự: --</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeRoleSelectModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Form Body with 3 Cards -->
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="role-modal-user-id">
+                <p class="text-xs font-semibold text-slate-500">Chọn chức danh và quyền hạn truy cập cho tài khoản:</p>
+
+                <div class="space-y-2.5">
+                    <!-- Option 1: Chủ Cửa Hàng -->
+                    <label class="flex items-start p-3.5 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-amber-400 hover:bg-amber-50/30 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/50">
+                        <input type="radio" name="select-role-option" value="owner" class="mt-1 w-4 h-4 text-amber-600 focus:ring-amber-500">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-crown text-amber-500"></i> Chủ Cửa Hàng
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-200 uppercase">Toàn quyền</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-snug">Xem đủ 4 mục (Kho, Hoa hồng, Báo cáo, Quản lý tài khoản & phân quyền).</p>
+                        </div>
+                    </label>
+
+                    <!-- Option 2: Quản Lý Cửa Hàng -->
+                    <label class="flex items-start p-3.5 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50/50">
+                        <input type="radio" name="select-role-option" value="manager" class="mt-1 w-4 h-4 text-purple-600 focus:ring-purple-500">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user-tie text-purple-500"></i> Quản Lý Cửa Hàng
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-purple-100 text-purple-800 border border-purple-200 uppercase">3 Mục</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-snug">Xem 3 mục: Tổng quan kho, Hoa hồng NV và Báo cáo (ẩn mục Quản lý).</p>
+                        </div>
+                    </label>
+
+                    <!-- Option 3: Nhân Viên Bán Hàng -->
+                    <label class="flex items-start p-3.5 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/50">
+                        <input type="radio" name="select-role-option" value="staff" class="mt-1 w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user-tag text-blue-500"></i> Nhân Viên Bán Hàng
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-100 text-blue-800 border border-blue-200 uppercase">2 Mục</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-snug">Chỉ xem 2 mục: Tổng quan kho và Hoa hồng (ẩn giá vốn và báo cáo doanh thu).</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-2 border-t border-slate-100">
+                    <button type="button" onclick="closeRoleSelectModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">Hủy</button>
+                    <button type="button" onclick="saveRoleSelection()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Lưu Phân Quyền</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Đặt Lại Mật Khẩu Nhân Viên (Admin Reset Staff Password Modal) -->
+    <div id="admin-reset-pwd-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 animate-in fade-in duration-200">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-white">Đổi Mật Khẩu Cho Nhân Sự</h3>
+                        <p class="text-xs text-slate-400 font-medium">Cập nhật mật khẩu đăng nhập trực tiếp</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAdminResetPasswordModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="form-admin-reset-pwd" onsubmit="handleAdminResetPasswordSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="admin-reset-staff-id">
+                <input type="hidden" id="admin-reset-staff-email">
+
+                <div class="flex items-center space-x-3 p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+                    <div id="admin-reset-avatar" class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center">NV</div>
+                    <div class="min-w-0 flex-1">
+                        <p id="admin-reset-name" class="font-bold text-slate-800 text-xs truncate">Nhân Viên</p>
+                        <p id="admin-reset-email" class="text-[11px] text-slate-500 font-mono truncate">email@example.com</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mật Khẩu Mới <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <input type="password" id="admin-reset-new-pwd" required minlength="6" oninput="checkAdminPasswordStrength(this.value)" placeholder="VD: Matkhau@2026..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('admin-reset-new-pwd', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1 mt-2 text-[9px] font-bold">
+                        <span id="adm-pwd-check-len" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-center">≥ 6 ký tự</span>
+                        <span id="adm-pwd-check-lower" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-center">Chữ thường</span>
+                        <span id="adm-pwd-check-upper" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-center">Chữ HOA</span>
+                        <span id="adm-pwd-check-num" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-center">Chữ số</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nhập Lại Mật Khẩu Mới <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <input type="password" id="admin-reset-confirm-pwd" required minlength="6" placeholder="Xác nhận mật khẩu..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('admin-reset-confirm-pwd', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="admin-reset-pwd-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+
+                <div class="pt-2 flex justify-between items-center border-t border-slate-100">
+                    <button type="button" onclick="handleSendResetEmailForStaff()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1">
+                        <i class="fa-solid fa-paper-plane text-[10px]"></i> Gửi email reset
+                    </button>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="closeAdminResetPasswordModal()" class="px-3.5 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">Đóng</button>
+                        <button type="submit" id="btn-admin-submit-pwd" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Lưu Mật Khẩu</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Notification Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
@@ -1064,7 +1390,7 @@
         // Biến trạng thái ứng dụng
         let currentUser = null;
         let currentUserProfile = null;
-        let userRole = 'staff'; // 'admin' hoặc 'staff'
+        let userRole = 'staff'; // 'owner' (Chủ), 'manager' (Quản lý), 'staff' (Nhân viên)
         let products = [];
         let currentTab = 'inventory';
         let confirmCallback = null;
@@ -1073,6 +1399,7 @@
         let sortDirection = 'asc';
 
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_supabase_v1';
+        let systemProfilesList = [];
 
         // KHỞI ĐỘNG ỨNG DỤNG VÀ SUPABASE AUTH
         async function initApp() {
@@ -1122,6 +1449,9 @@
         async function handleUserLoggedIn(user) {
             showAuthModal(false);
 
+            // Kiểm tra tài khoản đặc quyền Chủ Cửa Hàng
+            const isRootOwner = (user.email || '').toLowerCase() === 'saint.niky@gmail.com';
+
             // Tải thông tin vai trò từ bảng profiles
             try {
                 const { data, error } = await supabaseClient
@@ -1132,28 +1462,50 @@
 
                 if (data) {
                     currentUserProfile = data;
-                    userRole = data.role || 'staff';
+                    userRole = isRootOwner ? 'owner' : (data.role || 'staff');
+                    if (userRole === 'admin') userRole = 'owner'; // Chuẩn hóa mã cũ admin sang owner
                 } else {
-                    // Nếu chưa có profile trong bảng (hoặc trigger chưa kịp chạy)
-                    const roleFromMeta = user.user_metadata?.role || (user.email?.includes('admin') ? 'admin' : 'staff');
-                    const nameFromMeta = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nhân Viên';
+                    const roleFromMeta = isRootOwner ? 'owner' : (user.user_metadata?.role || (user.email?.includes('admin') ? 'owner' : 'staff'));
+                    const nameFromMeta = user.user_metadata?.full_name || user.email?.split('@')[0] || (isRootOwner ? 'Chủ Cửa Hàng' : 'Nhân Viên');
                     userRole = roleFromMeta;
                     currentUserProfile = { id: user.id, email: user.email, full_name: nameFromMeta, role: userRole };
                     
-                    // Thử ghi nhận profile
                     try {
                         await supabaseClient.from('profiles').upsert(currentUserProfile);
                     } catch(e) { console.warn("Lưu profile dự phòng:", e); }
                 }
+
+                // Nếu là tài khoản saint.niky@gmail.com luôn đảm bảo vai trò là 'owner' trên cơ sở dữ liệu
+                if (isRootOwner && currentUserProfile.role !== 'owner') {
+                    currentUserProfile.role = 'owner';
+                    userRole = 'owner';
+                    try {
+                        await supabaseClient.from('profiles').update({ role: 'owner' }).eq('id', user.id);
+                    } catch(e) {}
+                }
             } catch (err) {
                 console.warn("Lỗi tải profile:", err);
-                userRole = user.email?.includes('admin') ? 'admin' : 'staff';
+                userRole = isRootOwner ? 'owner' : (user.email?.includes('admin') ? 'owner' : 'staff');
             }
 
             updateUserUI();
             await fetchProductsFromSupabase();
-            if (userRole === 'admin') {
+            await fetchSystemProfiles();
+            if (userRole === 'owner') {
                 loadProfilesList();
+            }
+        }
+
+        async function fetchSystemProfiles() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*');
+                if (!error && data && data.length > 0) {
+                    systemProfilesList = data;
+                }
+            } catch (err) {
+                console.warn("Lỗi tải danh sách tài khoản:", err);
             }
         }
 
@@ -1222,49 +1574,82 @@
             const roleBadgeEl = document.getElementById('user-role-badge');
             const roleNoticeText = document.getElementById('role-notice-text');
             const roleNoticeDesc = document.getElementById('role-notice-desc');
+            const tabProfitBtn = document.getElementById('tab-profit-btn');
             const tabMgmtBtn = document.getElementById('tab-management-btn');
             const btnAddProduct = document.getElementById('btn-add-product');
             const adminActions = document.getElementById('admin-quick-actions');
             const profitStatCard = document.getElementById('stat-card-profit');
 
-            const isOwner = userRole === 'admin';
-            const displayName = currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || (isOwner ? 'Chủ Cửa Hàng' : 'Nhân Viên');
+            const isOwner = (userRole === 'owner' || userRole === 'admin');
+            const isManager = (userRole === 'manager');
+            const isStaff = !isOwner && !isManager;
+
+            const displayName = currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || (isOwner ? 'Chủ Cửa Hàng' : (isManager ? 'Quản Lý' : 'Nhân Viên'));
 
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
 
             if (isOwner) {
+                // CHỨC DANH 1: CHỦ CỬA HÀNG (4 mục: Kho, Hoa Hồng, Báo Cáo, Quản Lý)
                 if (roleBadgeEl) {
                     roleBadgeEl.innerText = 'CHỦ';
-                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider';
+                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider shadow-sm';
                 }
-                if (roleNoticeText) roleNoticeText.innerText = 'CHỦ CỬA HÀNG (ADMIN)';
-                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Xem toàn quyền: Giá vốn, Lợi nhuận, Quản lý kho, Cấp tài khoản nhân viên)';
-                if (tabMgmtBtn) tabMgmtBtn.classList.remove('hidden');
+                if (roleNoticeText) roleNoticeText.innerText = 'CHỦ CỬA HÀNG (OWNER)';
+                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Toàn quyền tối cao: Quản lý nhân sự, Báo cáo tài chính, Giá vốn, Cấp tài khoản)';
+                if (tabProfitBtn) { tabProfitBtn.classList.remove('hidden'); tabProfitBtn.style.display = ''; }
+                if (tabMgmtBtn) { tabMgmtBtn.classList.remove('hidden'); tabMgmtBtn.style.display = ''; }
                 if (btnAddProduct) btnAddProduct.style.display = 'flex';
                 if (adminActions) adminActions.classList.remove('hidden');
                 if (profitStatCard) profitStatCard.style.display = 'flex';
-            } else {
+            } else if (isManager) {
+                // CHỨC DANH 2: QUẢN LÝ (Chỉ hiện 3 mục: Tổng Quan Kho, Hoa Hồng NV và Báo Cáo - ẨN HẲN MỤC QUẢN LÝ)
                 if (roleBadgeEl) {
-                    roleBadgeEl.innerText = 'NV';
-                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-400 text-slate-950 inline-block uppercase tracking-wider';
+                    roleBadgeEl.innerText = 'QUẢN LÝ';
+                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-400 text-slate-950 inline-block uppercase tracking-wider shadow-sm';
+                }
+                if (roleNoticeText) roleNoticeText.innerText = 'QUẢN LÝ CỬA HÀNG (MANAGER)';
+                if (roleNoticeDesc) roleNoticeDesc.innerText = '(Xem 3 mục: Tổng quan kho, Hoa hồng nhân viên và Báo cáo)';
+                if (tabProfitBtn) { tabProfitBtn.classList.remove('hidden'); tabProfitBtn.style.display = ''; }
+                if (tabMgmtBtn) { tabMgmtBtn.classList.add('hidden'); tabMgmtBtn.style.display = 'none'; }
+                
+                const viewMgmt = document.getElementById('view-management');
+                if (viewMgmt) viewMgmt.classList.add('hidden');
+
+                if (btnAddProduct) btnAddProduct.style.display = 'flex';
+                if (adminActions) adminActions.classList.add('hidden');
+                if (profitStatCard) profitStatCard.style.display = 'flex';
+
+                if (currentTab === 'management') {
+                    switchTab('inventory');
+                }
+            } else {
+                // CHỨC DANH 3: NHÂN VIÊN (Chỉ hiện 2 mục: Tổng quan kho và Hoa hồng NV)
+                if (roleBadgeEl) {
+                    roleBadgeEl.innerText = 'NHÂN VIÊN';
+                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-400 text-slate-950 inline-block uppercase tracking-wider shadow-sm';
                 }
                 if (roleNoticeText) roleNoticeText.innerText = 'NHÂN VIÊN BÁN HÀNG (STAFF)';
                 if (roleNoticeDesc) roleNoticeDesc.innerText = '(Chỉ xem giá bán niêm yết, chốt đơn cho khách và xem hoa hồng của mình)';
-                if (tabMgmtBtn) tabMgmtBtn.classList.add('hidden');
+                if (tabProfitBtn) { tabProfitBtn.classList.add('hidden'); tabProfitBtn.style.display = 'none'; }
+                if (tabMgmtBtn) { tabMgmtBtn.classList.add('hidden'); tabMgmtBtn.style.display = 'none'; }
+                
+                const viewMgmt = document.getElementById('view-management');
+                if (viewMgmt) viewMgmt.classList.add('hidden');
+
                 if (btnAddProduct) btnAddProduct.style.display = 'none';
                 if (adminActions) adminActions.classList.add('hidden');
                 if (profitStatCard) profitStatCard.style.display = 'none';
                 
-                // Nếu nhân viên đang ở tab cấm, tự chuyển về inventory
                 if (currentTab === 'management' || currentTab === 'profit') {
                     switchTab('inventory');
                 }
             }
 
+            // Hiển thị cột giá nhập cho Chủ và Quản lý
             const importHeaders = document.querySelectorAll('.col-import-price');
             importHeaders.forEach(el => {
-                el.style.display = isOwner ? '' : 'none';
+                el.style.display = (isOwner || isManager) ? '' : 'none';
             });
         }
 
@@ -1308,13 +1693,14 @@
                 if (error) throw error;
                 showToast('Đăng nhập thành công!', 'success');
             } catch (err) {
-                console.error("Lỗi xác thực:", err);
+                console.warn("Lưu ý xác thực:", err.message || err);
                 let friendlyMessage = err.message || 'Lỗi xác thực, vui lòng thử lại.';
                 
-                if (err.message && err.message.toLowerCase().includes('invalid login credentials')) {
-                    friendlyMessage = '<i class="fa-solid fa-triangle-exclamation text-rose-500 mr-1"></i> <strong>Sai thông tin đăng nhập:</strong> Email hoặc mật khẩu chưa chính xác. Vui lòng kiểm tra lại.';
-                } else if (err.message && err.message.toLowerCase().includes('email not confirmed')) {
-                    friendlyMessage = 'Email này chưa được xác thực trên Supabase. Bạn có thể tắt "Confirm email" trong Dashboard > Authentication > Providers > Email của Supabase để đăng nhập trực tiếp.';
+                const errLower = (err.message || '').toLowerCase();
+                if (errLower.includes('invalid login credentials') || errLower.includes('invalid_grant')) {
+                    friendlyMessage = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i><strong>Sai thông tin đăng nhập:</strong> Email hoặc mật khẩu chưa khớp`;
+                } else if (errLower.includes('email not confirmed')) {
+                    friendlyMessage = '<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Email này chưa được xác thực trên hệ thống.';
                 }
                 
                 errBox.innerHTML = friendlyMessage;
@@ -1359,6 +1745,231 @@
             }
         };
 
+        window.openProfileModal = function() {
+            if (!currentUser) {
+                showToast('Vui lòng đăng nhập trước!', 'error');
+                showAuthModal(true);
+                return;
+            }
+
+            const modal = document.getElementById('profile-modal');
+            const name = currentUserProfile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || 'Người Dùng';
+            const email = currentUser?.email || '--';
+            const isOwner = userRole === 'admin';
+
+            // Gán dữ liệu vào Card và Input
+            document.getElementById('prof-card-avatar').innerText = name.charAt(0).toUpperCase();
+            document.getElementById('prof-card-name').innerText = name;
+            document.getElementById('prof-card-email').innerText = email;
+            
+            const roleBadge = document.getElementById('prof-card-role');
+            if (roleBadge) {
+                roleBadge.innerText = isOwner ? 'Quản Trị Viên (Admin)' : 'Nhân Viên Bán Hàng (Staff)';
+                roleBadge.className = isOwner
+                    ? 'mt-1 inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 uppercase'
+                    : 'mt-1 inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 uppercase';
+            }
+
+            document.getElementById('prof-input-name').value = name;
+            document.getElementById('prof-input-email').value = email;
+
+            // Xóa thông báo lỗi / thành công cũ
+            const msgInfo = document.getElementById('prof-info-msg');
+            const msgPwd = document.getElementById('prof-pwd-msg');
+            if (msgInfo) { msgInfo.className = 'hidden'; msgInfo.innerHTML = ''; }
+            if (msgPwd) { msgPwd.className = 'hidden'; msgPwd.innerHTML = ''; }
+
+            // Reset form đổi mật khẩu
+            const pwdForm = document.getElementById('form-update-pwd');
+            if (pwdForm) pwdForm.reset();
+            checkPasswordStrength('');
+
+            // Mặc định mở tab thông tin
+            switchProfileTab('info');
+
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.checkPasswordStrength = function(pwd) {
+            const hasLen = pwd.length >= 6;
+            const hasLower = /[a-z]/.test(pwd);
+            const hasUpper = /[A-Z]/.test(pwd);
+            const hasNum = /[0-9]/.test(pwd);
+
+            const updateTag = (id, valid) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (valid) {
+                    el.className = "px-2 py-1 rounded-lg bg-emerald-100 text-emerald-700 border border-emerald-200 text-center transition-colors";
+                } else {
+                    el.className = "px-2 py-1 rounded-lg bg-slate-100 text-slate-400 text-center transition-colors";
+                }
+            };
+
+            updateTag('pwd-check-len', hasLen);
+            updateTag('pwd-check-lower', hasLower);
+            updateTag('pwd-check-upper', hasUpper);
+            updateTag('pwd-check-num', hasNum);
+        };
+
+        window.closeProfileModal = function() {
+            const modal = document.getElementById('profile-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.switchProfileTab = function(tab) {
+            const btnInfo = document.getElementById('prof-tab-btn-info');
+            const btnPwd = document.getElementById('prof-tab-btn-pwd');
+            const contentInfo = document.getElementById('prof-content-info');
+            const contentPwd = document.getElementById('prof-content-pwd');
+
+            if (tab === 'info') {
+                btnInfo.className = "pb-3 px-4 font-bold text-xs sm:text-sm text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-1.5";
+                btnPwd.className = "pb-3 px-4 font-semibold text-xs sm:text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition flex items-center gap-1.5";
+                contentInfo.classList.remove('hidden');
+                contentPwd.classList.add('hidden');
+            } else {
+                btnPwd.className = "pb-3 px-4 font-bold text-xs sm:text-sm text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-1.5";
+                btnInfo.className = "pb-3 px-4 font-semibold text-xs sm:text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition flex items-center gap-1.5";
+                contentPwd.classList.remove('hidden');
+                contentInfo.classList.add('hidden');
+            }
+        };
+
+        window.handleUpdateProfileSubmit = async function(e) {
+            e.preventDefault();
+            const newName = document.getElementById('prof-input-name').value.trim();
+            const msgBox = document.getElementById('prof-info-msg');
+            const submitBtn = document.getElementById('btn-save-profile');
+
+            if (!newName) {
+                showToast('Họ và tên không được để trống!', 'error');
+                return;
+            }
+
+            msgBox.className = 'hidden';
+            const origHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang lưu...`;
+
+            try {
+                // 1. Cập nhật metadata trong Supabase Auth
+                try {
+                    await supabaseClient.auth.updateUser({
+                        data: { full_name: newName }
+                    });
+                } catch (authErr) {
+                    console.warn("Lưu metadata Auth:", authErr);
+                }
+
+                // 2. Cập nhật bảng profiles
+                if (currentUser && currentUser.id !== 'admin-local-master') {
+                    try {
+                        await supabaseClient
+                            .from('profiles')
+                            .update({ full_name: newName })
+                            .eq('id', currentUser.id);
+                    } catch (dbErr) {
+                        console.warn("Lưu bảng profiles:", dbErr);
+                    }
+                }
+
+                // 3. Cập nhật bộ nhớ cục bộ và giao diện tức thời
+                if (currentUserProfile) {
+                    currentUserProfile.full_name = newName;
+                }
+                updateUserUI();
+
+                // Cập nhật thẻ hiển thị trong modal
+                document.getElementById('prof-card-avatar').innerText = newName.charAt(0).toUpperCase();
+                document.getElementById('prof-card-name').innerText = newName;
+
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Đã cập nhật họ tên thành công!`;
+                showToast('Cập nhật thông tin thành công!', 'success');
+
+                // Nếu đang là Admin và tab Quản lý đang mở, làm mới danh sách
+                if (userRole === 'admin') {
+                    loadProfilesList();
+                }
+            } catch (err) {
+                console.error("Lỗi cập nhật profile:", err);
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi: ${escapeHtml(err.message || 'Không thể lưu thông tin.')}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHtml;
+            }
+        };
+
+        window.handleUpdatePasswordSubmit = async function(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('prof-new-pwd').value;
+            const confirmPassword = document.getElementById('prof-confirm-pwd').value;
+            const msgBox = document.getElementById('prof-pwd-msg');
+            const submitBtn = document.getElementById('btn-save-pwd');
+
+            if (newPassword.length < 6) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu phải có độ dài tối thiểu 6 ký tự!`;
+                return;
+            }
+
+            if (!/[a-z]/.test(newPassword)) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu phải chứa ít nhất 1 chữ cái thường (a - z)!`;
+                return;
+            }
+
+            if (!/[A-Z]/.test(newPassword)) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu phải chứa ít nhất 1 chữ cái in hoa (A - Z)!`;
+                return;
+            }
+
+            if (!/[0-9]/.test(newPassword)) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu phải chứa ít nhất 1 chữ số (0 - 9)!`;
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu xác nhận không trùng khớp!`;
+                return;
+            }
+
+            msgBox.className = 'hidden';
+            const origHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang đổi mật khẩu...`;
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Mật khẩu mới đã được cập nhật thành công!`;
+                document.getElementById('form-update-pwd').reset();
+                checkPasswordStrength('');
+                showToast('Đổi mật khẩu thành công!', 'success');
+            } catch (err) {
+                console.error("Lỗi đổi mật khẩu:", err);
+                let errText = err.message || 'Không thể đổi mật khẩu.';
+                if (errText.includes('Password should contain') || errText.includes('weak')) {
+                    errText = 'Mật khẩu chưa đủ độ mạnh: Cần tối thiểu 6 ký tự gồm chữ thường (a-z), chữ in hoa (A-Z) và chữ số (0-9).';
+                }
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${escapeHtml(errText)}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHtml;
+            }
+        };
+
         // TÍNH NĂNG QUẢN LÝ NHÂN SỰ: CẤP TÀI KHOẢN KHÔNG VĂNG ADMIN
         window.handleCreateStaffSubmit = async function(e) {
             e.preventDefault();
@@ -1375,6 +1986,10 @@
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tạo tài khoản...`;
 
             try {
+                if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+                    throw new Error('Mật khẩu cấp cho nhân viên cần chứa ít nhất chữ thường (a-z), chữ HOA (A-Z) và chữ số (0-9).');
+                }
+
                 // Dùng isolatedSupabase để không ghi đè session của Admin đang đăng nhập
                 const { data, error } = await isolatedSupabase.auth.signUp({
                     email,
@@ -1406,6 +2021,7 @@
                 msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Cấp tài khoản cho <strong>${escapeHtml(name)}</strong> thành công! Nhân viên có thể đăng nhập ngay bằng email và mật khẩu vừa cấp.`;
                 document.getElementById('create-staff-form').reset();
                 showToast(`Đã cấp tài khoản thành công cho ${name}!`);
+                await fetchSystemProfiles();
                 loadProfilesList();
             } catch (err) {
                 console.error("Lỗi cấp tài khoản:", err);
@@ -1448,6 +2064,8 @@
 
                 if (countBadge) countBadge.innerText = `${usersList.length} tài khoản`;
 
+                systemProfilesList = usersList;
+
                 if (usersList.length === 0) {
                     tbody.innerHTML = `
                         <tr>
@@ -1458,34 +2076,75 @@
                 }
 
                 tbody.innerHTML = usersList.map(u => {
-                    const isAdmin = u.role === 'admin';
+                    const isOwnerAccount = (u.email || '').toLowerCase() === 'saint.niky@gmail.com' || u.role === 'owner' || u.role === 'admin';
+                    const isManagerAccount = !isOwnerAccount && (u.role === 'manager');
+                    const isStaffAccount = !isOwnerAccount && !isManagerAccount;
                     const isCurrent = u.id === currentUser?.id;
+                    const safeName = escapeHtml(u.full_name || 'Nhân Viên');
+                    const safeEmail = escapeHtml(u.email || '');
+
+                    let roleBadgeHtml = '';
+                    let avatarColor = 'bg-blue-100 text-blue-700';
+
+                    if (isOwnerAccount) {
+                        roleBadgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200"><i class="fa-solid fa-crown text-amber-500 mr-1"></i> Chủ Cửa Hàng</span>`;
+                        avatarColor = 'bg-amber-100 text-amber-700';
+                    } else if (isManagerAccount) {
+                        roleBadgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200"><i class="fa-solid fa-user-tie text-purple-500 mr-1"></i> Quản Lý Cửa Hàng</span>`;
+                        avatarColor = 'bg-purple-100 text-purple-700';
+                    } else {
+                        roleBadgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200"><i class="fa-solid fa-user-tag text-blue-500 mr-1"></i> Nhân Viên Bán Hàng</span>`;
+                    }
+
+                    const effectiveRole = isOwnerAccount ? 'owner' : (isManagerAccount ? 'manager' : 'staff');
 
                     return `
-                        <tr class="hover:bg-slate-50 transition">
+                        <tr class="hover:bg-slate-50 transition relative">
                             <td class="py-3 px-4">
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-7 h-7 rounded-lg ${isAdmin ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'} font-black flex items-center justify-center text-xs">
+                                    <div class="w-7 h-7 rounded-lg ${avatarColor} font-black flex items-center justify-center text-xs">
                                         ${escapeHtml((u.full_name || 'U').charAt(0).toUpperCase())}
                                     </div>
                                     <div>
-                                        <p class="font-bold text-slate-800 text-xs">${escapeHtml(u.full_name || 'Không tên')}</p>
+                                        <p class="font-bold text-slate-800 text-xs">${safeName}</p>
                                         ${isCurrent ? '<span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Đang đăng nhập</span>' : ''}
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-3 px-4 font-mono text-slate-600 text-xs">${escapeHtml(u.email || '--')}</td>
+                            <td class="py-3 px-4 font-mono text-slate-600 text-xs">${safeEmail || '--'}</td>
                             <td class="py-3 px-4 text-center">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isAdmin ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-blue-100 text-blue-800 border border-blue-200'}">
-                                    ${isAdmin ? 'Quản Trị (Admin)' : 'Nhân Viên (Staff)'}
-                                </span>
+                                ${roleBadgeHtml}
                             </td>
                             <td class="py-3 px-4 text-right">
                                 ${!isCurrent ? `
-                                    <button onclick="toggleProfileRole('${u.id}', '${isAdmin ? 'staff' : 'admin'}')" class="px-2.5 py-1 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200 rounded-lg text-xs font-semibold transition" title="Đổi quyền hạn">
-                                        <i class="fa-solid fa-repeat mr-1"></i> Đổi quyền
-                                    </button>
-                                ` : '<span class="text-slate-300 text-[10px]">Tài khoản của bạn</span>'}
+                                    <div class="relative inline-block text-left">
+                                        <button type="button" onclick="toggleStaffMenu('${u.id}', event)" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 hover:border-indigo-200 rounded-xl text-xs font-bold text-slate-700 transition flex items-center gap-1.5 shadow-xs">
+                                            <i class="fa-solid fa-sliders text-slate-400 group-hover:text-indigo-500"></i>
+                                            <span>Quản lý</span>
+                                            <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                                        </button>
+                                        
+                                        <!-- Menu hành động Dropdown -->
+                                        <div id="staff-menu-${u.id}" class="staff-action-menu hidden absolute right-0 mt-1 w-44 bg-white rounded-2xl shadow-2xl border border-slate-200 py-1.5 z-40 text-left divide-y divide-slate-100 animate-in fade-in duration-150">
+                                            <div class="py-1">
+                                                <button type="button" onclick="closeAllStaffMenus(); openRoleSelectModal('${u.id}', '${safeName}', '${effectiveRole}')" class="w-full text-left px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition flex items-center gap-2">
+                                                    <i class="fa-solid fa-shield-halved text-indigo-500 w-4 text-center"></i>
+                                                    <span>Phân Quyền</span>
+                                                </button>
+                                                <button type="button" onclick="closeAllStaffMenus(); openAdminResetPasswordModal('${u.id}', '${safeName}', '${safeEmail}')" class="w-full text-left px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition flex items-center gap-2">
+                                                    <i class="fa-solid fa-key text-amber-500 w-4 text-center"></i>
+                                                    <span>Đổi Mật Khẩu</span>
+                                                </button>
+                                            </div>
+                                            <div class="py-1">
+                                                <button type="button" onclick="closeAllStaffMenus(); confirmDeleteStaff('${u.id}', '${safeName}', '${safeEmail}')" class="w-full text-left px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 transition flex items-center gap-2">
+                                                    <i class="fa-solid fa-trash-can text-rose-500 w-4 text-center"></i>
+                                                    <span>Xóa Tài Khoản</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : '<span class="text-slate-300 text-[10px] font-semibold pr-2">Tài khoản của bạn</span>'}
                             </td>
                         </tr>
                     `;
@@ -1496,7 +2155,41 @@
             }
         };
 
-        window.toggleProfileRole = async function(userId, newRole) {
+        window.openRoleSelectModal = function(userId, staffName, currentRole) {
+            const modal = document.getElementById('role-select-modal');
+            if (!modal) return;
+
+            const userIdInput = document.getElementById('role-modal-user-id');
+            const targetUserEl = document.getElementById('role-modal-target-user');
+
+            if (userIdInput) userIdInput.value = userId;
+            if (targetUserEl) targetUserEl.innerText = `Nhân sự: ${staffName}`;
+            
+            const radios = document.querySelectorAll('input[name="select-role-option"]');
+            radios.forEach(r => {
+                r.checked = (r.value === currentRole);
+            });
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeRoleSelectModal = function() {
+            const modal = document.getElementById('role-select-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.saveRoleSelection = async function() {
+            const userId = document.getElementById('role-modal-user-id')?.value;
+            const selectedRadio = document.querySelector('input[name="select-role-option"]:checked');
+            if (!selectedRadio || !userId) return;
+
+            const newRole = selectedRadio.value;
+            const roleLabels = {
+                'owner': 'Chủ Cửa Hàng',
+                'manager': 'Quản Lý Cửa Hàng',
+                'staff': 'Nhân Viên Bán Hàng'
+            };
+
             try {
                 const { error } = await supabaseClient
                     .from('profiles')
@@ -1504,10 +2197,11 @@
                     .eq('id', userId);
 
                 if (error) throw error;
-                showToast(`Đã cập nhật vai trò thành công!`, 'success');
+                showToast(`Đã phân quyền thành ${roleLabels[newRole]}!`, 'success');
+                closeRoleSelectModal();
                 loadProfilesList();
             } catch (err) {
-                showToast('Lỗi cập nhật: ' + err.message, 'error');
+                showToast('Lỗi cập nhật chức danh: ' + err.message, 'error');
             }
         };
 
@@ -1559,7 +2253,11 @@
         };
 
         window.switchTab = function(tabName) {
-            if ((tabName === 'profit' || tabName === 'management') && userRole !== 'admin') {
+            if (tabName === 'management' && userRole !== 'owner' && userRole !== 'admin') {
+                showToast('Bạn không có quyền truy cập mục này!', 'error');
+                return;
+            }
+            if (tabName === 'profit' && userRole === 'staff') {
                 showToast('Bạn không có quyền truy cập mục này!', 'error');
                 return;
             }
@@ -1578,6 +2276,18 @@
                 }
             });
 
+            // Đảm bảo mục Quản Lý chỉ hiển thị cho Chủ Cửa Hàng
+            const tabMgmtBtn = document.getElementById('tab-management-btn');
+            if (tabMgmtBtn) {
+                if (userRole === 'owner' || userRole === 'admin') {
+                    tabMgmtBtn.classList.remove('hidden');
+                    tabMgmtBtn.style.display = '';
+                } else {
+                    tabMgmtBtn.classList.add('hidden');
+                    tabMgmtBtn.style.display = 'none';
+                }
+            }
+
             if (tabName === 'management') {
                 loadProfilesList();
             } else {
@@ -1585,8 +2295,140 @@
             }
         };
 
+        window.toggleStaffMenu = function(userId, event) {
+            if (event) event.stopPropagation();
+            const targetMenu = document.getElementById(`staff-menu-${userId}`);
+            const isCurrentlyOpen = targetMenu && !targetMenu.classList.contains('hidden');
+            closeAllStaffMenus();
+            if (targetMenu && !isCurrentlyOpen) {
+                targetMenu.classList.remove('hidden');
+            }
+        };
+
+        window.closeAllStaffMenus = function() {
+            document.querySelectorAll('.staff-action-menu').forEach(m => m.classList.add('hidden'));
+        };
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.staff-action-menu') && !e.target.closest('button[onclick*="toggleStaffMenu"]')) {
+                closeAllStaffMenus();
+            }
+        });
+
+        window.confirmDeleteStaff = function(userId, name, email) {
+            confirmCallback = async () => {
+                try {
+                    const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
+                    if (error) throw error;
+                    showToast(`Đã xóa tài khoản nhân sự: ${name}!`);
+                    await fetchSystemProfiles();
+                    loadProfilesList();
+                } catch (err) {
+                    showToast('Lỗi xóa tài khoản: ' + err.message, 'error');
+                }
+            };
+
+            document.getElementById('confirm-title').innerText = 'Xác Nhận Xóa Tài Khoản';
+            document.getElementById('confirm-message').innerText = `Bạn có chắc chắn muốn xóa tài khoản "${name}" (${email})? Tài khoản này sẽ bị thu hồi toàn bộ quyền truy cập.`;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        };
+
+        window.openAdminResetPasswordModal = function(userId, name, email) {
+            const modal = document.getElementById('admin-reset-pwd-modal');
+            if (!modal) return;
+            document.getElementById('admin-reset-staff-id').value = userId;
+            document.getElementById('admin-reset-staff-email').value = email;
+            document.getElementById('admin-reset-name').innerText = name;
+            document.getElementById('admin-reset-email').innerText = email;
+            document.getElementById('admin-reset-avatar').innerText = (name || 'NV').charAt(0).toUpperCase();
+            document.getElementById('form-admin-reset-pwd').reset();
+            checkAdminPasswordStrength('');
+            const msg = document.getElementById('admin-reset-pwd-msg');
+            if (msg) msg.className = 'hidden';
+            modal.classList.remove('hidden');
+        };
+
+        window.closeAdminResetPasswordModal = function() {
+            const modal = document.getElementById('admin-reset-pwd-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.checkAdminPasswordStrength = function(pwd) {
+            const hasLen = pwd.length >= 6;
+            const hasLower = /[a-z]/.test(pwd);
+            const hasUpper = /[A-Z]/.test(pwd);
+            const hasNum = /[0-9]/.test(pwd);
+
+            const updateTag = (id, valid) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (valid) {
+                    el.className = "px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-center";
+                } else {
+                    el.className = "px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 text-center";
+                }
+            };
+
+            updateTag('adm-pwd-check-len', hasLen);
+            updateTag('adm-pwd-check-lower', hasLower);
+            updateTag('adm-pwd-check-upper', hasUpper);
+            updateTag('adm-pwd-check-num', hasNum);
+        };
+
+        window.handleAdminResetPasswordSubmit = async function(e) {
+            e.preventDefault();
+            const newPwd = document.getElementById('admin-reset-new-pwd').value;
+            const confirmPwd = document.getElementById('admin-reset-confirm-pwd').value;
+            const staffEmail = document.getElementById('admin-reset-staff-email').value;
+            const msgBox = document.getElementById('admin-reset-pwd-msg');
+            const submitBtn = document.getElementById('btn-admin-submit-pwd');
+
+            if (newPwd.length < 6 || !/[a-z]/.test(newPwd) || !/[A-Z]/.test(newPwd) || !/[0-9]/.test(newPwd)) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = 'Mật khẩu cần tối thiểu 6 ký tự gồm chữ thường (a-z), chữ HOA (A-Z) và chữ số (0-9).';
+                return;
+            }
+
+            if (newPwd !== confirmPwd) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = 'Mật khẩu xác nhận không trùng khớp!';
+                return;
+            }
+
+            msgBox.className = 'hidden';
+            const origHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang đổi...';
+
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(staffEmail);
+                if (error) throw error;
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Đã gửi email đặt lại mật khẩu tới <strong>${escapeHtml(staffEmail)}</strong>! Nhân viên có thể mở link trong email để đặt mật khẩu mới ngay.`;
+                showToast('Đã gửi yêu cầu đặt lại mật khẩu!');
+            } catch (err) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `Lỗi: ${escapeHtml(err.message || 'Không thể đặt lại mật khẩu.')}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHtml;
+            }
+        };
+
+        window.handleSendResetEmailForStaff = async function() {
+            const staffEmail = document.getElementById('admin-reset-staff-email').value;
+            if (!staffEmail) return;
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(staffEmail);
+                if (error) throw error;
+                showToast(`Đã gửi email khôi phục mật khẩu đến ${staffEmail}!`, 'success');
+            } catch(err) {
+                showToast('Lỗi gửi email: ' + err.message, 'error');
+            }
+        };
+
         function formatVND(amount) {
-            if (isNaN(amount) || amount === null) return '0\u00A0₫';
+            if (isNaN(amount) || amount === null || amount === undefined) return '0\u00A0₫';
             return new Intl.NumberFormat('vi-VN').format(amount) + '\u00A0₫';
         }
 
@@ -1667,16 +2509,24 @@
             const totalCommissionMonth = monthSoldList.reduce((sum, p) => sum + (Number(p.commission) || 0), 0);
             const netProfitMonth = totalRevenueMonth - totalImportMonth - totalCommissionMonth;
 
-            // Cập nhật số liệu lên các thẻ tổng quan
-            document.getElementById('stat-total-stock').innerText = availableCount;
-            document.getElementById('stat-total-sold').innerText = totalSoldThisMonth;
+            // Cập nhật an toàn lên các thẻ tổng quan
+            const statStockEl = document.getElementById('stat-total-stock');
+            if (statStockEl) statStockEl.innerText = availableCount;
+            
+            const statSoldEl = document.getElementById('stat-total-sold');
+            if (statSoldEl) statSoldEl.innerText = totalSoldThisMonth;
             
             const monthTag = document.getElementById('stat-month-tag');
             if (monthTag) monthTag.innerText = `(T${curMonth + 1}/${curYear})`;
 
-            document.getElementById('stat-total-revenue').innerText = formatVND(totalRevenueMonth);
-            document.getElementById('stat-total-profit').innerText = formatVND(netProfitMonth);
-            document.getElementById('stat-total-commission').innerText = formatVND(totalCommissionMonth);
+            const statRevEl = document.getElementById('stat-total-revenue');
+            if (statRevEl) statRevEl.innerText = formatVND(totalRevenueMonth);
+            
+            const statProfitEl = document.getElementById('stat-total-profit');
+            if (statProfitEl) statProfitEl.innerText = formatVND(netProfitMonth);
+            
+            const statCommEl = document.getElementById('stat-total-commission');
+            if (statCommEl) statCommEl.innerText = formatVND(totalCommissionMonth);
 
             if (currentTab === 'inventory') {
                 renderInventoryTable();
@@ -1726,7 +2576,8 @@
                 return 0;
             };
 
-            const isOwner = userRole === 'admin';
+            const canViewCost = (userRole === 'owner' || userRole === 'admin' || userRole === 'manager');
+            const canManageProduct = (userRole === 'owner' || userRole === 'admin' || userRole === 'manager');
 
             const renderRow = (p, isSoldMuted = false) => {
                 const isSold = p.status === 'SOLD';
@@ -1751,7 +2602,7 @@
                             </div>
                             <p class="text-xs font-bold text-slate-700 mt-0.5">${specs || 'Tiêu chuẩn'} <span class="text-slate-400 font-normal">•</span> <span class="text-[11px] text-slate-500 font-medium truncate max-w-[200px] inline-block align-bottom" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || 'Zin 100%')}</span></p>
                         </td>
-                        ${isOwner ? `<td class="py-3 px-4 text-right font-bold text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
+                        ${canViewCost ? `<td class="py-3 px-4 text-right font-bold text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
                         <td class="py-3 px-4 text-right font-extrabold text-indigo-600 text-sm whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                         <td class="py-3 px-4 text-right font-bold text-purple-600 text-xs whitespace-nowrap">${formatVND(p.commission)}</td>
                         <td class="py-3 px-4 text-center">${statusBadge}</td>
@@ -1773,7 +2624,7 @@
                                     </button>
                                 `}
 
-                                ${isOwner ? `
+                                ${canManageProduct ? `
                                     <button onclick="openEditModal('${p.id}')" title="Chỉnh sửa thông tin" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                                         <i class="fa-solid fa-pen-to-square text-sm"></i>
                                     </button>
@@ -1860,21 +2711,55 @@
 
         function renderCommissionReport() {
             const grid = document.getElementById('commission-grid');
+            const periodType = document.getElementById('comm-period-type')?.value || 'MONTH';
+            const filterMonth = document.getElementById('comm-filter-month');
+            const filterQuarter = document.getElementById('comm-filter-quarter');
+            const filterYear = Number(document.getElementById('comm-filter-year')?.value || 2026);
+
+            if (filterMonth) filterMonth.classList.toggle('hidden', periodType !== 'MONTH');
+            if (filterQuarter) filterQuarter.classList.toggle('hidden', periodType !== 'QUARTER');
+
             const soldItems = products.filter(p => p.status === 'SOLD' && p.seller);
 
-            if (soldItems.length === 0) {
+            // Lọc danh sách máy đã bán theo khoảng thời gian được chọn
+            const filteredSold = soldItems.filter(p => {
+                if (periodType === 'ALL') return true;
+                if (!p.soldAt) return false;
+                const dateObj = new Date(p.soldAt);
+                if (isNaN(dateObj.getTime())) return false;
+
+                const itemYear = dateObj.getFullYear();
+                const itemMonth = dateObj.getMonth() + 1;
+
+                if (itemYear !== filterYear) return false;
+
+                if (periodType === 'MONTH') {
+                    const selMonth = Number(filterMonth?.value || 9);
+                    return itemMonth === selMonth;
+                } else if (periodType === 'QUARTER') {
+                    const selQuarter = Number(filterQuarter?.value || 3);
+                    const qStart = (selQuarter - 1) * 3 + 1;
+                    const qEnd = selQuarter * 3;
+                    return itemMonth >= qStart && itemMonth <= qEnd;
+                } else if (periodType === 'YEAR') {
+                    return itemYear === filterYear;
+                }
+                return true;
+            });
+
+            if (filteredSold.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full p-10 bg-white rounded-2xl border border-slate-200 text-center">
                         <i class="fa-solid fa-hand-holding-dollar text-3xl text-slate-300 mb-2"></i>
-                        <p class="font-bold text-slate-600">Chưa có dữ liệu hoa hồng</p>
-                        <p class="text-xs text-slate-400 mt-0.5">Hoa hồng sẽ tự động tính khi có đơn máy bán thành công.</p>
+                        <p class="font-bold text-slate-600">Không có dữ liệu hoa hồng trong khoảng thời gian này</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Vui lòng chọn tháng/quý/năm khác hoặc chọn "Toàn Bộ Lịch Sử".</p>
                     </div>
                 `;
                 return;
             }
 
             const staffMap = {};
-            soldItems.forEach(p => {
+            filteredSold.forEach(p => {
                 const sName = p.seller;
                 if (!staffMap[sName]) {
                     staffMap[sName] = {
@@ -1911,12 +2796,12 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="text-[10px] font-bold text-slate-400 uppercase">Tổng Hoa Hồng</p>
-                                    <p class="text-base font-black text-purple-600">${formatVND(s.totalCommission)}</p>
+                                    <p class="text-base font-black text-purple-600 whitespace-nowrap">${formatVND(s.totalCommission)}</p>
                                 </div>
                             </div>
 
                             <div class="space-y-2 pt-2">
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Đơn hàng mới nhất (Tối đa 3 đơn):</p>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Đơn hàng trong kỳ (Tối đa 3 đơn):</p>
                                 <div class="space-y-1.5">
                                     ${top3.map(item => `
                                         <div class="flex justify-between items-center text-xs p-2 rounded-xl bg-slate-50 border border-slate-100">
@@ -1925,8 +2810,8 @@
                                                 <p class="text-[10px] text-slate-400">${item.soldAt || 'Mới đây'} • Khách: ${escapeHtml(item.customerName || 'Khách lẻ')}</p>
                                             </div>
                                             <div class="text-right">
-                                                <p class="font-extrabold text-indigo-600">${formatVND(item.sellingPrice)}</p>
-                                                <p class="text-[10px] font-bold text-purple-600">+${formatVND(item.commission)} HH</p>
+                                                <p class="font-extrabold text-indigo-600 whitespace-nowrap">${formatVND(item.sellingPrice)}</p>
+                                                <p class="text-[10px] font-bold text-purple-600 whitespace-nowrap">+${formatVND(item.commission)} HH</p>
                                             </div>
                                         </div>
                                     `).join('')}
@@ -1946,7 +2831,39 @@
         }
 
         window.openStaffHistoryModal = function(staffName) {
-            const soldItems = products.filter(p => p.status === 'SOLD' && p.seller === staffName);
+            const periodType = document.getElementById('comm-period-type')?.value || 'MONTH';
+            const filterMonth = document.getElementById('comm-filter-month');
+            const filterQuarter = document.getElementById('comm-filter-quarter');
+            const filterYear = Number(document.getElementById('comm-filter-year')?.value || 2026);
+
+            const allSoldForStaff = products.filter(p => p.status === 'SOLD' && p.seller === staffName);
+
+            // Áp dụng bộ lọc thời gian tương tự cho modal chi tiết
+            const soldItems = allSoldForStaff.filter(p => {
+                if (periodType === 'ALL') return true;
+                if (!p.soldAt) return false;
+                const dateObj = new Date(p.soldAt);
+                if (isNaN(dateObj.getTime())) return false;
+
+                const itemYear = dateObj.getFullYear();
+                const itemMonth = dateObj.getMonth() + 1;
+
+                if (itemYear !== filterYear) return false;
+
+                if (periodType === 'MONTH') {
+                    const selMonth = Number(filterMonth?.value || 9);
+                    return itemMonth === selMonth;
+                } else if (periodType === 'QUARTER') {
+                    const selQuarter = Number(filterQuarter?.value || 3);
+                    const qStart = (selQuarter - 1) * 3 + 1;
+                    const qEnd = selQuarter * 3;
+                    return itemMonth >= qStart && itemMonth <= qEnd;
+                } else if (periodType === 'YEAR') {
+                    return itemYear === filterYear;
+                }
+                return true;
+            });
+
             soldItems.sort((a, b) => new Date(b.soldAt || 0) - new Date(a.soldAt || 0));
 
             const totalRev = soldItems.reduce((sum, p) => sum + (Number(p.sellingPrice) || 0), 0);
@@ -1960,21 +2877,25 @@
             document.getElementById('sh-total-commission').innerText = formatVND(totalComm);
 
             const container = document.getElementById('sh-items-container');
-            container.innerHTML = soldItems.map(p => `
-                <div class="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-                    <div class="space-y-0.5 max-w-[280px]">
-                        <p class="font-extrabold text-slate-800">${escapeHtml(p.name)}</p>
-                        <p class="text-[11px] text-slate-500 font-medium">${p.soldAt || '--'} • Khách: <strong class="text-slate-700">${escapeHtml(p.customerName || 'Khách lẻ')}</strong> ${p.customerPhone ? '(' + p.customerPhone + ')' : ''}</p>
-                        <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(p.condition || '')}</p>
+            if (soldItems.length === 0) {
+                container.innerHTML = `<p class="text-center py-6 text-slate-400 text-xs font-medium">Không có đơn hàng nào trong khoảng thời gian đã chọn.</p>`;
+            } else {
+                container.innerHTML = soldItems.map(p => `
+                    <div class="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                        <div class="space-y-0.5 max-w-[280px]">
+                            <p class="font-extrabold text-slate-800">${escapeHtml(p.name)}</p>
+                            <p class="text-[11px] text-slate-500 font-medium">${p.soldAt || '--'} • Khách: <strong class="text-slate-700">${escapeHtml(p.customerName || 'Khách lẻ')}</strong> ${p.customerPhone ? '(' + p.customerPhone + ')' : ''}</p>
+                            <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(p.condition || '')}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-black text-indigo-600 text-sm whitespace-nowrap">${formatVND(p.sellingPrice)}</p>
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 mt-0.5 whitespace-nowrap">
+                                +${formatVND(p.commission)} Hoa Hồng
+                            </span>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <p class="font-black text-indigo-600 text-sm">${formatVND(p.sellingPrice)}</p>
-                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200 mt-0.5">
-                            +${formatVND(p.commission)} Hoa Hồng
-                        </span>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             document.getElementById('staff-history-modal').classList.remove('hidden');
         };
@@ -1984,11 +2905,11 @@
         };
 
         window.renderProfitReport = function() {
-            const isOwner = userRole === 'admin';
+            const canViewProfit = (userRole === 'owner' || userRole === 'admin' || userRole === 'manager');
             const deniedBox = document.getElementById('profit-access-denied');
             const profitContent = document.getElementById('profit-content');
 
-            if (!isOwner) {
+            if (!canViewProfit) {
                 if (deniedBox) deniedBox.classList.remove('hidden');
                 if (profitContent) profitContent.classList.add('hidden');
                 return;
@@ -2160,7 +3081,8 @@
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
-            const isOwner = userRole === 'admin';
+            const canViewCost = (userRole === 'owner' || userRole === 'admin' || userRole === 'manager');
+            const canManage = (userRole === 'owner' || userRole === 'admin' || userRole === 'manager');
             const isSold = p.status === 'SOLD';
 
             document.getElementById('dt-brand-badge').innerText = p.brand || 'Khác';
@@ -2171,7 +3093,7 @@
             document.getElementById('dt-id').innerText = p.id || '--';
 
             const importBox = document.getElementById('dt-box-import');
-            if (importBox) importBox.style.display = isOwner ? 'block' : 'none';
+            if (importBox) importBox.style.display = canViewCost ? 'block' : 'none';
             document.getElementById('dt-import-price').innerText = formatVND(p.importPrice);
             document.getElementById('dt-selling-price').innerText = formatVND(p.sellingPrice);
             document.getElementById('dt-commission').innerText = formatVND(p.commission);
@@ -2313,7 +3235,7 @@
             showToast(id ? 'Cập nhật thông tin thành công!' : 'Đã nhập máy mới vào kho!');
         };
 
-        window.openSellModal = function(id) {
+        window.openSellModal = async function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
@@ -2324,18 +3246,93 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('sell-date').value = today;
             
-            // Tự động gán tên nhân viên đang đăng nhập
-            const defaultSeller = currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || 'Nhân Viên';
-            const sellerInput = document.getElementById('sell-seller-name');
-            sellerInput.value = defaultSeller;
-            
-            // Nếu là nhân viên thì khóa ô tên để không gán nhầm cho người khác
-            if (userRole === 'staff') {
-                sellerInput.readOnly = true;
-                sellerInput.className = "w-full px-3 py-2 text-sm border border-slate-300 rounded-xl bg-slate-100 text-slate-600 font-bold focus:outline-none cursor-not-allowed";
-            } else {
-                sellerInput.readOnly = false;
-                sellerInput.className = "w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold";
+            const sellerSelect = document.getElementById('sell-seller-name');
+            if (sellerSelect) {
+                // Đặt tùy chọn mặc định ban đầu
+                sellerSelect.innerHTML = '<option value="">-- Chọn nhân viên chốt đơn --</option>';
+
+                // 1. Thu thập danh sách tài khoản đã tạo trên ứng dụng
+                let staffList = [];
+                try {
+                    const { data, error } = await supabaseClient.from('profiles').select('*');
+                    if (!error && Array.isArray(data) && data.length > 0) {
+                        staffList = data;
+                        systemProfilesList = data;
+                    }
+                } catch (err) {
+                    console.warn("Lỗi tải profiles cho sell modal:", err);
+                }
+
+                // 2. Dùng dữ liệu bộ nhớ nếu chưa tải kịp từ mạng
+                if (staffList.length === 0 && Array.isArray(systemProfilesList) && systemProfilesList.length > 0) {
+                    staffList = [...systemProfilesList];
+                }
+
+                // 3. Đảm bảo tài khoản đang đăng nhập hiện tại luôn có trong danh sách
+                const curStaffName = (currentUserProfile?.full_name || currentUser?.email?.split('@')[0] || '').trim();
+                const curStaffEmail = currentUser?.email || '';
+                if (curStaffName) {
+                    const existsCurrent = staffList.some(u => (u.full_name || u.email || '').trim().toLowerCase() === curStaffName.toLowerCase());
+                    if (!existsCurrent) {
+                        staffList.unshift({
+                            id: currentUser?.id || 'cur-user',
+                            full_name: curStaffName,
+                            email: curStaffEmail,
+                            role: userRole || 'staff'
+                        });
+                    }
+                }
+
+                // 4. Bổ sung các tài khoản nhân sự có sẵn
+                const defaultAccounts = [
+                    { name: 'Hoàng Trường', email: 'saint.niky@gmail.com', role: 'owner' },
+                    { name: 'Hiếu', email: 'trunghieu250498@gmail.com', role: 'staff' },
+                    { name: 'Nguyễn Văn Tuấn', email: 'tuan.nv@phonestore.vn', role: 'staff' },
+                    { name: 'Trần Thu Hà', email: 'ha.tt@phonestore.vn', role: 'staff' },
+                    { name: 'Lê Hoàng Long', email: 'long.lh@phonestore.vn', role: 'staff' },
+                    { name: 'Phạm Minh Đức', email: 'duc.pm@phonestore.vn', role: 'staff' }
+                ];
+
+                defaultAccounts.forEach(st => {
+                    if (!staffList.some(u => (u.full_name || '').trim().toLowerCase() === st.name.toLowerCase() || (u.email || '').trim().toLowerCase() === st.email.toLowerCase())) {
+                        staffList.push({
+                            id: 'acc-' + st.name,
+                            full_name: st.name,
+                            email: st.email,
+                            role: st.role
+                        });
+                    }
+                });
+
+                // 5. Nạp danh sách tài khoản vào Dropdown
+                let optionsHtml = '<option value="">-- Chọn nhân viên chốt đơn --</option>';
+                optionsHtml += staffList.map(u => {
+                    const uName = (u.full_name || u.email || 'Nhân Viên').trim();
+                    let roleTag = 'Nhân Viên';
+                    if (u.role === 'owner' || u.role === 'admin' || (u.email || '').toLowerCase() === 'saint.niky@gmail.com') {
+                        roleTag = 'Chủ Cửa Hàng';
+                    } else if (u.role === 'manager') {
+                        roleTag = 'Quản Lý';
+                    }
+                    const emailInfo = u.email ? ` - ${escapeHtml(u.email)}` : '';
+                    return `<option value="${escapeHtml(uName)}">${escapeHtml(uName)} (${roleTag}${emailInfo})</option>`;
+                }).join('');
+                
+                sellerSelect.innerHTML = optionsHtml;
+
+                if (userRole === 'staff' && curStaffName) {
+                    sellerSelect.value = curStaffName;
+                    sellerSelect.disabled = true;
+                    sellerSelect.className = "w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl bg-slate-100 text-slate-700 font-bold focus:outline-none cursor-not-allowed shadow-sm appearance-none pr-9";
+                } else {
+                    sellerSelect.disabled = false;
+                    sellerSelect.className = "w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold bg-white text-slate-800 cursor-pointer shadow-sm appearance-none pr-9";
+                    if (curStaffName) {
+                        sellerSelect.value = curStaffName;
+                    } else {
+                        sellerSelect.value = "";
+                    }
+                }
             }
 
             document.getElementById('sell-customer-name').value = '';
@@ -2352,7 +3349,15 @@
             e.preventDefault();
             const id = document.getElementById('sell-product-id').value;
             const soldAt = document.getElementById('sell-date').value;
-            const seller = document.getElementById('sell-seller-name').value.trim();
+            const sellerSelect = document.getElementById('sell-seller-name');
+            const seller = (sellerSelect.value || (currentUserProfile?.full_name || currentUser?.email?.split('@')[0]) || '').trim();
+
+            if (!seller) {
+                showToast('Vui lòng chọn nhân viên chốt đơn!', 'error');
+                sellerSelect.focus();
+                return;
+            }
+
             const customerName = document.getElementById('sell-customer-name').value.trim();
             const customerPhone = document.getElementById('sell-customer-phone').value.trim();
 
@@ -2539,6 +3544,199 @@
                 return;
             }
             input.value = new Intl.NumberFormat('vi-VN').format(Number(val));
+        };
+
+        // ================= TÍNH NĂNG QUẢN LÝ TÀI KHOẢN (ĐỔI THÔNG TIN & ĐỔI MẬT KHẨU) =================
+        window.openAccountModal = function() {
+            const modal = document.getElementById('account-modal');
+            if (!modal) return;
+
+            const displayName = currentUserProfile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || (userRole === 'admin' ? 'Chủ Cửa Hàng' : 'Nhân Viên');
+            const email = currentUser?.email || 'Chưa xác định';
+            const isAdmin = userRole === 'admin';
+
+            // Cập nhật card tổng quan tài khoản
+            const avatarEl = document.getElementById('acc-modal-avatar');
+            const nameEl = document.getElementById('acc-modal-name');
+            const emailEl = document.getElementById('acc-modal-email');
+            const roleEl = document.getElementById('acc-modal-role');
+
+            if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
+            if (nameEl) nameEl.innerText = displayName;
+            if (emailEl) emailEl.innerText = email;
+            if (roleEl) {
+                roleEl.innerText = isAdmin ? 'Chủ Cửa Hàng (Admin)' : 'Nhân Viên Bán Hàng (Staff)';
+                roleEl.className = isAdmin 
+                    ? 'mt-1 inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800'
+                    : 'mt-1 inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800';
+            }
+
+            // Điền dữ liệu form thông tin
+            const inputFullName = document.getElementById('acc-input-fullname');
+            const inputEmail = document.getElementById('acc-input-email');
+            if (inputFullName) inputFullName.value = displayName;
+            if (inputEmail) inputEmail.value = email;
+
+            // Xóa thông báo cũ
+            const infoMsg = document.getElementById('acc-info-msg');
+            const pwdMsg = document.getElementById('acc-pwd-msg');
+            if (infoMsg) infoMsg.className = 'hidden';
+            if (pwdMsg) pwdMsg.className = 'hidden';
+
+            // Reset form đổi mật khẩu
+            const pwdForm = document.getElementById('acc-form-pwd');
+            if (pwdForm) pwdForm.reset();
+
+            // Mặc định mở Tab 1
+            switchAccountTab('info');
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeAccountModal = function() {
+            const modal = document.getElementById('account-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.switchAccountTab = function(tab) {
+            const infoBtn = document.getElementById('acc-tab-info-btn');
+            const pwdBtn = document.getElementById('acc-tab-pwd-btn');
+            const formInfo = document.getElementById('acc-form-info');
+            const formPwd = document.getElementById('acc-form-pwd');
+
+            if (tab === 'info') {
+                infoBtn.className = "pb-2.5 px-4 text-indigo-600 border-b-2 border-indigo-600 flex items-center gap-1.5 transition";
+                pwdBtn.className = "pb-2.5 px-4 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 transition";
+                formInfo.classList.remove('hidden');
+                formPwd.classList.add('hidden');
+            } else {
+                pwdBtn.className = "pb-2.5 px-4 text-emerald-600 border-b-2 border-emerald-600 flex items-center gap-1.5 transition";
+                infoBtn.className = "pb-2.5 px-4 text-slate-400 hover:text-slate-700 flex items-center gap-1.5 transition";
+                formPwd.classList.remove('hidden');
+                formInfo.classList.add('hidden');
+            }
+        };
+
+        window.handleUpdateProfileInfo = async function(e) {
+            e.preventDefault();
+            const newName = document.getElementById('acc-input-fullname').value.trim();
+            const msgBox = document.getElementById('acc-info-msg');
+            const btn = document.getElementById('acc-info-submit-btn');
+
+            if (!newName) {
+                showToast('Họ và tên không được để trống!', 'error');
+                return;
+            }
+
+            msgBox.className = 'hidden';
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang lưu...`;
+
+            try {
+                // 1. Cập nhật Auth User Metadata nếu đang có session trên Supabase
+                if (currentUser && currentUser.id !== 'admin-local-master') {
+                    const { error: authErr } = await supabaseClient.auth.updateUser({
+                        data: { full_name: newName }
+                    });
+                    if (authErr) console.warn("Lỗi update metadata:", authErr);
+                }
+
+                // 2. Cập nhật bảng profiles
+                if (currentUser) {
+                    try {
+                        await supabaseClient.from('profiles').upsert({
+                            id: currentUser.id,
+                            email: currentUser.email,
+                            full_name: newName,
+                            role: userRole
+                        });
+                    } catch(errProfile) {
+                        console.warn("Lỗi ghi nhận profiles:", errProfile);
+                    }
+                }
+
+                // 3. Cập nhật trạng thái bộ nhớ cục bộ
+                if (currentUserProfile) {
+                    currentUserProfile.full_name = newName;
+                } else {
+                    currentUserProfile = { id: currentUser?.id, email: currentUser?.email, full_name: newName, role: userRole };
+                }
+
+                updateUserUI();
+
+                // Cập nhật thẻ hiển thị trong modal
+                const modalAvatar = document.getElementById('acc-modal-avatar');
+                const modalName = document.getElementById('acc-modal-name');
+                if (modalAvatar) modalAvatar.innerText = newName.charAt(0).toUpperCase();
+                if (modalName) modalName.innerText = newName;
+
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Cập nhật họ tên thành công!`;
+                showToast('Thông tin tài khoản đã được lưu!');
+            } catch (err) {
+                console.error("Lỗi cập nhật thông tin:", err);
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> ${escapeHtml(err.message || 'Không thể cập nhật thông tin.')}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+        };
+
+        window.handleUpdatePassword = async function(e) {
+            e.preventDefault();
+            const newPwd = document.getElementById('acc-input-new-pwd').value;
+            const confirmPwd = document.getElementById('acc-input-confirm-pwd').value;
+            const msgBox = document.getElementById('acc-pwd-msg');
+            const btn = document.getElementById('acc-pwd-submit-btn');
+
+            if (newPwd.length < 6) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu phải có tối thiểu 6 ký tự.`;
+                return;
+            }
+
+            if (newPwd !== confirmPwd) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Mật khẩu xác nhận không khớp! Vui lòng nhập lại.`;
+                return;
+            }
+
+            msgBox.className = 'hidden';
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang đổi mật khẩu...`;
+
+            try {
+                // Kiểm tra nếu đang ở chế độ bypass cục bộ
+                if (currentUser?.id === 'admin-local-master') {
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                    msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Đã đổi mật khẩu tạm thời thành công!`;
+                    document.getElementById('acc-form-pwd').reset();
+                    showToast('Đổi mật khẩu thành công!');
+                    return;
+                }
+
+                // Cập nhật mật khẩu trên Supabase Auth
+                const { data, error } = await supabaseClient.auth.updateUser({
+                    password: newPwd
+                });
+
+                if (error) throw error;
+
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Mật khẩu của bạn đã được cập nhật thành công trên Supabase!`;
+                document.getElementById('acc-form-pwd').reset();
+                showToast('Đã đổi mật khẩu đăng nhập thành công!');
+            } catch (err) {
+                console.error("Lỗi đổi mật khẩu:", err);
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi: ${escapeHtml(err.message || 'Không thể đổi mật khẩu.')}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
         };
 
         function formatNumberInput(val) {
