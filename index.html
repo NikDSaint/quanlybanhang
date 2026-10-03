@@ -2395,43 +2395,11 @@
             }
         };
 
-        window.loadProfilesList = async function() {
+        // Hàm render lại bảng danh sách nhân sự (được tách ra để tái sử dụng nhanh)
+        function renderProfilesTable(accounts) {
             const tbody = document.getElementById('mgmt-users-tbody');
             const countBadge = document.getElementById('mgmt-users-count');
             if (!tbody) return;
-
-            tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu và đồng bộ Firebase...</td></tr>`;
-
-            let accounts = getStaffAccounts();
-
-            try {
-                // Fetch profiles from Firebase Firestore
-                const querySnapshot = await getDocs(collection(db, "profiles"));
-                if (!querySnapshot.empty) {
-                    let merged = [...accounts];
-                    querySnapshot.forEach(docSnap => {
-                        const p = docSnap.data();
-                        const idx = merged.findIndex(a => a.id === p.id || a.email === p.email);
-                        if (idx >= 0) {
-                            merged[idx].full_name = p.full_name || merged[idx].full_name;
-                            merged[idx].role = p.role || merged[idx].role;
-                            merged[idx].id = p.id;
-                        } else {
-                            merged.push({
-                                id: p.id,
-                                email: p.email,
-                                full_name: p.full_name,
-                                role: p.role,
-                                password: '' 
-                            });
-                        }
-                    });
-                    accounts = merged;
-                    saveStaffAccounts(accounts);
-                }
-            } catch(e) {
-                console.warn("Lỗi đồng bộ profiles từ Firebase:", e);
-            }
 
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
 
@@ -2487,6 +2455,53 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        window.loadProfilesList = async function() {
+            let accounts = getStaffAccounts();
+            
+            // 1. Render hiển thị ngay lập tức (Tốc độ Load 0 giây)
+            renderProfilesTable(accounts);
+
+            // 2. Tải ngầm từ Firebase để đối chiếu. Nếu có bản cập nhật mới, tự động chèn vào UI.
+            try {
+                const querySnapshot = await getDocs(collection(db, "profiles"));
+                if (!querySnapshot.empty) {
+                    let merged = [...accounts];
+                    let hasChanges = false;
+                    
+                    querySnapshot.forEach(docSnap => {
+                        const p = docSnap.data();
+                        const idx = merged.findIndex(a => a.id === p.id || a.email === p.email);
+                        
+                        if (idx >= 0) {
+                            if (merged[idx].full_name !== p.full_name || merged[idx].role !== p.role || merged[idx].id !== p.id) {
+                                merged[idx].full_name = p.full_name || merged[idx].full_name;
+                                merged[idx].role = p.role || merged[idx].role;
+                                merged[idx].id = p.id;
+                                hasChanges = true;
+                            }
+                        } else {
+                            merged.push({
+                                id: p.id,
+                                email: p.email,
+                                full_name: p.full_name,
+                                role: p.role,
+                                password: '' 
+                            });
+                            hasChanges = true;
+                        }
+                    });
+                    
+                    if (hasChanges) {
+                        accounts = merged;
+                        saveStaffAccounts(accounts);
+                        renderProfilesTable(accounts); // Render lại âm thầm
+                    }
+                }
+            } catch(e) {
+                console.warn("Lỗi đồng bộ profiles từ Firebase:", e);
+            }
         };
 
         window.changeUserRole = async function(userId, newRole) {
