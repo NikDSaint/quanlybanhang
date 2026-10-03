@@ -1095,29 +1095,33 @@
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
-    <script>
-        const SUPABASE_URL = "https://gdrrvlhmhvsnqwpcuesc.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_iFW7AOizqOm9Q-qGYgK7nA_LP37brLz";
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-        let supabaseClient = null;
-        let isolatedSupabase = null;
+        // Cấu hình Firebase của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-1N2j-mCsMFALY9_oM065OeI0GAnjpwo",
+            authDomain: "aistore-1124.firebaseapp.com",
+            projectId: "aistore-1124",
+            storageBucket: "aistore-1124.firebasestorage.app",
+            messagingSenderId: "599323640675",
+            appId: "1:599323640675:web:7801c77a5e04f7b5304956",
+            measurementId: "G-99G8D97MV9"
+        };
 
-        function initSupabase() {
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                try {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                        auth: { persistSession: true, autoRefreshToken: true }
-                    });
-                    isolatedSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                        auth: { persistSession: false, autoRefreshToken: false }
-                    });
-                } catch (e) {
-                    console.warn("Không thể kết nối Supabase:", e);
-                }
-            } else {
-                console.info("Môi trường offline hoặc CDN bị chặn. Chạy trên localStorage.");
-            }
-        }
+        // Khởi tạo Firebase App chính (Bảo vệ chống lỗi khởi tạo nhiều lần trong môi trường Live Preview)
+        const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Khởi tạo App phụ (Secondary) để Chủ cửa hàng tạo tài khoản NV mà không bị đăng xuất
+        const apps = getApps();
+        const secondaryApp = apps.find(a => a.name === "SecondaryApp") 
+                            ? getApp("SecondaryApp") 
+                            : initializeApp(firebaseConfig, "SecondaryApp");
+        const secondaryAuth = getAuth(secondaryApp);
 
         const MASTER_SAMPLE_PRODUCTS = [
             { id: 'ip-16pm-01', brand: 'iPhone', name: 'iPhone 16 Pro Max Titan Sa Mạc', ram: '8GB', storage: '256GB', import_price: 31200000, selling_price: 34500000, commission: 350000, status: 'AVAILABLE', condition: 'IMEI: 358912340011928 - Mới 100% Nguyên Seal VN/A', seller: '', customer_name: '', customer_phone: '', sold_at: '' },
@@ -1134,26 +1138,39 @@
         let sortMode = 'DEFAULT';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
-        const LOCAL_NOTIF_KEY = 'phonestore_pro_notifications_v2';
         let systemProfilesList = [];
-        let notificationsList = [];
 
         function getStaffAccounts() {
             const raw = localStorage.getItem(LOCAL_STAFF_KEY);
+            let accounts = [];
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    if (Array.isArray(parsed) && parsed.length > 0) accounts = parsed;
                 } catch(e) {}
             }
-            const defaults = [
-                { id: 'acc-owner', full_name: 'Quản Trị Viên', email: 'admin@phonestore.vn', role: 'owner' },
-                { id: 'acc-tuan', full_name: 'Nguyễn Văn Tuấn', email: 'tuan.nv@phonestore.vn', role: 'staff' },
-                { id: 'acc-ha', full_name: 'Trần Thu Hà', email: 'ha.tt@phonestore.vn', role: 'staff' },
-                { id: 'acc-long', full_name: 'Lê Hoàng Long', email: 'long.lh@phonestore.vn', role: 'staff' }
-            ];
-            localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(defaults));
-            return defaults;
+            
+            if (accounts.length === 0) {
+                accounts = [
+                    { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
+                    { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: 'h0ilamgiha', role: 'owner' },
+                    { id: 'acc-owner', full_name: 'Quản Trị Viên', email: 'admin@gmail.com', role: 'owner' },
+                    { id: 'acc-tuan', full_name: 'Nguyễn Văn Tuấn', email: 'tuannv@gmail.com', role: 'staff' },
+                    { id: 'acc-ha', full_name: 'Trần Thu Hà', email: 'hatt@gmail.com', role: 'staff' },
+                    { id: 'acc-long', full_name: 'Lê Hoàng Long', email: 'longlh@gmail.com', role: 'staff' }
+                ];
+            } else {
+                // Đảm bảo saint.niky@gmail.com luôn có quyền Chủ Cửa Hàng (Owner) nếu đã bị lưu thành staff trước đó
+                const niky = accounts.find(a => a.email && a.email.toLowerCase() === 'saint.niky@gmail.com');
+                if (niky) {
+                    niky.role = 'owner';
+                } else {
+                    accounts.unshift({ id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' });
+                }
+            }
+            
+            localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
+            return accounts;
         }
 
         function saveStaffAccounts(accounts) {
@@ -1161,94 +1178,14 @@
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
         }
 
-        function loadNotifications() {
-            const raw = localStorage.getItem(LOCAL_NOTIF_KEY);
-            if (raw) {
-                try { notificationsList = JSON.parse(raw); } catch(e) { notificationsList = []; }
-            }
-        }
-
-        function saveNotifications() {
-            localStorage.setItem(LOCAL_NOTIF_KEY, JSON.stringify(notificationsList));
-        }
-
-        function addNotification(type, message) {
-            const newNotif = {
-                id: 'notif-' + Date.now(),
-                type: type, 
-                message: message,
-                time: new Date().toISOString(),
-                readBy: [currentUser?.id || currentUserProfile?.full_name || 'system'] 
-            };
-            notificationsList.unshift(newNotif);
-            if (notificationsList.length > 50) notificationsList.pop(); // Giữ tối đa 50 thông báo gần nhất
-            saveNotifications();
-            renderNotifications();
-        }
-
-        function getUserIdForNotif() {
-            return currentUser?.id || currentUserProfile?.full_name || 'guest';
-        }
-
-        function renderNotifications() {
-            const listEl = document.getElementById('notif-list');
-            const badgeEl = document.getElementById('notif-badge');
-            if (!listEl || !badgeEl) return;
-
-            const uid = getUserIdForNotif();
-            let unreadCount = 0;
-
-            const html = notificationsList.map(n => {
-                const isRead = n.readBy && n.readBy.includes(uid);
-                if (!isRead) unreadCount++;
-                
-                const icon = n.type === 'SELL' 
-                    ? '<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm"><i class="fa-solid fa-cart-shopping text-xs"></i></div>'
-                    : '<div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm"><i class="fa-solid fa-box-open text-xs"></i></div>';
-                    
-                const timeStr = new Date(n.time).toLocaleString('vi-VN', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'2-digit' });
-
-                return `
-                    <div class="p-3.5 flex items-start gap-3 hover:bg-slate-50 transition ${!isRead ? 'bg-indigo-50/40' : ''}">
-                        ${icon}
-                        <div class="flex-1 min-w-0">
-                            <p class="text-[13px] text-slate-800 ${!isRead ? 'font-bold' : 'font-medium'} leading-relaxed">${escapeHtml(n.message)}</p>
-                            <span class="text-[10px] text-slate-400 mt-1 block font-mono">${timeStr}</span>
-                        </div>
-                        ${!isRead ? '<span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-1.5 shadow-sm"></span>' : ''}
-                    </div>
-                `;
-            }).join('');
-
-            if (notificationsList.length === 0) {
-                listEl.innerHTML = '<div class="p-8 text-center flex flex-col items-center justify-center opacity-70"><i class="fa-regular fa-bell-slash text-2xl text-slate-300 mb-2"></i><p class="text-slate-400 text-xs font-semibold mt-2">Chưa có thông báo nào</p></div>';
-            } else {
-                listEl.innerHTML = html;
-            }
-
-            if (unreadCount > 0) {
-                badgeEl.classList.remove('hidden');
-            } else {
-                badgeEl.classList.add('hidden');
-            }
-        }
-
         window.toggleNotifications = function() {
             const dropdown = document.getElementById('notif-dropdown');
-            if(dropdown) dropdown.classList.toggle('hidden');
-            if (dropdown && !dropdown.classList.contains('hidden')) {
-                renderNotifications();
+            if(dropdown) {
+                dropdown.classList.toggle('hidden');
+                if (!dropdown.classList.contains('hidden')) {
+                    window.loadAndRenderNotifications();
+                }
             }
-        };
-
-        window.markAllAsRead = function() {
-            const uid = getUserIdForNotif();
-            notificationsList.forEach(n => {
-                if (!n.readBy) n.readBy = [];
-                if (!n.readBy.includes(uid)) n.readBy.push(uid);
-            });
-            saveNotifications();
-            renderNotifications();
         };
 
         // Đóng dropdown khi click ra ngoài
@@ -1261,8 +1198,7 @@
         });
 
         async function initApp() {
-            initSupabase();
-            loadNotifications();
+            window.loadAndRenderNotifications();
 
             const cached = localStorage.getItem(LOCAL_CACHE_KEY);
             if (cached) {
@@ -1274,27 +1210,11 @@
                 seedSampleData(false);
             }
 
-            if (!supabaseClient) {
-                loginWithBypassAdmin('Quản Trị Viên (Demo)', 'admin@phonestore.vn');
-                return;
-            }
-
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    currentUser = session.user;
-                    await handleUserLoggedIn(currentUser);
-                } else {
-                    showAuthModal(true);
-                }
-            } catch (err) {
-                showAuthModal(true);
-            }
-
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                if (session && session.user) {
-                    currentUser = session.user;
-                    await handleUserLoggedIn(currentUser);
+            // Firebase Auth Listener
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await handleUserLoggedIn(user);
                 } else {
                     currentUser = null;
                     currentUserProfile = null;
@@ -1307,16 +1227,26 @@
 
         async function handleUserLoggedIn(user) {
             showAuthModal(false);
-            const isRootOwner = (user.email || '').toLowerCase().includes('admin');
+            const userEmail = (user.email || '').toLowerCase();
+            const isRootOwner = userEmail.includes('admin') || userEmail === 'saint.niky@gmail.com' || userEmail === 'nik90@gmail.com';
 
             try {
-                const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
-                if (data) {
-                    currentUserProfile = data;
-                    userRole = isRootOwner ? 'owner' : (data.role || 'staff');
+                // Fetch profile from Firestore
+                const docSnap = await getDoc(doc(db, "profiles", user.uid));
+                if (docSnap.exists()) {
+                    currentUserProfile = docSnap.data();
+                    userRole = isRootOwner ? 'owner' : (currentUserProfile.role || 'staff');
+                    
+                    // Cập nhật lại role trên đám mây nếu phát hiện là Chủ nhưng DB cũ vẫn ghi là Nhân viên
+                    if (isRootOwner && currentUserProfile.role !== 'owner') {
+                        currentUserProfile.role = 'owner';
+                        setDoc(doc(db, "profiles", user.uid), { role: 'owner' }, { merge: true });
+                    }
                 } else {
                     userRole = isRootOwner ? 'owner' : 'staff';
-                    currentUserProfile = { id: user.id, email: user.email, full_name: user.email?.split('@')[0] || 'Nhân Viên', role: userRole };
+                    currentUserProfile = { id: user.uid, email: user.email, full_name: user.email?.split('@')[0] || 'Nhân Viên', role: userRole };
+                    // Tạo profile mới trên Firestore nếu chưa có
+                    setDoc(doc(db, "profiles", user.uid), currentUserProfile, { merge: true });
                 }
             } catch (err) {
                 userRole = isRootOwner ? 'owner' : 'staff';
@@ -1324,30 +1254,33 @@
 
             const accounts = getStaffAccounts();
             const currentName = currentUserProfile?.full_name || user.email?.split('@')[0] || 'Nhân Viên';
-            const userEmail = (user.email || '').toLowerCase();
+            // Bỏ dòng khai báo lại const userEmail ở đây vì đã khai báo ở đầu hàm
             const existingIdx = accounts.findIndex(a => (a.email && a.email.toLowerCase() === userEmail) || a.full_name === currentName);
             if (existingIdx >= 0) {
                 accounts[existingIdx].full_name = currentName;
                 accounts[existingIdx].role = userRole;
             } else {
-                accounts.push({ id: user.id, full_name: currentName, email: user.email, role: userRole });
+                accounts.push({ id: user.uid, full_name: currentName, email: user.email, role: userRole });
             }
             saveStaffAccounts(accounts);
 
             updateUserUI();
-            await fetchProductsFromSupabase();
+            await fetchProductsFromFirebase();
             if (userRole === 'owner' || userRole === 'admin') {
                 loadProfilesList();
             }
             await loadAndRenderNotifications();
         }
 
-        async function fetchProductsFromSupabase(silent = false) {
-            if (!supabaseClient) return;
+        async function fetchProductsFromFirebase(silent = false) {
             try {
-                const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                if (data && data.length > 0) {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                if (!querySnapshot.empty) {
+                    const data = [];
+                    querySnapshot.forEach((doc) => {
+                        data.push(doc.data());
+                    });
+                    
                     products = data.map(item => ({
                         id: item.id,
                         brand: item.brand || 'Khác',
@@ -1364,11 +1297,12 @@
                         customerPhone: item.customer_phone || '',
                         soldAt: item.sold_at || ''
                     }));
+                    // Optional: Sort by created_at logic if needed, or rely on local
                     localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
                     renderApp();
                 }
             } catch (err) {
-                if (!silent) console.warn("Lỗi tải sản phẩm:", err);
+                if (!silent) console.warn("Lỗi tải sản phẩm từ Firebase:", err);
             }
         }
 
@@ -1391,7 +1325,6 @@
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
 
-            // Ẩn bảng overview theo yêu cầu
             if (dashboardCards) dashboardCards.classList.add('hidden');
 
             if (isOwner) {
@@ -1440,7 +1373,7 @@
             const importHeaders = document.querySelectorAll('.col-import-price');
             importHeaders.forEach(el => { el.style.display = isOwner ? '' : 'none'; });
 
-            renderNotifications(); // Refresh notifications theo user hiện tại
+            window.loadAndRenderNotifications();
         }
 
         window.showAuthModal = function(show) {
@@ -1448,7 +1381,6 @@
             if (!modal) return;
             
             if (show) {
-                // Sửa lỗi kẹt nút "Đang xác thực..." và reset form
                 const submitBtn = document.getElementById('auth-submit-btn');
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -1464,52 +1396,36 @@
             modal.classList.toggle('hidden', !show);
         };
 
-        window.loginWithBypassAdmin = function(name, email) {
-            currentUser = { id: 'admin-local', email: email || 'admin@phonestore.vn' };
-            currentUserProfile = { id: currentUser.id, email: currentUser.email, full_name: name || 'Quản Trị Viên', role: 'owner' };
-            userRole = 'owner';
-            showAuthModal(false);
-            updateUserUI();
-            renderApp();
-            showToast('Đã đăng nhập quyền Quản Trị Viên!', 'success');
-        };
-
         window.handleAuthActionClick = async function() {
-            if (supabaseClient) {
-                try { await supabaseClient.auth.signOut(); } catch (e) {}
-            }
+            try { await signOut(auth); } catch (e) { console.warn(e); }
             currentUser = null;
             currentUserProfile = null;
             userRole = 'staff';
-            
-            // Xóa dữ liệu cũ trên form khi đăng xuất
-            const loginForm = document.getElementById('login-form');
-            if (loginForm) loginForm.reset();
-            
             showAuthModal(true);
             showToast('Đã đăng xuất');
         };
 
         window.handleAuthSubmit = async function(e) {
             e.preventDefault();
-            const accountInput = document.getElementById('auth-email').value.trim();
+            let accountInput = document.getElementById('auth-email').value.trim();
+
+            // Tự động điền @gmail.com nếu người dùng chưa gõ ký tự @
+            if (accountInput && !accountInput.includes('@')) {
+                accountInput += '@gmail.com';
+                document.getElementById('auth-email').value = accountInput; // Hiển thị lại lên UI cho rõ ràng
+            }
+
             const password = document.getElementById('auth-password').value;
             const errBox = document.getElementById('auth-error-msg');
             const submitBtn = document.getElementById('auth-submit-btn');
 
             if (errBox) errBox.classList.add('hidden');
 
-            // Cố định HTML mặc định thay vì lấy từ giao diện để tránh kẹt trạng thái
-            const origBtnHtml = '<i class="fa-solid fa-right-to-bracket"></i> <span>Xác Nhận Đăng Nhập</span>';
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xác thực...</span>';
-            }
-
+            const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
             let authOk = false;
             const accountLower = accountInput.toLowerCase();
 
-            // 1. Thử xác thực với danh sách tài khoản nhân viên (hỗ trợ cả tên đăng nhập lẫn email)
+            // 1. Kiểm tra tài khoản nội bộ (cache)
             const accounts = getStaffAccounts();
             const matchedAccount = accounts.find(a => {
                 const accLogin = (a.email || '').toLowerCase();
@@ -1523,7 +1439,7 @@
                         matchedAccount.password = password;
                         saveStaffAccounts(accounts);
                     }
-                    currentUser = { id: matchedAccount.id, email: matchedAccount.email };
+                    currentUser = { uid: matchedAccount.id, email: matchedAccount.email };
                     userRole = matchedAccount.role || 'staff';
                     currentUserProfile = {
                         id: matchedAccount.id,
@@ -1539,17 +1455,15 @@
                 }
             }
 
-            // 2. Thử đăng nhập qua Supabase Auth nếu chưa khớp tài khoản nội bộ
-            if (!authOk && supabaseClient) {
+            // 2. Thử Firebase Auth
+            if (!authOk) {
                 try {
                     const emailForAuth = accountInput.includes('@') ? accountInput : `${accountLower.replace(/[^a-z0-9._-]/g, '')}@aistore.local`;
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailForAuth, password });
-                    if (!error && data?.user) {
-                        authOk = true;
-                        return; // Sự kiện onAuthStateChange sẽ tự động gọi handleUserLoggedIn
-                    }
+                    await signInWithEmailAndPassword(auth, emailForAuth, password);
+                    authOk = true;
+                    // Sự kiện onAuthStateChanged sẽ tự động bắt
                 } catch (err) {
-                    console.warn("Supabase auth lỗi hoặc tài khoản nội bộ:", err);
+                    console.warn("Firebase auth lỗi hoặc tài khoản nội bộ không đúng:", err);
                 }
             }
 
@@ -1582,7 +1496,7 @@
             document.getElementById('prof-card-email').innerText = email;
             document.getElementById('prof-input-name').value = name;
             document.getElementById('prof-input-email').value = email;
-            switchProfileTab('info');
+            window.switchProfileTab('info');
             modal.classList.remove('hidden');
         };
 
@@ -1614,7 +1528,7 @@
             if (!newName) return;
             if (currentUserProfile) currentUserProfile.full_name = newName;
             updateUserUI();
-            closeProfileModal();
+            window.closeProfileModal();
             showToast('Đã lưu thông tin cá nhân!', 'success');
         };
 
@@ -1628,7 +1542,7 @@
                 msg.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
                 return;
             }
-            closeProfileModal();
+            window.closeProfileModal();
             showToast('Đổi mật khẩu thành công!', 'success');
         };
 
@@ -1644,126 +1558,34 @@
             updateTag('pwd-check-num', /[0-9]/.test(pwd));
         };
 
-        window.seedSampleData = function(isManual = true) {
+        window.seedSampleData = async function(isManual = true) {
             try {
                 const todayStr = new Date().toISOString().split('T')[0];
 
-                // Bộ dữ liệu mẫu chuẩn (4 máy còn trong kho + 2 máy đã xuất bán)
                 products = [
-                    { 
-                        id: 'ip-16pm-' + Date.now(), 
-                        brand: 'iPhone', 
-                        name: 'iPhone 16 Pro Max Titan Sa Mạc', 
-                        ram: '8GB', 
-                        storage: '256GB', 
-                        importPrice: 31200000, 
-                        sellingPrice: 34500000, 
-                        commission: 350000, 
-                        status: 'AVAILABLE', 
-                        condition: 'IMEI: 358912340011928 - Mới 100% Nguyên Seal VN/A', 
-                        seller: '', 
-                        customerName: '', 
-                        customerPhone: '', 
-                        soldAt: '' 
-                    },
-                    { 
-                        id: 'ss-s24u-' + Date.now(), 
-                        brand: 'Samsung', 
-                        name: 'Galaxy S24 Ultra 5G Xám Titan', 
-                        ram: '12GB', 
-                        storage: '512GB', 
-                        importPrice: 22800000, 
-                        sellingPrice: 26200000, 
-                        commission: 300000, 
-                        status: 'AVAILABLE', 
-                        condition: 'IMEI: 359188880011223 - SSVN đẹp 99.9% Fullbox', 
-                        seller: '', 
-                        customerName: '', 
-                        customerPhone: '', 
-                        soldAt: '' 
-                    },
-                    { 
-                        id: 'mi-14u-' + Date.now(), 
-                        brand: 'Xiaomi', 
-                        name: 'Xiaomi 14 Ultra Camera Leica Trắng', 
-                        ram: '16GB', 
-                        storage: '512GB', 
-                        importPrice: 18500000, 
-                        sellingPrice: 21800000, 
-                        commission: 250000, 
-                        status: 'AVAILABLE', 
-                        condition: 'IMEI: 864522060011001 - Bản Quốc Tế Fullbox keng', 
-                        seller: '', 
-                        customerName: '', 
-                        customerPhone: '', 
-                        soldAt: '' 
-                    },
-                    { 
-                        id: 'ip-15pm-avail-' + Date.now(), 
-                        brand: 'iPhone', 
-                        name: 'iPhone 15 Pro Max Titan Tự Nhiên', 
-                        ram: '8GB', 
-                        storage: '256GB', 
-                        importPrice: 23500000, 
-                        sellingPrice: 26800000, 
-                        commission: 300000, 
-                        status: 'AVAILABLE', 
-                        condition: 'IMEI: 358912340088991 - Zin all 99%, Pin 100%', 
-                        seller: '', 
-                        customerName: '', 
-                        customerPhone: '', 
-                        soldAt: '' 
-                    },
-                    { 
-                        id: 'ip-15pm-sold-' + Date.now(), 
-                        brand: 'iPhone', 
-                        name: 'iPhone 15 Pro Max Titan Xanh', 
-                        ram: '8GB', 
-                        storage: '256GB', 
-                        importPrice: 23800000, 
-                        sellingPrice: 26900000, 
-                        commission: 300000, 
-                        status: 'SOLD', 
-                        condition: 'IMEI: 358912340033746 - Zin ốc 99%, Pin 98%', 
-                        seller: 'Nguyễn Văn Tuấn', 
-                        customerName: 'Hoàng Anh Tuấn', 
-                        customerPhone: '0988112233', 
-                        soldAt: todayStr 
-                    },
-                    { 
-                        id: 'ss-s24u-sold-' + Date.now(), 
-                        brand: 'Samsung', 
-                        name: 'Galaxy S24 Ultra 5G Đen Titan', 
-                        ram: '12GB', 
-                        storage: '256GB', 
-                        importPrice: 21500000, 
-                        sellingPrice: 24900000, 
-                        commission: 250000, 
-                        status: 'SOLD', 
-                        condition: 'IMEI: 359188880055441 - Máy chính hãng đẹp 99%', 
-                        seller: 'Trần Thu Hà', 
-                        customerName: 'Bùi Quang Huy', 
-                        customerPhone: '0904123888', 
-                        soldAt: todayStr 
-                    }
+                    { id: 'ip-16pm-' + Date.now(), brand: 'iPhone', name: 'iPhone 16 Pro Max Titan Sa Mạc', ram: '8GB', storage: '256GB', importPrice: 31200000, sellingPrice: 34500000, commission: 350000, status: 'AVAILABLE', condition: 'IMEI: 358912340011928 - Mới 100% Nguyên Seal VN/A', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+                    { id: 'ss-s24u-' + Date.now(), brand: 'Samsung', name: 'Galaxy S24 Ultra 5G Xám Titan', ram: '12GB', storage: '512GB', importPrice: 22800000, sellingPrice: 26200000, commission: 300000, status: 'AVAILABLE', condition: 'IMEI: 359188880011223 - SSVN đẹp 99.9% Fullbox', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+                    { id: 'mi-14u-' + Date.now(), brand: 'Xiaomi', name: 'Xiaomi 14 Ultra Camera Leica Trắng', ram: '16GB', storage: '512GB', importPrice: 18500000, sellingPrice: 21800000, commission: 250000, status: 'AVAILABLE', condition: 'IMEI: 864522060011001 - Bản Quốc Tế Fullbox keng', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+                    { id: 'ip-15pm-avail-' + Date.now(), brand: 'iPhone', name: 'iPhone 15 Pro Max Titan Tự Nhiên', ram: '8GB', storage: '256GB', importPrice: 23500000, sellingPrice: 26800000, commission: 300000, status: 'AVAILABLE', condition: 'IMEI: 358912340088991 - Zin all 99%, Pin 100%', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+                    { id: 'ip-15pm-sold-' + Date.now(), brand: 'iPhone', name: 'iPhone 15 Pro Max Titan Xanh', ram: '8GB', storage: '256GB', importPrice: 23800000, sellingPrice: 26900000, commission: 300000, status: 'SOLD', condition: 'IMEI: 358912340033746 - Zin ốc 99%, Pin 98%', seller: 'Nguyễn Văn Tuấn', customerName: 'Hoàng Anh Tuấn', customerPhone: '0988112233', soldAt: todayStr },
+                    { id: 'ss-s24u-sold-' + Date.now(), brand: 'Samsung', name: 'Galaxy S24 Ultra 5G Đen Titan', ram: '12GB', storage: '256GB', importPrice: 21500000, sellingPrice: 24900000, commission: 250000, status: 'SOLD', condition: 'IMEI: 359188880055441 - Máy chính hãng đẹp 99%', seller: 'Trần Thu Hà', customerName: 'Bùi Quang Huy', customerPhone: '0904123888', soldAt: todayStr }
                 ];
 
-                // Lưu vào bộ nhớ cục bộ
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
 
-                // Đặt lại ô tìm kiếm và lọc hãng để các máy mới nạp hiển thị ngay lập tức
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) searchInput.value = '';
                 const brandFilter = document.getElementById('filter-brand');
                 if (brandFilter) brandFilter.value = 'ALL';
 
-                // Cập nhật giao diện ngay lập tức
-                renderApp();
+                window.renderApp();
 
-                // Đồng bộ ngầm lên Supabase (nếu có kết nối, không làm treo ứng dụng)
-                if (supabaseClient) {
-                    try {
-                        const dbPayload = products.map(p => ({
+                // Đồng bộ ngầm lên Firebase Firestore
+                try {
+                    const batch = writeBatch(db);
+                    products.forEach(p => {
+                        const ref = doc(db, "products", p.id);
+                        batch.set(ref, {
                             id: p.id,
                             brand: p.brand,
                             name: p.name,
@@ -1778,20 +1600,18 @@
                             customer_name: p.customerName,
                             customer_phone: p.customerPhone,
                             sold_at: p.soldAt
-                        }));
-                        supabaseClient.from('products').upsert(dbPayload).then(() => {
-                            console.log("Đã đồng bộ dữ liệu mẫu lên đám mây.");
-                        }).catch(e => console.warn("Supabase sync notice:", e));
-                    } catch (e) {
-                        console.warn("Lỗi đồng bộ Supabase:", e);
-                    }
+                        }, { merge: true });
+                    });
+                    await batch.commit();
+                    console.log("Đã đồng bộ dữ liệu mẫu lên đám mây Firebase.");
+                } catch (e) {
+                    console.warn("Lỗi đồng bộ Firebase:", e);
                 }
 
                 if (isManual) {
                     showToast('Đã nạp 6 sản phẩm mẫu vào kho thành công!', 'success');
                 }
             } catch (err) {
-                console.error("Lỗi khi nạp dữ liệu mẫu:", err);
                 showToast('Có lỗi xảy ra: ' + err.message, 'error');
             }
         };
@@ -1814,9 +1634,9 @@
                 if (btn) {
                     const isSelected = (t === tabName);
                     if (isSelected) {
-                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow flex items-center gap-1.5 transition-all";
+                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow transition-all flex items-center gap-1.5";
                     } else {
-                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-1.5 transition-all";
+                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5";
                     }
 
                     if (!isOwner && (t === 'profit' || t === 'management')) {
@@ -1830,15 +1650,15 @@
                 if (view) view.classList.toggle('hidden', t !== tabName);
             });
             if (tabName === 'management') {
-                loadProfilesList();
+                window.loadProfilesList();
             }
-            renderApp();
+            window.renderApp();
         };
 
         window.handleDropdownSortChange = function() {
             sortMode = document.getElementById('filter-sort').value;
             updateSortIcons();
-            renderApp();
+            window.renderApp();
         };
 
         window.toggleSortColumn = function(column) {
@@ -1852,7 +1672,7 @@
             const sortDropdown = document.getElementById('filter-sort');
             if (sortDropdown) sortDropdown.value = sortMode;
             updateSortIcons();
-            renderApp();
+            window.renderApp();
         };
 
         function updateSortIcons() {
@@ -1950,7 +1770,7 @@
                 }
 
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-                renderApp();
+                window.renderApp();
                 showToast(`Đã nhập thành công ${importedCount} máy từ CSV!`);
                 event.target.value = '';
             };
@@ -1968,8 +1788,8 @@
             quarterSelect.classList.toggle('hidden', val !== 'QUARTER');
             yearSelect.classList.toggle('hidden', val === 'ALL');
 
-            if (type === 'comm') renderCommissionReport();
-            else renderProfitReport();
+            if (type === 'comm') window.renderCommissionReport();
+            else window.renderProfitReport();
         };
 
         window.renderApp = function() {
@@ -1991,8 +1811,8 @@
             if (statComm) statComm.innerText = formatVND(totalComm);
 
             if (currentTab === 'inventory') renderInventoryTable();
-            else if (currentTab === 'commission') renderCommissionReport();
-            else if (currentTab === 'profit') renderProfitReport();
+            else if (currentTab === 'commission') window.renderCommissionReport();
+            else if (currentTab === 'profit') window.renderProfitReport();
         };
 
         function renderInventoryTable() {
@@ -2001,7 +1821,6 @@
             const isOwner = (userRole === 'owner' || userRole === 'admin');
             const currentStaffName = currentUserProfile?.full_name || '';
 
-            // 1. Lọc sản phẩm còn trong kho (AVAILABLE)
             let availableList = products.filter(p => {
                 if (p.status === 'SOLD') return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
@@ -2010,7 +1829,6 @@
                 return matchSearch && matchBrand;
             });
 
-            // 2. Lọc sản phẩm đã bán (SOLD): Nếu là Nhân Viên, chỉ hiển thị đơn máy do chính nhân viên này chốt
             let soldList = products.filter(p => {
                 if (p.status !== 'SOLD') return false;
                 if (!isOwner && p.seller !== currentStaffName) return false;
@@ -2022,7 +1840,6 @@
                 return matchSearch && matchBrand;
             });
 
-            // Áp dụng sắp xếp cho cả 2 danh sách
             const applySort = (list) => {
                 if (sortMode === 'PRICE_DESC') {
                     list.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
@@ -2037,13 +1854,11 @@
             applySort(availableList);
             applySort(soldList);
 
-            // Cập nhật số lượng huy hiệu (kiểm tra an toàn nếu có)
             const badgeAvailable = document.getElementById('badge-available-count');
             if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
             const badgeSold = document.getElementById('badge-sold-count');
             if (badgeSold) badgeSold.innerText = `${soldList.length} máy`;
 
-            // BẢNG 1: SẢN PHẨM CÒN HÀNG (BÊN TRÊN)
             const tbodyAvailable = document.getElementById('product-table-body');
             const emptyState = document.getElementById('empty-state');
             if (tbodyAvailable) {
@@ -2082,7 +1897,6 @@
                 }
             }
 
-            // BẢNG 2: SẢN PHẨM ĐÃ BÁN (BÊN DƯỚI)
             const tbodySold = document.getElementById('sold-table-body');
             const emptySoldState = document.getElementById('empty-sold-state');
             if (tbodySold) {
@@ -2155,7 +1969,6 @@
                 });
             }
 
-            // Theo Tháng (MONTH)
             const monthSelect = document.getElementById(`${prefix}-filter-month`);
             const month = parseInt(monthSelect ? monthSelect.value : (new Date().getMonth() + 1), 10);
             return items.filter(p => {
@@ -2165,7 +1978,7 @@
             });
         }
 
-        function renderCommissionReport() {
+        window.renderCommissionReport = function() {
             const grid = document.getElementById('commission-grid');
             const tbody = document.getElementById('commission-table-body');
             const emptyState = document.getElementById('comm-empty-state');
@@ -2176,7 +1989,6 @@
 
             let soldItems = products.filter(p => p.status === 'SOLD');
             
-            // Nếu là tài khoản Nhân Viên (Staff), chỉ lọc các máy do chính mình chốt đơn
             if (!isOwner) {
                 soldItems = soldItems.filter(p => p.seller === currentStaffName);
             }
@@ -2185,7 +1997,6 @@
 
             if (countBadge) countBadge.innerText = `${filteredSold.length} máy đã bán`;
 
-            // 1. Thống kê theo nhân viên (Chủ xem toàn bộ nhân viên, Nhân viên chỉ xem thẻ của chính mình)
             const staffMap = {};
             filteredSold.forEach(p => {
                 const sellerName = p.seller || 'Chưa gán';
@@ -2228,7 +2039,6 @@
                 }
             }
 
-            // 2. Chi tiết máy đã bán
             if (tbody) {
                 if (filteredSold.length === 0) {
                     tbody.innerHTML = '';
@@ -2263,9 +2073,9 @@
                     `).join('');
                 }
             }
-        }
+        };
 
-        function renderProfitReport() {
+        window.renderProfitReport = function() {
             let soldItems = products.filter(p => p.status === 'SOLD');
             soldItems = filterItemsByDate(soldItems, 'profit');
 
@@ -2298,7 +2108,7 @@
                     <td class="py-3 px-4 text-right font-black text-emerald-600">${formatVND(p.sellingPrice - p.importPrice - p.commission)}</td>
                 </tr>
             `).join('');
-        }
+        };
 
         window.openDetailModal = function(id) {
             const p = products.find(prod => prod.id === id);
@@ -2386,7 +2196,7 @@
         };
 
         window.editProduct = function(id) {
-            closeDetailModal();
+            window.closeDetailModal();
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
@@ -2421,11 +2231,19 @@
             document.getElementById('product-modal').classList.remove('hidden');
         };
 
-        window.deleteProduct = function(id) {
-            closeDetailModal();
+        window.deleteProduct = async function(id) {
+            window.closeDetailModal();
             products = products.filter(p => p.id !== id);
             localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-            renderApp();
+            
+            // Delete from Firebase
+            try {
+                await deleteDoc(doc(db, "products", id));
+            } catch (e) {
+                console.warn("Lỗi xóa từ Firebase:", e);
+            }
+
+            window.renderApp();
             showToast('Đã xóa máy khỏi danh mục kho!');
         };
 
@@ -2433,7 +2251,7 @@
             document.getElementById('product-modal').classList.add('hidden');
         };
 
-        window.handleProductSubmit = function(e) {
+        window.handleProductSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('form-product-id').value || ('prod-' + Date.now());
             const storageSelVal = document.getElementById('form-storage').value;
@@ -2460,13 +2278,36 @@
                 products[idx] = { ...products[idx], ...newProd };
             } else {
                 products.unshift(newProd);
-                // Gửi thông báo khi có máy mới được thêm
-                pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
+                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
             }
 
             localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-            closeProductModal();
-            renderApp();
+
+            // Cập nhật lên Firebase Firestore
+            try {
+                const ref = doc(db, "products", id);
+                await setDoc(ref, {
+                    id: newProd.id,
+                    brand: newProd.brand,
+                    name: newProd.name,
+                    ram: newProd.ram,
+                    storage: newProd.storage,
+                    import_price: newProd.importPrice,
+                    selling_price: newProd.sellingPrice,
+                    commission: newProd.commission,
+                    status: newProd.status,
+                    condition: newProd.condition,
+                    seller: newProd.seller,
+                    customer_name: newProd.customerName,
+                    customer_phone: newProd.customerPhone,
+                    sold_at: newProd.soldAt
+                }, { merge: true });
+            } catch (e) {
+                console.warn("Lỗi lưu lên Firebase:", e);
+            }
+
+            window.closeProductModal();
+            window.renderApp();
             showToast('Đã lưu máy vào kho thành công!');
         };
 
@@ -2511,7 +2352,7 @@
             document.getElementById('sell-modal').classList.add('hidden');
         };
 
-        window.handleQuickSellSubmit = function(e) {
+        window.handleQuickSellSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('sell-product-id').value;
             const p = products.find(prod => prod.id === id);
@@ -2529,13 +2370,27 @@
                 p.seller = seller;
                 p.customerName = document.getElementById('sell-customer-name').value.trim();
                 p.customerPhone = document.getElementById('sell-customer-phone').value.trim();
+                
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
                 
-                // Gửi thông báo khi bán máy
-                pushNotification('Đã chốt đơn', `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}.`, 'sell');
+                // Đồng bộ Firebase
+                try {
+                    const ref = doc(db, "products", p.id);
+                    await setDoc(ref, {
+                        status: p.status,
+                        sold_at: p.soldAt,
+                        seller: p.seller,
+                        customer_name: p.customerName,
+                        customer_phone: p.customerPhone
+                    }, { merge: true });
+                } catch (e) {
+                    console.warn("Lỗi đồng bộ Firebase:", e);
+                }
+
+                window.pushNotification('Đã chốt đơn', `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}.`, 'sell');
                 
-                closeSellModal();
-                renderApp();
+                window.closeSellModal();
+                window.renderApp();
                 showToast(`Đã xuất bán thành công cho ${p.seller}!`);
             }
         };
@@ -2545,38 +2400,37 @@
             const countBadge = document.getElementById('mgmt-users-count');
             if (!tbody) return;
 
-            tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu và đồng bộ Supabase...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu và đồng bộ Firebase...</td></tr>`;
 
             let accounts = getStaffAccounts();
 
-            // Đồng bộ 2 chiều từ Supabase bảng profiles
-            if (supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.from('profiles').select('*');
-                    if (!error && data && data.length > 0) {
-                        let merged = [...accounts];
-                        data.forEach(p => {
-                            const idx = merged.findIndex(a => a.id === p.id || a.email === p.email);
-                            if (idx >= 0) {
-                                merged[idx].full_name = p.full_name || merged[idx].full_name;
-                                merged[idx].role = p.role || merged[idx].role;
-                                merged[idx].id = p.id;
-                            } else {
-                                merged.push({
-                                    id: p.id,
-                                    email: p.email,
-                                    full_name: p.full_name,
-                                    role: p.role,
-                                    password: '' // Không lấy được password từ db
-                                });
-                            }
-                        });
-                        accounts = merged;
-                        saveStaffAccounts(accounts);
-                    }
-                } catch(e) {
-                    console.warn("Lỗi đồng bộ profiles:", e);
+            try {
+                // Fetch profiles from Firebase Firestore
+                const querySnapshot = await getDocs(collection(db, "profiles"));
+                if (!querySnapshot.empty) {
+                    let merged = [...accounts];
+                    querySnapshot.forEach(docSnap => {
+                        const p = docSnap.data();
+                        const idx = merged.findIndex(a => a.id === p.id || a.email === p.email);
+                        if (idx >= 0) {
+                            merged[idx].full_name = p.full_name || merged[idx].full_name;
+                            merged[idx].role = p.role || merged[idx].role;
+                            merged[idx].id = p.id;
+                        } else {
+                            merged.push({
+                                id: p.id,
+                                email: p.email,
+                                full_name: p.full_name,
+                                role: p.role,
+                                password: '' 
+                            });
+                        }
+                    });
+                    accounts = merged;
+                    saveStaffAccounts(accounts);
                 }
+            } catch(e) {
+                console.warn("Lỗi đồng bộ profiles từ Firebase:", e);
             }
 
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
@@ -2587,8 +2441,29 @@
             }
 
             tbody.innerHTML = accounts.map(u => {
-                const isCurrent = u.id === currentUser?.id || u.full_name === currentUserProfile?.full_name;
+                const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name;
                 const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
+                const isProtectedRoot = u.email === 'saint.niky@gmail.com' || u.email === 'admin@gmail.com' || u.email === 'nik90@gmail.com';
+                
+                let roleHtml = '';
+                // Hiện menu thả xuống (dropdown) nếu không phải tài khoản đang đăng nhập và không phải tài khoản gốc
+                if (!isCurrent && !isProtectedRoot) {
+                    roleHtml = `
+                        <select onchange="changeUserRole('${u.id}', this.value)" class="px-2 py-1 rounded-lg text-[10px] font-bold outline-none cursor-pointer border transition-colors ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100' : 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100')}">
+                            <option value="owner" class="font-bold text-amber-800" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
+                            <option value="manager" class="font-bold text-purple-800" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
+                            <option value="staff" class="font-bold text-blue-800" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
+                        </select>
+                    `;
+                } else {
+                    // Nếu là tài khoản cố định hoặc đang đăng nhập, hiển thị dạng text cố định
+                    roleHtml = `
+                        <span class="px-2 py-1 inline-block rounded-lg text-[10px] font-bold border ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200')}">
+                            ${isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')}
+                        </span>
+                    `;
+                }
+
                 return `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
@@ -2597,9 +2472,7 @@
                         </td>
                         <td class="py-3 px-4 font-mono text-slate-600">${escapeHtml(u.email || '--')}</td>
                         <td class="py-3 px-4 text-center">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isOwnerAccount ? 'bg-amber-100 text-amber-800' : (u.role === 'manager' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800')}">
-                                ${isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')}
-                            </span>
+                            ${roleHtml}
                         </td>
                         <td class="py-3 px-4 text-center">
                             ${u.password ? `<span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-[11px] font-mono font-semibold text-slate-700 select-all">${escapeHtml(u.password)}</span>` : '<span class="text-slate-400 text-[11px] italic">Mặc định</span>'}
@@ -2616,6 +2489,34 @@
             }).join('');
         };
 
+        window.changeUserRole = async function(userId, newRole) {
+            let accounts = getStaffAccounts();
+            const targetIndex = accounts.findIndex(a => a.id === userId);
+            
+            if (targetIndex === -1) return;
+
+            const targetUser = accounts[targetIndex];
+            
+            if (targetUser.email === 'saint.niky@gmail.com' || targetUser.email === 'admin@gmail.com' || targetUser.email === 'nik90@gmail.com') {
+                showToast('Không thể thay đổi quyền của tài khoản gốc này!', 'error');
+                window.loadProfilesList(); 
+                return;
+            }
+
+            targetUser.role = newRole;
+            saveStaffAccounts(accounts);
+
+            try {
+                await setDoc(doc(db, "profiles", userId), { role: newRole }, { merge: true });
+            } catch (e) {
+                console.warn("Lỗi đồng bộ role lên Firebase:", e);
+            }
+
+            const roleName = newRole === 'owner' ? 'Chủ Cửa Hàng' : (newRole === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+            showToast(`Đã thay đổi quyền của "${targetUser.full_name}" thành ${roleName}!`);
+            window.loadProfilesList(); 
+        };
+
         window.handleCreateStaffSubmit = async function(e) {
             e.preventDefault();
             const nameInput = document.getElementById('staff-name');
@@ -2626,7 +2527,14 @@
             const submitBtn = document.getElementById('btn-create-staff');
 
             const name = nameInput.value.trim();
-            const accountValue = accountInput.value.trim();
+            let accountValue = accountInput.value.trim();
+
+            // Tự động điền @gmail.com nếu người dùng tạo tài khoản mà quên nhập
+            if (accountValue && !accountValue.includes('@')) {
+                accountValue += '@gmail.com';
+                accountInput.value = accountValue;
+            }
+
             const password = pwdInput.value;
             const role = roleInput.value;
 
@@ -2655,50 +2563,33 @@
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tạo tài khoản...';
 
             let cloudId = null;
-            // Chuẩn hóa email nội bộ cho Supabase nếu người dùng nhập tên đăng nhập thường (vd: tuannv -> tuannv@aistore.local)
             const emailForCloud = accountValue.includes('@') ? accountValue : `${lowerAccount.replace(/[^a-z0-9._-]/g, '')}@aistore.local`;
 
-            // 1. Thử đăng ký tài khoản ngầm qua isolatedSupabase (không làm gián đoạn phiên của Owner)
-            if (isolatedSupabase) {
-                try {
-                    const { data: signUpData, error: signUpErr } = await isolatedSupabase.auth.signUp({
-                        email: emailForCloud,
-                        password,
-                        options: { data: { full_name: name, role: role, username: accountValue } }
-                    });
-                    if (signUpErr) {
-                        console.warn("Supabase Auth Warning:", signUpErr);
-                        showToast(`Cảnh báo Auth: ${signUpErr.message}. Vẫn tiến hành lưu nội bộ!`, "error");
-                    } else if (signUpData?.user) {
-                        cloudId = signUpData.user.id;
-                    }
-                } catch (err) {
-                    console.warn("Đăng ký Supabase:", err);
+            // Đăng ký Firebase Auth thông qua app phụ (tránh văng Owner)
+            try {
+                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, emailForCloud, password);
+                if (userCredential && userCredential.user) {
+                    cloudId = userCredential.user.uid;
+                    
+                    // Ghi vào bảng profiles
+                    await setDoc(doc(db, "profiles", cloudId), {
+                        id: cloudId,
+                        email: accountValue,
+                        full_name: name,
+                        role: role
+                    }, { merge: true });
+
+                    // Quan trọng: Đăng xuất phiên tạo mới để giải phóng
+                    await signOut(secondaryAuth);
                 }
+            } catch (err) {
+                console.warn("Lỗi đăng ký Firebase:", err);
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = `Không thể tạo trên đám mây: ${err.message}`;
             }
 
             const newId = cloudId || ('staff-' + Date.now());
 
-            // 2. Ép buộc đồng bộ lên bảng profiles trên Supabase
-            if (supabaseClient) {
-                try {
-                    const { error: upsertErr } = await supabaseClient.from('profiles').upsert({
-                        id: newId,
-                        email: accountValue,
-                        full_name: name,
-                        role: role
-                    });
-                    if (upsertErr) {
-                        console.warn("Lỗi đồng bộ bảng profiles:", upsertErr);
-                    } else {
-                        console.log("Đã đồng bộ tài khoản lên bảng profiles thành công.");
-                    }
-                } catch (err) {
-                    console.warn("Lỗi try/catch profiles upsert:", err);
-                }
-            }
-
-            // 3. Lưu tài khoản kèm mật khẩu và phân quyền vào danh sách hệ thống
             const newAcc = { 
                 id: newId, 
                 full_name: name, 
@@ -2715,7 +2606,7 @@
             msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 block';
             msgBox.innerText = `Đã cấp tài khoản thành công cho "${name}" (Tài khoản: ${accountValue})! Nhân viên có thể đăng nhập ngay.`;
             document.getElementById('create-staff-form').reset();
-            loadProfilesList();
+            window.loadProfilesList();
             showToast(`Đã thêm nhân viên: ${name}!`, 'success');
         };
 
@@ -2732,13 +2623,14 @@
             accounts = accounts.filter(a => a.id !== id);
             saveStaffAccounts(accounts);
 
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('profiles').delete().eq('id', id);
-                } catch(e) {}
+            try {
+                // Chỉ có thể xóa dữ liệu Profile. Xóa User Auth yêu cầu thao tác phía Server/Admin SDK.
+                await deleteDoc(doc(db, "profiles", id));
+            } catch(e) {
+                console.warn("Lỗi xóa document Firebase:", e);
             }
 
-            loadProfilesList();
+            window.loadProfilesList();
             showToast(`Đã xóa tài khoản "${target.full_name}" khỏi hệ thống!`);
         };
 
@@ -2786,24 +2678,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // --- HỆ THỐNG THÔNG BÁO ---
-        window.toggleNotifications = function() {
-            const dropdown = document.getElementById('notif-dropdown');
-            if (dropdown) dropdown.classList.toggle('hidden');
-        };
-
-        window.markAllNotificationsRead = function() {
-            if (!currentUserProfile) return;
-            const notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
-            const maxId = notifs.length > 0 ? Math.max(...notifs.map(n => n.id)) : 0;
-            localStorage.setItem(`aistore_notif_last_read_${currentUserProfile.id || 'guest'}`, maxId);
-            
-            document.getElementById('notif-badge').classList.add('hidden');
-            showToast('Đã đánh dấu đọc tất cả thông báo.');
-        };
-
         window.loadAndRenderNotifications = async function() {
-            // Lấy thông báo toàn cầu
             const notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
             const listEl = document.getElementById('notif-list');
             const badgeEl = document.getElementById('notif-badge');
@@ -2830,7 +2705,6 @@
                 }
             }
             
-            // Kiểm tra trạng thái đã đọc
             const lastReadId = parseInt(localStorage.getItem(`aistore_notif_last_read_${currentUserProfile?.id || 'guest'}`) || '0');
             const hasUnread = notifs.some(n => n.id > lastReadId);
             
@@ -2850,30 +2724,27 @@
                 time: new Date().toLocaleString('vi-VN')
             };
             notifs.unshift(newNotif);
-            if (notifs.length > 50) notifs.pop(); // Giữ tối đa 50 thông báo
+            if (notifs.length > 50) notifs.pop();
             localStorage.setItem('aistore_global_notifs', JSON.stringify(notifs));
             
-            // Cập nhật lại UI thông báo cho người dùng hiện tại
-            loadAndRenderNotifications();
+            window.loadAndRenderNotifications();
             
-            // Tùy chọn: Đồng bộ lên Supabase nếu có bảng 'notifications'
-            if (supabaseClient) {
-                try {
-                    supabaseClient.from('notifications').insert([{
-                        title, message, type, created_at: new Date().toISOString()
-                    }]).then(()=>{}).catch(()=>{});
-                } catch(e) {}
-            }
+            // Push lên Firebase Notifications (tuỳ chọn)
+            try {
+                const notifRef = doc(db, "notifications", newNotif.id.toString());
+                setDoc(notifRef, newNotif);
+            } catch(e) {}
         };
 
-        // Đóng dropdown khi click ra ngoài
-        document.addEventListener('click', function(event) {
-            const btn = document.getElementById('btn-notifications');
-            const dropdown = document.getElementById('notif-dropdown');
-            if (btn && dropdown && !btn.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
+        window.markAllNotificationsRead = function() {
+            if (!currentUserProfile) return;
+            const notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
+            const maxId = notifs.length > 0 ? Math.max(...notifs.map(n => n.id)) : 0;
+            localStorage.setItem(`aistore_notif_last_read_${currentUserProfile.id || 'guest'}`, maxId);
+            
+            document.getElementById('notif-badge').classList.add('hidden');
+            showToast('Đã đánh dấu đọc tất cả thông báo.');
+        };
 
         window.onload = function() {
             initApp();
