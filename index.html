@@ -18,6 +18,25 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* Modern White Pill Theme Styles (Vibrant Purple & Cyan Accents) */
+        .pill-tab-active {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 60%, #6366f1 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px -2px rgba(147, 51, 234, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .pill-tab-inactive {
+            background: transparent !important;
+            color: #475569 !important;
+            border: 1px solid transparent !important;
+        }
+
+        .pill-tab-inactive:hover {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        
         @media print {
             body * { visibility: hidden !important; }
             #printable-invoice, #printable-invoice * { visibility: visible !important; }
@@ -36,83 +55,98 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
 
-    <!-- Header Navigation -->
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-3 gap-4 overflow-x-auto custom-scrollbar" style="scrollbar-width: none;">
-                
-                <!-- Brand Logo -->
-                <div class="flex items-center space-x-3 shrink-0">
-                    <div class="w-11 h-11 rounded-2xl bg-black p-0.5 shadow-md flex items-center justify-center overflow-hidden border border-black shrink-0">
-                        <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.src='https://placehold.co/88x88/000000/ffffff?text=AI';">
+    <!-- SIDEBAR DỌC BÊN TRÁI (Vertical Sidebar) -->
+    <aside class="w-full md:w-64 lg:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200/80 shrink-0 flex flex-col md:h-screen md:sticky md:top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
+        <div class="p-4 md:p-5 flex-1 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
+
+            <!-- 1. CỤM LOGO & TÊN HỆ THỐNG -->
+            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100 shrink-0">
+                <div class="w-10 h-10 flex items-center justify-center overflow-hidden shrink-0 bg-transparent">
+                    <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/88x88/transparent/9333ea?text=AI';">
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center space-x-1.5">
+                        <h1 class="font-black text-xl tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
                     </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h1 class="font-black text-xl tracking-tight text-white">A.I <span class="text-rose-500">Store</span></h1>
-                        </div>
-                        <p class="text-[11px] sm:text-xs text-slate-400 font-medium whitespace-nowrap hidden sm:block">Hệ thống quản lý bán hàng</p>
-                    </div>
+                    <p class="text-[11px] text-slate-400 font-medium truncate">Hệ thống quản lý bán hàng</p>
                 </div>
-
-                <!-- Navigation Tabs -->
-                <div class="flex items-center space-x-1 sm:space-x-2 bg-slate-800/80 p-1 rounded-xl border border-slate-700 shrink-0">
-                    <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow transition-all flex items-center gap-1.5 whitespace-nowrap">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span>Tổng Quan Kho</span>
-                    </button>
-                    <button id="tab-commission-btn" onclick="switchTab('commission')" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap">
-                        <i class="fa-solid fa-hand-holding-dollar"></i>
-                        <span>Hoa Hồng NV</span>
-                    </button>
-                    <button id="tab-profit-btn" onclick="switchTab('profit')" class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span>Báo Cáo</span>
-                    </button>
-                    <button id="tab-management-btn" onclick="switchTab('management')" class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5 whitespace-nowrap">
-                        <i class="fa-solid fa-users-gear text-amber-400"></i>
-                        <span>Quản Lý</span>
-                    </button>
-                </div>
-
-                <!-- User Profile & Action Tools -->
-                <div class="flex items-center space-x-2 shrink-0">
-                    <!-- Notification Bell (Đã di chuyển sang bên trái thẻ tài khoản) -->
-                    <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="relative p-2 sm:px-2.5 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 transition flex items-center justify-center shrink-0">
-                        <i class="fa-regular fa-bell text-base"></i>
-                        <span id="notif-badge" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full border-2 border-slate-900 flex items-center justify-center hidden animate-pulse shadow-sm">
-                            0
-                        </span>
-                    </button>
-
-                    <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl border border-slate-700 transition cursor-pointer text-left group shrink-0">
-                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-extrabold flex items-center justify-center text-xs shadow-sm group-hover:scale-105 transition-transform shrink-0">
-                            ?
-                        </div>
-                        <div class="text-left hidden sm:block">
-                            <div class="flex items-center space-x-1">
-                                <p id="user-name-display" class="text-xs font-semibold leading-tight text-slate-200 max-w-[110px] truncate whitespace-nowrap">Đang tải...</p>
-                                <i class="fa-solid fa-gear text-[10px] text-slate-400 group-hover:text-indigo-400 transition-colors"></i>
-                            </div>
-                            <span id="user-role-badge" class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 inline-block uppercase tracking-wider">
-                                VAI TRÒ
-                            </span>
-                        </div>
-                    </button>
-
-                    <!-- Auth Sign Out Action Button -->
-                    <button id="btn-auth-action" onclick="handleAuthActionClick()" class="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 rounded-xl text-xs font-semibold text-white transition flex items-center space-x-1.5 shadow-sm shrink-0 whitespace-nowrap">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="hidden sm:inline">Đăng Xuất</span>
-                    </button>
-                </div>
-
             </div>
-        </div>
-    </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- 2. THÔNG BÁO -->
+            <div class="shrink-0">
+                <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shadow-xs group-hover:scale-105 transition-transform">
+                            <i class="fa-regular fa-bell"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-800">Thông Báo</span>
+                    </div>
+                    <span id="notif-badge" class="min-w-[20px] h-5 px-1.5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center hidden animate-pulse shadow-sm">
+                        0
+                    </span>
+                </button>
+            </div>
+
+            <!-- 3. TÀI KHOẢN & ĐĂNG XUẤT -->
+            <div class="pb-3 border-b border-slate-100 space-y-2 shrink-0">
+                <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 p-2.5 rounded-2xl cursor-pointer text-left transition group">
+                    <div id="user-avatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white font-black flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                        ?
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p id="user-name-display" class="text-xs font-bold leading-tight text-slate-800 truncate">Đang tải...</p>
+                            <i class="fa-solid fa-gear text-[11px] text-slate-400 group-hover:text-purple-600 transition-colors"></i>
+                        </div>
+                        <span id="user-role-badge" class="mt-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 inline-block uppercase tracking-wider">
+                            VAI TRÒ
+                        </span>
+                    </div>
+                </button>
+
+                <button id="btn-auth-action" onclick="handleAuthActionClick()" class="w-full px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200/70 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Đăng Xuất</span>
+                </button>
+            </div>
+
+            <!-- CÁC MỤC TAB ĐIỀU HƯỚNG DỌC -->
+            <div class="space-y-1.5 flex-1">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1">Chức Năng</p>
+                
+                <!-- 4. TỔNG QUAN KHO -->
+                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left">
+                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
+                    <span>Tổng Quan Kho</span>
+                </button>
+
+                <!-- 5. HOA HỒNG -->
+                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
+                    <i class="fa-solid fa-hand-holding-dollar w-4 text-center"></i>
+                    <span>Hoa Hồng</span>
+                </button>
+
+                <!-- 6. BÁO CÁO -->
+                <button id="tab-profit-btn" onclick="switchTab('profit')" class="hidden w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
+                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                    <span>Báo Cáo</span>
+                </button>
+
+                <!-- 7. QUẢN LÝ -->
+                <button id="tab-management-btn" onclick="switchTab('management')" class="hidden w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
+                    <i class="fa-solid fa-users-gear text-amber-500 w-4 text-center"></i>
+                    <span>Quản Lý</span>
+                </button>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- KHUNG NỘI DUNG CHÍNH (Main Content Area) -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         <!-- VIEW 1: TỔNG QUAN KHO (INVENTORY) -->
         <div id="view-inventory" class="space-y-6">
@@ -263,7 +297,6 @@
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
                 <div>
                     <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên</h2>
-                    <p class="text-xs text-slate-500">Tự động tính tiền thưởng cho từng nhân viên khi chốt đơn thành công theo kỳ lọc.</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -520,13 +553,12 @@
                                     <th class="py-3 px-4">Nhân Sự</th>
                                     <th class="py-3 px-4">Email Đăng Nhập</th>
                                     <th class="py-3 px-4 text-center">Vai Trò</th>
-                                    <th class="py-3 px-4 text-center">Mật Khẩu</th>
                                     <th class="py-3 px-4 text-right">Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="mgmt-users-tbody" class="divide-y divide-slate-100 font-medium">
                                 <tr>
-                                    <td colspan="5" class="py-8 text-center text-slate-400">Đang tải danh sách nhân sự...</td>
+                                    <td colspan="4" class="py-8 text-center text-slate-400">Đang tải danh sách nhân sự...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -650,8 +682,8 @@
     <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100">
             <div class="bg-slate-900 text-white p-6 text-center">
-                <div class="w-16 h-16 rounded-2xl bg-black p-1 mx-auto mb-2 shadow-lg flex items-center justify-center overflow-hidden border border-black">
-                    <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.src='https://placehold.co/128x128/000000/ffffff?text=AI';">
+                <div class="w-16 h-16 mx-auto mb-2 flex items-center justify-center overflow-hidden bg-transparent">
+                    <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/128x128/transparent/ffffff?text=AI';">
                 </div>
                 <h3 class="font-black text-xl text-white">A.I <span class="text-rose-500">Store</span></h3>
                 <p class="text-xs text-slate-400 mt-1" id="auth-modal-subtitle">Đăng nhập tài khoản nội bộ để truy cập</p>
@@ -780,6 +812,28 @@
                 <div id="dt-actions-left" class="flex items-center space-x-2"></div>
                 <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
                     Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác Nhận Xóa Sản Phẩm -->
+    <div id="confirm-delete-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 p-6 text-center transform transition-all">
+            <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-extrabold text-slate-900 text-base sm:text-lg mb-1">Xác Nhận Xóa Sản Phẩm?</h3>
+            <p class="text-xs text-slate-500 mb-5 leading-relaxed">
+                Bạn có chắc chắn muốn xóa máy <span id="confirm-delete-prod-name" class="font-bold text-rose-600"></span> khỏi kho? Dữ liệu trên hệ thống sẽ bị xóa vĩnh viễn.
+            </p>
+            <div class="flex items-center justify-center space-x-2.5">
+                <button type="button" onclick="closeConfirmDeleteModal()" class="flex-1 py-2.5 px-4 border border-slate-300 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+                    Hủy Bỏ
+                </button>
+                <button type="button" id="btn-confirm-delete-action" onclick="executeDeleteProduct()" class="flex-1 py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>Xác Nhận Xóa</span>
                 </button>
             </div>
         </div>
@@ -969,7 +1023,7 @@
             <div id="printable-invoice" class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-slate-800">
                 <div class="text-center border-b border-slate-200 pb-3">
                     <div class="flex items-center justify-center gap-2 mb-1">
-                        <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store" class="w-7 h-7 rounded-full object-cover border border-black bg-black" onerror="this.style.display='none';">
+                        <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store" class="w-8 h-8 object-contain bg-transparent" onerror="this.style.display='none';">
                         <h2 class="font-black text-xl text-slate-900 tracking-tight">A.I STORE</h2>
                     </div>
                     <p class="text-xs text-slate-500 font-medium">Hệ Thống Bán Lẻ Điện Thoại Chính Hãng</p>
@@ -1097,6 +1151,22 @@
         let unsubscribeNotifs = null;
         let unsubscribeProfiles = null;
 
+        // Ma trận quyền hạn chi tiết cho từng vai trò
+        function getPermissions() {
+            const isOwner = (userRole === 'owner' || userRole === 'admin');
+            const isManager = (userRole === 'manager');
+            return {
+                isOwner,
+                isManager,
+                canViewCosts: isOwner || isManager,         // Xem giá vốn nhập
+                canViewProfitTab: isOwner || isManager,     // Xem Báo cáo Lợi Nhuận
+                canManageStaff: isOwner,                    // Cấp/Sửa quyền/Xóa nhân sự (chỉ Chủ)
+                canViewManagementTab: isOwner || isManager, // Xem danh mục nhân sự
+                canAddEditProduct: isOwner || isManager,    // Thêm / Sửa / Xóa máy trong kho
+                canSelectSeller: isOwner || isManager       // Chọn nhân viên khi xuất bán
+            };
+        }
+
         function getStaffAccounts() {
             const raw = localStorage.getItem(LOCAL_STAFF_KEY);
             let accounts = [];
@@ -1134,15 +1204,32 @@
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
         }
 
-        // Bấm chuông thông báo: Bung modal ra giữa màn hình và tự động xóa badge số chưa đọc
+        const NOTIF_STORAGE_KEY = 'aistore_global_notifs';
+        const NOTIF_READ_KEY = 'aistore_read_notif_ids_v2';
+
+        function getReadNotifIds() {
+            try {
+                const raw = localStorage.getItem(NOTIF_READ_KEY);
+                return new Set(raw ? JSON.parse(raw) : []);
+            } catch (e) {
+                return new Set();
+            }
+        }
+
+        function saveReadNotifIds(idSet) {
+            try {
+                localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(Array.from(idSet)));
+            } catch (e) {}
+        }
+
+        // Bấm chuông thông báo: Bung modal ra giữa màn hình và tự động xóa badge số chưa đọc ngay lập tức
         window.openNotificationsModal = function() {
             const modal = document.getElementById('notif-modal');
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-                // Khi mở modal: Đánh dấu đã đọc và xóa số đếm trên badge
+                // Đánh dấu tất cả thông báo hiện có là đã đọc
                 window.markAllNotificationsRead();
-                window.loadAndRenderNotifications();
             }
         };
 
@@ -1213,34 +1300,40 @@
                                 customerName: item.customer_name || '',
                                 customerPhone: item.customer_phone || '',
                                 soldAt: item.sold_at || '',
-                                importedAt: item.imported_at || item.importedAt || new Date().toISOString().split('T')[0]
+                                importedAt: item.imported_at || ''
                             });
                         });
                         products = cloudProducts;
                         localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
                         renderApp();
-                    } else if (products.length === 0) {
-                        seedSampleData(false);
                     }
                 }, (error) => {
                     console.warn("Lỗi đồng bộ Realtime products:", error);
                 });
             } catch (err) {
-                console.error("Không thể khởi động onSnapshot products:", err);
+                console.warn("Không thể khởi động onSnapshot products:", err);
             }
 
-            // 2. Đồng bộ liên tục thông báo chốt đơn & nhập kho (Notifications)
+            // 2. Đồng bộ liên tục thông báo (Notifications)
             if (unsubscribeNotifs) unsubscribeNotifs();
             try {
                 unsubscribeNotifs = onSnapshot(collection(db, "notifications"), (snapshot) => {
-                    const notifs = [];
-                    snapshot.forEach(docSnap => {
-                        notifs.push(docSnap.data());
-                    });
-                    if (notifs.length > 0) {
-                        notifs.sort((a, b) => (b.id || 0) - (a.id || 0));
-                        localStorage.setItem('aistore_global_notifs', JSON.stringify(notifs.slice(0, 50)));
-                        window.loadAndRenderNotifications();
+                    if (!snapshot.empty) {
+                        const cloudNotifs = [];
+                        snapshot.forEach(docSnap => {
+                            const data = docSnap.data();
+                            cloudNotifs.push({
+                                ...data,
+                                id: String(data.id || docSnap.id)
+                            });
+                        });
+                        cloudNotifs.sort((a, b) => {
+                            const timeA = Number(a.id) || 0;
+                            const timeB = Number(b.id) || 0;
+                            return timeB - timeA;
+                        });
+                        localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(cloudNotifs));
+                        loadAndRenderNotifications();
                     }
                 }, (error) => {
                     console.warn("Lỗi đồng bộ Realtime notifications:", error);
@@ -1249,38 +1342,59 @@
                 console.warn("Không thể khởi động onSnapshot notifications:", err);
             }
 
-            // 3. Đồng bộ liên tục danh sách nhân sự (Profiles)
+            // 3. Đồng bộ liên tục danh sách nhân sự & cập nhật quyền tự động
             if (unsubscribeProfiles) unsubscribeProfiles();
             try {
                 unsubscribeProfiles = onSnapshot(collection(db, "profiles"), (snapshot) => {
                     if (!snapshot.empty) {
                         let accounts = getStaffAccounts();
                         let hasChanges = false;
+                        let myRoleChanged = false;
+
                         snapshot.forEach(docSnap => {
                             const p = docSnap.data();
-                            const idx = accounts.findIndex(a => a.id === p.id || a.email === p.email);
+                            const docId = docSnap.id;
+                            const idx = accounts.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === p.email.toLowerCase()));
+                            
                             if (idx >= 0) {
                                 if (accounts[idx].full_name !== p.full_name || accounts[idx].role !== p.role) {
                                     accounts[idx].full_name = p.full_name || accounts[idx].full_name;
                                     accounts[idx].role = p.role || accounts[idx].role;
                                     hasChanges = true;
+
+                                    // Nếu tài khoản đang đăng nhập bị đổi quyền từ xa
+                                    if (currentUser && (accounts[idx].email?.toLowerCase() === currentUser.email?.toLowerCase() || accounts[idx].id === currentUser.uid)) {
+                                        if (userRole !== accounts[idx].role) {
+                                            userRole = accounts[idx].role;
+                                            if (currentUserProfile) currentUserProfile.role = userRole;
+                                            myRoleChanged = true;
+                                        }
+                                    }
                                 }
                             } else {
                                 accounts.push({
-                                    id: p.id || docSnap.id,
+                                    id: p.id || docId,
                                     email: p.email,
                                     full_name: p.full_name,
-                                    role: p.role,
+                                    role: p.role || 'staff',
                                     password: ''
                                 });
                                 hasChanges = true;
                             }
                         });
+
                         if (hasChanges) {
                             saveStaffAccounts(accounts);
                             if (currentTab === 'management') {
                                 renderProfilesTable(accounts);
                             }
+                        }
+
+                        if (myRoleChanged) {
+                            updateUserUI();
+                            renderApp();
+                            const roleText = userRole === 'owner' ? 'Chủ Cửa Hàng' : (userRole === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+                            showToast(`Quyền hạn của bạn đã được cập nhật thành: ${roleText}!`, 'success');
                         }
                     }
                 }, (error) => {
@@ -1297,20 +1411,33 @@
             const isRootOwner = userEmail.includes('admin') || userEmail === 'saint.niky@gmail.com' || userEmail === 'nik90@gmail.com';
 
             try {
+                // Kiểm tra trực tiếp cả doc ID và query email trên Firestore
+                let resolvedRole = isRootOwner ? 'owner' : null;
                 const docSnap = await getDoc(doc(db, "profiles", user.uid));
+                
                 if (docSnap.exists()) {
                     currentUserProfile = docSnap.data();
-                    userRole = isRootOwner ? 'owner' : (currentUserProfile.role || 'staff');
-                    
-                    if (isRootOwner && currentUserProfile.role !== 'owner') {
-                        currentUserProfile.role = 'owner';
-                        setDoc(doc(db, "profiles", user.uid), { role: 'owner' }, { merge: true });
-                    }
+                    resolvedRole = resolvedRole || currentUserProfile.role;
                 } else {
-                    userRole = isRootOwner ? 'owner' : 'staff';
-                    currentUserProfile = { id: user.uid, email: user.email, full_name: user.email?.split('@')[0] || 'Nhân Viên', role: userRole };
+                    // Đối chiếu với danh sách tài khoản nội bộ theo email
+                    const accounts = getStaffAccounts();
+                    const matchedAcc = accounts.find(a => a.email && a.email.toLowerCase() === userEmail);
+                    if (matchedAcc) {
+                        resolvedRole = matchedAcc.role || 'staff';
+                    }
+                    userRole = resolvedRole || (isRootOwner ? 'owner' : 'staff');
+                    currentUserProfile = { 
+                        id: user.uid, 
+                        email: user.email, 
+                        full_name: matchedAcc?.full_name || user.email?.split('@')[0] || 'Nhân Viên', 
+                        role: userRole 
+                    };
                     setDoc(doc(db, "profiles", user.uid), currentUserProfile, { merge: true });
                 }
+
+                userRole = resolvedRole || 'staff';
+                if (currentUserProfile) currentUserProfile.role = userRole;
+
             } catch (err) {
                 userRole = isRootOwner ? 'owner' : 'staff';
             }
@@ -1327,7 +1454,7 @@
             saveStaffAccounts(accounts);
 
             updateUserUI();
-            if (userRole === 'owner' || userRole === 'admin') {
+            if (userRole === 'owner' || userRole === 'manager' || userRole === 'admin') {
                 loadProfilesList();
             }
             await loadAndRenderNotifications();
@@ -1340,53 +1467,63 @@
             const tabProfitBtn = document.getElementById('tab-profit-btn');
             const tabMgmtBtn = document.getElementById('tab-management-btn');
             const btnAddProduct = document.getElementById('btn-add-product');
-            const profitStatCard = document.getElementById('stat-card-profit');
+            const perm = getPermissions();
 
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const displayName = currentUserProfile?.full_name || (isOwner ? 'Chủ Cửa Hàng' : 'Nhân Viên');
+            const displayName = currentUserProfile?.full_name || (perm.isOwner ? 'Chủ Cửa Hàng' : (perm.isManager ? 'Quản Lý' : 'Nhân Viên'));
 
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
 
-            if (isOwner) {
-                if (roleBadgeEl) {
+            // 1. Cập nhật Badge hiển thị vai trò người dùng trên Header
+            if (roleBadgeEl) {
+                if (perm.isOwner) {
                     roleBadgeEl.innerText = 'CHỦ';
-                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase';
-                }
-                if (tabProfitBtn) {
-                    tabProfitBtn.classList.remove('hidden');
-                    tabProfitBtn.style.display = '';
-                }
-                if (tabMgmtBtn) {
-                    tabMgmtBtn.classList.remove('hidden');
-                    tabMgmtBtn.style.display = '';
-                }
-                if (btnAddProduct) btnAddProduct.style.display = 'flex';
-                if (profitStatCard) profitStatCard.style.display = 'flex';
-            } else {
-                if (roleBadgeEl) {
+                    roleBadgeEl.className = 'text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase shadow-sm tracking-wider';
+                } else if (perm.isManager) {
+                    roleBadgeEl.innerText = 'QUẢN LÝ';
+                    roleBadgeEl.className = 'text-[9px] font-black px-1.5 py-0.2 rounded bg-purple-500 text-white inline-block uppercase shadow-sm tracking-wider';
+                } else {
                     roleBadgeEl.innerText = 'NHÂN VIÊN';
-                    roleBadgeEl.className = 'text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-400 text-slate-950 inline-block uppercase';
-                }
-                
-                if (tabProfitBtn) {
-                    tabProfitBtn.classList.add('hidden');
-                    tabProfitBtn.style.display = 'none';
-                }
-                if (tabMgmtBtn) {
-                    tabMgmtBtn.classList.add('hidden');
-                    tabMgmtBtn.style.display = 'none';
-                }
-                if (btnAddProduct) btnAddProduct.style.display = 'none';
-                if (profitStatCard) profitStatCard.style.display = 'none';
-
-                if (currentTab === 'profit' || currentTab === 'management') {
-                    switchTab('inventory');
+                    roleBadgeEl.className = 'text-[9px] font-black px-1.5 py-0.2 rounded bg-blue-500 text-white inline-block uppercase shadow-sm tracking-wider';
                 }
             }
 
+            // 2. Kiểm soát Tab Báo Cáo Lợi Nhuận
+            if (tabProfitBtn) {
+                if (perm.canViewProfitTab) {
+                    tabProfitBtn.classList.remove('hidden');
+                    tabProfitBtn.style.display = '';
+                } else {
+                    tabProfitBtn.classList.add('hidden');
+                    tabProfitBtn.style.display = 'none';
+                }
+            }
+
+            // 3. Kiểm soát Tab Quản Lý Nhân Sự
+            if (tabMgmtBtn) {
+                if (perm.canViewManagementTab) {
+                    tabMgmtBtn.classList.remove('hidden');
+                    tabMgmtBtn.style.display = '';
+                } else {
+                    tabMgmtBtn.classList.add('hidden');
+                    tabMgmtBtn.style.display = 'none';
+                }
+            }
+
+            // 4. Kiểm soát Nút Thêm Máy Mới
+            if (btnAddProduct) {
+                btnAddProduct.style.display = perm.canAddEditProduct ? 'flex' : 'none';
+            }
+
+            // 5. Nếu đang đứng ở tab bị cấm truy cập, tự động điều hướng về Tổng Quan Kho
+            if ((currentTab === 'profit' && !perm.canViewProfitTab) || 
+                (currentTab === 'management' && !perm.canViewManagementTab)) {
+                switchTab('inventory');
+            }
+
+            // 6. Ẩn/Hiện cột Giá Nhập trên bảng kho theo quyền hạn
             const importHeaders = document.querySelectorAll('.col-import-price');
-            importHeaders.forEach(el => { el.style.display = isOwner ? '' : 'none'; });
+            importHeaders.forEach(el => { el.style.display = perm.canViewCosts ? '' : 'none'; });
 
             window.loadAndRenderNotifications();
         }
@@ -1504,9 +1641,27 @@
             const modal = document.getElementById('profile-modal');
             const name = currentUserProfile?.full_name || 'Người Dùng';
             const email = currentUserProfile?.email || '--';
-            document.getElementById('prof-card-avatar').innerText = name.charAt(0).toUpperCase();
-            document.getElementById('prof-card-name').innerText = name;
-            document.getElementById('prof-card-email').innerText = email;
+            const role = userRole || currentUserProfile?.role || 'staff';
+            const roleName = (role === 'owner' || role === 'admin') ? 'Chủ Cửa Hàng' : (role === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+
+            const avatarEl = document.getElementById('prof-card-avatar');
+            const nameEl = document.getElementById('prof-card-name');
+            const emailEl = document.getElementById('prof-card-email');
+            const roleBadge = document.getElementById('prof-card-role');
+
+            if (avatarEl) avatarEl.innerText = name.charAt(0).toUpperCase();
+            if (nameEl) nameEl.innerText = name;
+            if (emailEl) emailEl.innerText = email;
+
+            if (roleBadge) {
+                roleBadge.innerText = roleName;
+                roleBadge.className = `mt-1 inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase ${
+                    (role === 'owner' || role === 'admin') 
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300' 
+                        : (role === 'manager' ? 'bg-purple-100 text-purple-900 border border-purple-300' : 'bg-blue-100 text-blue-900 border border-blue-300')
+                }`;
+            }
+
             document.getElementById('prof-input-name').value = name;
             document.getElementById('prof-input-email').value = email;
             window.switchProfileTab('info');
@@ -1535,28 +1690,156 @@
             }
         };
 
-        window.handleUpdateProfileSubmit = function(e) {
+        window.handleUpdateProfileSubmit = async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('btn-save-profile');
+            const origHtml = btn ? btn.innerHTML : '';
             const newName = document.getElementById('prof-input-name').value.trim();
             if (!newName) return;
-            if (currentUserProfile) currentUserProfile.full_name = newName;
-            updateUserUI();
-            window.closeProfileModal();
-            showToast('Đã lưu thông tin cá nhân!', 'success');
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang lưu...';
+            }
+
+            try {
+                // 1. Cập nhật vào profile phiên hiện tại
+                if (currentUserProfile) {
+                    currentUserProfile.full_name = newName;
+                }
+
+                // 2. Cập nhật danh sách tài khoản nội bộ
+                const accounts = getStaffAccounts();
+                const userEmail = (currentUser?.email || currentUserProfile?.email || '').toLowerCase();
+                const userId = currentUser?.uid || currentUserProfile?.id;
+                
+                const idx = accounts.findIndex(a => 
+                    (userId && a.id === userId) || 
+                    (a.email && a.email.toLowerCase() === userEmail)
+                );
+
+                if (idx >= 0) {
+                    accounts[idx].full_name = newName;
+                } else if (userId || userEmail) {
+                    accounts.push({
+                        id: userId || ('acc-' + Date.now()),
+                        full_name: newName,
+                        email: userEmail,
+                        role: userRole || 'staff'
+                    });
+                }
+                saveStaffAccounts(accounts);
+
+                // 3. Đồng bộ chuẩn xác lên Firebase Firestore (profiles collection)
+                if (userId) {
+                    await setDoc(doc(db, "profiles", userId), {
+                        id: userId,
+                        full_name: newName,
+                        email: userEmail,
+                        role: userRole || 'staff'
+                    }, { merge: true });
+                }
+
+                // Cập nhật tất cả bản ghi có cùng email trên Firestore nếu có
+                if (userEmail) {
+                    try {
+                        const querySnap = await getDocs(collection(db, "profiles"));
+                        querySnap.forEach(d => {
+                            const data = d.data();
+                            if (data.email && data.email.toLowerCase() === userEmail) {
+                                setDoc(doc(db, "profiles", d.id), { full_name: newName }, { merge: true });
+                            }
+                        });
+                    } catch(err) {
+                        console.warn("Lỗi đồng bộ email profile:", err);
+                    }
+                }
+
+                // 4. Làm mới giao diện người dùng
+                updateUserUI();
+                if (currentTab === 'management') {
+                    renderProfilesTable(accounts);
+                }
+
+                window.closeProfileModal();
+                showToast(`Đã đổi họ tên thành công: "${newName}"!`, 'success');
+            } catch (err) {
+                console.error("Lỗi cập nhật tên:", err);
+                showToast('Lỗi khi lưu tên lên hệ thống: ' + err.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
         };
 
-        window.handleUpdatePasswordSubmit = function(e) {
+        window.handleUpdatePasswordSubmit = async function(e) {
             e.preventDefault();
             const p1 = document.getElementById('prof-new-pwd').value;
             const p2 = document.getElementById('prof-confirm-pwd').value;
             const msg = document.getElementById('prof-pwd-msg');
+            const btn = document.getElementById('btn-save-pwd');
+
             if (p1 !== p2) {
-                msg.innerText = 'Mật khẩu xác nhận không khớp!';
-                msg.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                if (msg) {
+                    msg.innerText = 'Mật khẩu xác nhận không khớp!';
+                    msg.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                }
                 return;
             }
-            window.closeProfileModal();
-            showToast('Đổi mật khẩu thành công!', 'success');
+
+            if (p1.length < 6) {
+                if (msg) {
+                    msg.innerText = 'Mật khẩu phải có độ dài ít nhất 6 ký tự!';
+                    msg.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                }
+                return;
+            }
+
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang đổi mật khẩu...';
+            }
+
+            try {
+                // Cập nhật tài khoản local
+                const accounts = getStaffAccounts();
+                const userEmail = (currentUser?.email || currentUserProfile?.email || '').toLowerCase();
+                const userId = currentUser?.uid || currentUserProfile?.id;
+                const idx = accounts.findIndex(a => 
+                    (userId && a.id === userId) || 
+                    (a.email && a.email.toLowerCase() === userEmail)
+                );
+                if (idx >= 0) {
+                    accounts[idx].password = p1;
+                    saveStaffAccounts(accounts);
+                }
+
+                // Cập nhật Firebase Auth nếu người dùng đăng nhập bằng tài khoản Firebase
+                if (auth.currentUser) {
+                    try {
+                        const { updatePassword } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js");
+                        await updatePassword(auth.currentUser, p1);
+                    } catch (fbErr) {
+                        console.warn("Lưu ý đổi mật khẩu Firebase Auth:", fbErr);
+                    }
+                }
+
+                window.closeProfileModal();
+                showToast('Đổi mật khẩu thành công!', 'success');
+            } catch (err) {
+                if (msg) {
+                    msg.innerText = 'Lỗi đổi mật khẩu: ' + err.message;
+                    msg.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
         };
 
         window.checkPasswordStrength = function(pwd) {
@@ -1634,37 +1917,208 @@
         }
 
         window.switchTab = function(tabName) {
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
-            if (!isOwner && (tabName === 'profit' || tabName === 'management')) {
+            const perm = getPermissions();
+            if (!perm.canViewProfitTab && tabName === 'profit') {
+                tabName = 'inventory';
+            }
+            if (!perm.canViewManagementTab && tabName === 'management') {
                 tabName = 'inventory';
             }
 
             currentTab = tabName;
-            ['inventory', 'commission', 'profit', 'management'].forEach(t => {
+            ['inventory', 'commission', 'customers', 'profit', 'management'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 const view = document.getElementById(`view-${t}`);
                 if (btn) {
                     const isSelected = (t === tabName);
                     if (isSelected) {
-                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow transition-all flex items-center gap-1.5";
+                        btn.className = "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left";
                     } else {
-                        btn.className = "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5";
+                        btn.className = "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left";
                     }
 
-                    if (!isOwner && (t === 'profit' || t === 'management')) {
-                        btn.classList.add('hidden');
-                        btn.style.display = 'none';
-                    } else if (isOwner && (t === 'profit' || t === 'management')) {
-                        btn.classList.remove('hidden');
-                        btn.style.display = '';
+                    if (t === 'profit') {
+                        btn.style.display = perm.canViewProfitTab ? '' : 'none';
+                        btn.classList.toggle('hidden', !perm.canViewProfitTab);
+                    } else if (t === 'management') {
+                        btn.style.display = perm.canViewManagementTab ? '' : 'none';
+                        btn.classList.toggle('hidden', !perm.canViewManagementTab);
                     }
                 }
                 if (view) view.classList.toggle('hidden', t !== tabName);
             });
             if (tabName === 'management') {
                 window.loadProfilesList();
+            } else if (tabName === 'customers') {
+                window.renderCustomersView();
             }
             window.renderApp();
+        };
+
+        window.renderApp = function() {
+            if (currentTab === 'inventory') renderInventoryTable();
+            else if (currentTab === 'commission') window.renderCommissionReport();
+            else if (currentTab === 'customers') window.renderCustomersView();
+            else if (currentTab === 'profit') window.renderProfitReport();
+        };
+
+        // Quản lý & Render danh sách Khách hàng + Lịch sử mua
+        window.renderCustomersView = function() {
+            const tbody = document.getElementById('customers-table-body');
+            const emptyState = document.getElementById('customers-empty-state');
+            const searchVal = document.getElementById('customer-search-input')?.value.toLowerCase().trim() || '';
+
+            const soldItems = products.filter(p => p.status === 'SOLD');
+
+            // Gom nhóm theo số điện thoại (hoặc tên khách nếu không có SĐT)
+            const customersMap = {};
+            soldItems.forEach(p => {
+                const phone = (p.customerPhone || '').trim();
+                const name = (p.customerName || 'Khách Lẻ').trim();
+                const key = phone ? phone : `name_${name.toLowerCase()}`;
+
+                if (!customersMap[key]) {
+                    customersMap[key] = {
+                        key,
+                        name: name,
+                        phone: phone || '--',
+                        items: [],
+                        totalSpend: 0,
+                        lastPurchaseDate: p.soldAt || ''
+                    };
+                }
+
+                customersMap[key].items.push(p);
+                customersMap[key].totalSpend += (p.sellingPrice || 0);
+
+                if (p.soldAt && (!customersMap[key].lastPurchaseDate || p.soldAt > customersMap[key].lastPurchaseDate)) {
+                    customersMap[key].lastPurchaseDate = p.soldAt;
+                }
+            });
+
+            let customersList = Object.values(customersMap);
+
+            // Cập nhật thẻ tóm tắt
+            const totalRevenueFromCustomers = soldItems.reduce((sum, p) => sum + (p.sellingPrice || 0), 0);
+            const statTotalCust = document.getElementById('cust-stat-total');
+            const statOrders = document.getElementById('cust-stat-orders');
+            const statRevenue = document.getElementById('cust-stat-revenue');
+            const countBadge = document.getElementById('cust-count-badge');
+
+            if (statTotalCust) statTotalCust.innerText = customersList.length;
+            if (statOrders) statOrders.innerText = `${soldItems.length} máy`;
+            if (statRevenue) statRevenue.innerText = formatVND(totalRevenueFromCustomers);
+
+            // Lọc theo thanh tìm kiếm
+            if (searchVal) {
+                customersList = customersList.filter(c => 
+                    c.name.toLowerCase().includes(searchVal) || 
+                    c.phone.toLowerCase().includes(searchVal)
+                );
+            }
+
+            if (countBadge) countBadge.innerText = `${customersList.length} khách`;
+
+            // Sắp xếp: Khách mua nhiều tiền nhất lên đầu
+            customersList.sort((a, b) => b.totalSpend - a.totalSpend);
+
+            if (!tbody) return;
+
+            if (customersList.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+                tbody.innerHTML = customersList.map(c => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 px-4 font-bold text-slate-900 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
+                                ${escapeHtml(c.name.charAt(0).toUpperCase())}
+                            </div>
+                            <span class="truncate">${escapeHtml(c.name)}</span>
+                        </td>
+                        <td class="py-3 px-4 font-mono text-xs font-semibold text-slate-700">
+                            ${escapeHtml(c.phone)}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">
+                                ${c.items.length} máy
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right font-black text-purple-700 whitespace-nowrap">
+                            ${formatVND(c.totalSpend)}
+                        </td>
+                        <td class="py-3 px-4 text-xs font-medium text-slate-600 whitespace-nowrap">
+                            <i class="fa-regular fa-calendar-check mr-1 text-slate-400"></i>${c.lastPurchaseDate || '--'}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="openCustomerHistoryModal('${escapeHtml(c.key)}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>Xem Lịch Sử (${c.items.length})</span>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        };
+
+        window.openCustomerHistoryModal = function(customerKey) {
+            const soldItems = products.filter(p => p.status === 'SOLD');
+            const matchingItems = soldItems.filter(p => {
+                const phone = (p.customerPhone || '').trim();
+                const name = (p.customerName || 'Khách Lẻ').trim();
+                const key = phone ? phone : `name_${name.toLowerCase()}`;
+                return key === customerKey;
+            });
+
+            if (matchingItems.length === 0) return;
+
+            const first = matchingItems[0];
+            const custName = first.customerName || 'Khách Lẻ';
+            const custPhone = first.customerPhone || 'Không có';
+            const totalSpend = matchingItems.reduce((sum, item) => sum + (item.sellingPrice || 0), 0);
+
+            document.getElementById('cust-modal-name').innerText = custName;
+            document.getElementById('cust-modal-phone').innerText = custPhone;
+            document.getElementById('cust-modal-count').innerText = `${matchingItems.length} máy`;
+            document.getElementById('cust-modal-total-spend').innerText = formatVND(totalSpend);
+
+            // Sắp xếp ngày mua mới nhất lên đầu
+            matchingItems.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
+
+            const tbody = document.getElementById('cust-modal-items-tbody');
+            if (tbody) {
+                tbody.innerHTML = matchingItems.map(p => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                            ${p.soldAt || '--'}
+                        </td>
+                        <td class="py-2.5 px-3">
+                            <div class="font-bold text-slate-900">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</div>
+                            <div class="text-[10px] text-slate-400 font-mono truncate max-w-xs">${escapeHtml(p.condition || '')}</div>
+                        </td>
+                        <td class="py-2.5 px-3 text-right font-black text-indigo-700 whitespace-nowrap">
+                            ${formatVND(p.sellingPrice)}
+                        </td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-700 whitespace-nowrap">
+                            ${escapeHtml(p.seller || '--')}
+                        </td>
+                        <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                            <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold transition flex items-center gap-1 mx-auto" title="In phiếu bán hàng">
+                                <i class="fa-solid fa-receipt text-indigo-600"></i> Hóa đơn
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const modal = document.getElementById('customer-history-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeCustomerHistoryModal = function() {
+            const modal = document.getElementById('customer-history-modal');
+            if (modal) modal.classList.add('hidden');
         };
 
         window.handleDropdownSortChange = function() {
@@ -1814,7 +2268,7 @@
         function renderInventoryTable() {
             const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
             const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
+            const perm = getPermissions();
             const currentStaffName = currentUserProfile?.full_name || '';
 
             let availableList = products.filter(p => {
@@ -1827,7 +2281,8 @@
 
             let soldList = products.filter(p => {
                 if (p.status !== 'SOLD') return false;
-                if (!isOwner && p.seller !== currentStaffName) return false;
+                // Nếu là nhân viên thuần túy, chỉ xem máy do chính mình chốt
+                if (!perm.canViewProfitTab && p.seller !== currentStaffName) return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
                                     (p.condition || '').toLowerCase().includes(searchVal) ||
                                     (p.customerName || '').toLowerCase().includes(searchVal) ||
@@ -1878,7 +2333,7 @@
                                 <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
                                 <p class="text-xs text-slate-400 mt-0.5">${p.ram || ''} ${p.storage || ''}</p>
                             </td>
-                            ${isOwner ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
+                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
                             <td class="py-3 px-4 text-center">
@@ -1983,12 +2438,13 @@
             const emptyState = document.getElementById('comm-empty-state');
             const countBadge = document.getElementById('comm-sold-count');
 
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
+            const perm = getPermissions();
             const currentStaffName = currentUserProfile?.full_name || '';
 
             let soldItems = products.filter(p => p.status === 'SOLD');
             
-            if (!isOwner) {
+            // Nếu không phải Chủ hoặc Quản lý, chỉ hiển thị đơn của cá nhân nhân viên
+            if (!perm.canViewProfitTab) {
                 soldItems = soldItems.filter(p => p.seller === currentStaffName);
             }
 
@@ -2113,6 +2569,8 @@
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
+            const perm = getPermissions();
+
             document.getElementById('dt-brand-badge').innerText = p.brand || 'Khác';
             document.getElementById('dt-product-name').innerText = p.name || '--';
             document.getElementById('dt-brand').innerText = p.brand || '--';
@@ -2120,9 +2578,9 @@
             document.getElementById('dt-storage').innerText = p.storage || '--';
             document.getElementById('dt-id').innerText = p.id || '--';
 
-            const canViewCost = (userRole === 'owner' || userRole === 'admin');
+            // Chỉ Chủ và Quản lý mới được xem ô giá vốn
             const importBox = document.getElementById('dt-box-import');
-            if (importBox) importBox.style.display = canViewCost ? 'block' : 'none';
+            if (importBox) importBox.style.display = perm.canViewCosts ? 'block' : 'none';
 
             document.getElementById('dt-import-price').innerText = formatVND(p.importPrice);
             document.getElementById('dt-selling-price').innerText = formatVND(p.sellingPrice);
@@ -2148,12 +2606,12 @@
 
             const actionsLeft = document.getElementById('dt-actions-left');
             if (actionsLeft) {
-                if (canViewCost) {
+                if (perm.canAddEditProduct) {
                     actionsLeft.innerHTML = `
                         <button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
                             <i class="fa-solid fa-pen-to-square"></i> Sửa
                         </button>
-                        <button onclick="deleteProduct('${p.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
+                        <button onclick="requestDeleteProduct('${p.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
                             <i class="fa-solid fa-trash"></i> Xóa
                         </button>
                     `;
@@ -2167,6 +2625,53 @@
 
         window.closeDetailModal = function() {
             document.getElementById('detail-modal').classList.add('hidden');
+        };
+
+        let pendingDeleteId = null;
+
+        window.requestDeleteProduct = function(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+            pendingDeleteId = id;
+            const nameEl = document.getElementById('confirm-delete-prod-name');
+            if (nameEl) nameEl.innerText = `"${p.brand} ${p.name}"`;
+            const modal = document.getElementById('confirm-delete-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeConfirmDeleteModal = function() {
+            pendingDeleteId = null;
+            const modal = document.getElementById('confirm-delete-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.executeDeleteProduct = async function() {
+            if (!pendingDeleteId) return;
+            const id = pendingDeleteId;
+            const p = products.find(prod => prod.id === id);
+            const prodName = p ? `${p.brand} ${p.name}` : 'máy';
+
+            window.closeConfirmDeleteModal();
+            window.closeDetailModal();
+
+            products = products.filter(prod => prod.id !== id);
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+            
+            try {
+                await deleteDoc(doc(db, "products", id));
+            } catch (e) {
+                console.warn("Lỗi xóa từ Firebase:", e);
+            }
+
+            window.pushNotification('Đã xóa máy', `Máy "${prodName}" đã được xóa khỏi kho.`, 'system');
+            window.renderApp();
+            showToast(`Đã xóa vĩnh viễn "${prodName}" khỏi kho hàng!`, 'error');
         };
 
         window.openAddModal = function() {
@@ -2325,6 +2830,7 @@
 
             const sel = document.getElementById('sell-seller-name');
             const accounts = getStaffAccounts();
+            const perm = getPermissions();
 
             sel.innerHTML = `<option value="">-- Chọn nhân viên chốt đơn --</option>` +
                 accounts.map(acc => {
@@ -2332,14 +2838,15 @@
                     return `<option value="${escapeHtml(acc.full_name)}">${escapeHtml(acc.full_name)} (${roleLabel})</option>`;
                 }).join('');
 
-            const isStaff = (userRole === 'staff');
             const currentStaffName = currentUserProfile?.full_name || '';
 
-            if (isStaff && currentStaffName) {
+            // Nếu là Nhân viên thuần túy: Khóa chọn cố định tên của chính mình
+            if (!perm.canSelectSeller && currentStaffName) {
                 sel.value = currentStaffName;
                 sel.disabled = true;
                 sel.classList.add('bg-slate-100', 'cursor-not-allowed', 'opacity-90');
             } else {
+                // Chủ hoặc Quản lý được tùy chọn gán đơn cho bất kỳ nhân viên nào
                 sel.disabled = false;
                 sel.classList.remove('bg-slate-100', 'cursor-not-allowed', 'opacity-90');
                 if (currentStaffName) sel.value = currentStaffName;
@@ -2403,30 +2910,33 @@
             const countBadge = document.getElementById('mgmt-users-count');
             if (!tbody) return;
 
+            const perm = getPermissions();
+
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
 
             if (accounts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = accounts.map(u => {
-                const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name;
+                const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name || (u.email && u.email === currentUser?.email);
                 const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
                 const isProtectedRoot = u.email === 'saint.niky@gmail.com' || u.email === 'admin@gmail.com' || u.email === 'nik90@gmail.com';
                 
                 let roleHtml = '';
-                if (!isCurrent && !isProtectedRoot) {
+                // Chỉ Chủ Cửa Hàng mới được phép thay đổi quyền hạn của người khác
+                if (perm.canManageStaff && !isCurrent && !isProtectedRoot) {
                     roleHtml = `
-                        <select onchange="changeUserRole('${u.id}', this.value)" class="px-2 py-1 rounded-lg text-[10px] font-bold outline-none cursor-pointer border transition-colors ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100' : 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100')}">
-                            <option value="owner" class="font-bold text-amber-800" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
-                            <option value="manager" class="font-bold text-purple-800" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
-                            <option value="staff" class="font-bold text-blue-800" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
+                        <select onchange="changeUserRole('${u.id}', '${escapeHtml(u.email || '')}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-black outline-none cursor-pointer border shadow-sm transition-all ${isOwnerAccount ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200' : (u.role === 'manager' ? 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200' : 'bg-blue-100 text-blue-900 border-blue-300 hover:bg-blue-200')}">
+                            <option value="owner" class="font-bold text-amber-900 bg-white" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
+                            <option value="manager" class="font-bold text-purple-900 bg-white" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
+                            <option value="staff" class="font-bold text-blue-900 bg-white" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
                         </select>
                     `;
                 } else {
                     roleHtml = `
-                        <span class="px-2 py-1 inline-block rounded-lg text-[10px] font-bold border ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200')}">
+                        <span class="px-2.5 py-1 inline-block rounded-xl text-xs font-black border shadow-xs ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200')}">
                             ${isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')}
                         </span>
                     `;
@@ -2436,17 +2946,14 @@
                     <tr class="hover:bg-slate-50 transition">
                         <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
                             <span>${escapeHtml(u.full_name)}</span>
-                            ${isCurrent ? '<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Hiện tại</span>' : ''}
+                            ${isCurrent ? '<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Bạn</span>' : ''}
                         </td>
                         <td class="py-3 px-4 font-mono text-slate-600">${escapeHtml(u.email || '--')}</td>
                         <td class="py-3 px-4 text-center">
                             ${roleHtml}
                         </td>
-                        <td class="py-3 px-4 text-center">
-                            ${u.password ? `<span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-[11px] font-mono font-semibold text-slate-700 select-all">${escapeHtml(u.password)}</span>` : '<span class="text-slate-400 text-[11px] italic">Mặc định</span>'}
-                        </td>
                         <td class="py-3 px-4 text-right">
-                            ${!isCurrent && !isOwnerAccount ? `
+                            ${perm.canManageStaff && !isCurrent && !isOwnerAccount ? `
                                 <button onclick="deleteStaffAccount('${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs p-1">
                                     <i class="fa-solid fa-trash-can"></i> Xóa
                                 </button>
@@ -2469,21 +2976,20 @@
                     
                     querySnapshot.forEach(docSnap => {
                         const p = docSnap.data();
-                        const idx = merged.findIndex(a => a.id === p.id || a.email === p.email);
+                        const idx = merged.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === p.email.toLowerCase()));
                         
                         if (idx >= 0) {
-                            if (merged[idx].full_name !== p.full_name || merged[idx].role !== p.role || merged[idx].id !== p.id) {
+                            if (merged[idx].full_name !== p.full_name || merged[idx].role !== p.role) {
                                 merged[idx].full_name = p.full_name || merged[idx].full_name;
                                 merged[idx].role = p.role || merged[idx].role;
-                                merged[idx].id = p.id;
                                 hasChanges = true;
                             }
                         } else {
                             merged.push({
-                                id: p.id,
+                                id: p.id || docSnap.id,
                                 email: p.email,
                                 full_name: p.full_name,
-                                role: p.role,
+                                role: p.role || 'staff',
                                 password: '' 
                             });
                             hasChanges = true;
@@ -2501,9 +3007,9 @@
             }
         };
 
-        window.changeUserRole = async function(userId, newRole) {
+        window.changeUserRole = async function(userId, userEmail, newRole) {
             let accounts = getStaffAccounts();
-            const targetIndex = accounts.findIndex(a => a.id === userId);
+            const targetIndex = accounts.findIndex(a => a.id === userId || (userEmail && a.email && a.email.toLowerCase() === userEmail.toLowerCase()));
             
             if (targetIndex === -1) return;
 
@@ -2515,17 +3021,43 @@
                 return;
             }
 
+            // 1. Cập nhật ngay lập tức vào bộ nhớ cục bộ
             targetUser.role = newRole;
             saveStaffAccounts(accounts);
 
+            // 2. Nếu đổi quyền của chính người đang thao tác, cập nhật UI ngay
+            if (currentUser && (targetUser.id === currentUser.uid || (targetUser.email && targetUser.email.toLowerCase() === currentUser.email?.toLowerCase()))) {
+                userRole = newRole;
+                if (currentUserProfile) currentUserProfile.role = newRole;
+                updateUserUI();
+                renderApp();
+            }
+
+            // 3. Đồng bộ chuẩn xác lên Firebase Firestore cho tài khoản mục tiêu
             try {
-                await setDoc(doc(db, "profiles", userId), { role: newRole }, { merge: true });
+                // Cập nhật theo doc ID của tài khoản
+                await setDoc(doc(db, "profiles", userId), { 
+                    id: userId,
+                    role: newRole,
+                    email: targetUser.email || userEmail,
+                    full_name: targetUser.full_name 
+                }, { merge: true });
+
+                // Nếu user có Firebase UID thực tế trên Firestore, cập nhật luôn để khi đăng nhập lập tức có tác dụng
+                const querySnap = await getDocs(collection(db, "profiles"));
+                querySnap.forEach(d => {
+                    const data = d.data();
+                    if (data.email && targetUser.email && data.email.toLowerCase() === targetUser.email.toLowerCase()) {
+                        setDoc(doc(db, "profiles", d.id), { role: newRole }, { merge: true });
+                    }
+                });
+
             } catch (e) {
                 console.warn("Lỗi đồng bộ role lên Firebase:", e);
             }
 
             const roleName = newRole === 'owner' ? 'Chủ Cửa Hàng' : (newRole === 'manager' ? 'Quản Lý' : 'Nhân Viên');
-            showToast(`Đã thay đổi quyền của "${targetUser.full_name}" thành ${roleName}!`);
+            showToast(`Đã nâng/hạ quyền của "${targetUser.full_name}" thành ${roleName}!`, 'success');
             window.loadProfilesList(); 
         };
 
@@ -2686,38 +3218,49 @@
         }
 
         window.loadAndRenderNotifications = async function() {
-            let notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
+            let notifs = [];
+            try {
+                notifs = JSON.parse(localStorage.getItem(NOTIF_STORAGE_KEY) || '[]');
+            } catch (e) {
+                notifs = [];
+            }
             
             // Khởi tạo thông báo mẫu nếu chưa có dữ liệu thông báo nào
             if (notifs.length === 0) {
                 notifs = [
                     {
-                        id: Date.now() - 3600000,
+                        id: String(Date.now() - 3600000),
                         title: "Chào mừng đến với A.I Store",
                         message: "Hệ thống quản trị kho và doanh thu tự động đã sẵn sàng hoạt động.",
                         type: "system",
                         time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' hôm nay'
                     }
                 ];
-                localStorage.setItem('aistore_global_notifs', JSON.stringify(notifs));
+                localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifs));
             }
 
+            const readIds = getReadNotifIds();
             const listEl = document.getElementById('notif-list');
             const badgeEl = document.getElementById('notif-badge');
             
             if (listEl) {
                 listEl.innerHTML = notifs.map(n => {
+                    const nid = String(n.id);
+                    const isRead = readIds.has(nid);
                     const icon = n.type === 'add' 
                         ? '<i class="fa-solid fa-box text-emerald-500 mt-1"></i>' 
                         : (n.type === 'sell' 
                             ? '<i class="fa-solid fa-hand-holding-dollar text-indigo-500 mt-1"></i>' 
                             : '<i class="fa-solid fa-bell text-amber-500 mt-1"></i>');
                     return `
-                        <div class="p-3 hover:bg-slate-50 transition rounded-xl">
+                        <div class="p-3 ${isRead ? 'bg-white opacity-80' : 'bg-indigo-50/40 font-semibold'} hover:bg-slate-50 transition rounded-xl">
                             <div class="flex gap-3">
                                 <div class="mt-0.5 text-lg w-6 text-center shrink-0">${icon}</div>
                                 <div class="flex-1 min-w-0">
-                                    <h5 class="text-xs font-bold text-slate-800 truncate">${escapeHtml(n.title)}</h5>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <h5 class="text-xs font-bold text-slate-800 truncate">${escapeHtml(n.title)}</h5>
+                                        ${!isRead ? '<span class="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Chưa đọc"></span>' : ''}
+                                    </div>
                                     <p class="text-[11px] text-slate-600 mt-0.5 leading-relaxed">${escapeHtml(n.message)}</p>
                                     <p class="text-[9px] text-slate-400 font-mono mt-1">${n.time || '--'}</p>
                                 </div>
@@ -2727,23 +3270,24 @@
                 }).join('');
             }
             
-            const lastReadId = parseInt(localStorage.getItem(`aistore_notif_last_read_${currentUserProfile?.id || 'guest'}`) || '0');
-            const unreadCount = notifs.filter(n => n.id > lastReadId).length;
+            // Đếm chính xác số thông báo chưa nằm trong Set đã đọc
+            const unreadCount = notifs.filter(n => !readIds.has(String(n.id))).length;
             
             if (badgeEl) {
                 if (unreadCount > 0) {
                     badgeEl.innerText = unreadCount > 99 ? '99+' : unreadCount;
                     badgeEl.classList.remove('hidden');
                 } else {
+                    badgeEl.innerText = '0';
                     badgeEl.classList.add('hidden');
                 }
             }
         };
 
         window.pushNotification = function(title, message, type) {
-            const notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
+            const notifs = JSON.parse(localStorage.getItem(NOTIF_STORAGE_KEY) || '[]');
             const newNotif = {
-                id: Date.now(),
+                id: String(Date.now()),
                 title,
                 message,
                 type,
@@ -2751,25 +3295,39 @@
             };
             notifs.unshift(newNotif);
             if (notifs.length > 50) notifs.pop();
-            localStorage.setItem('aistore_global_notifs', JSON.stringify(notifs));
+            localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifs));
             
             window.loadAndRenderNotifications();
             
             try {
-                const notifRef = doc(db, "notifications", newNotif.id.toString());
+                const notifRef = doc(db, "notifications", newNotif.id);
                 setDoc(notifRef, newNotif);
             } catch(e) {}
         };
 
         window.markAllNotificationsRead = function() {
-            const notifs = JSON.parse(localStorage.getItem('aistore_global_notifs') || '[]');
-            const maxId = notifs.length > 0 ? Math.max(...notifs.map(n => n.id)) : Date.now();
-            localStorage.setItem(`aistore_notif_last_read_${currentUserProfile?.id || 'guest'}`, maxId);
+            let notifs = [];
+            try {
+                notifs = JSON.parse(localStorage.getItem(NOTIF_STORAGE_KEY) || '[]');
+            } catch(e) {}
+
+            const readIds = getReadNotifIds();
+            notifs.forEach(n => {
+                if (n && n.id) {
+                    readIds.add(String(n.id));
+                }
+            });
+            saveReadNotifIds(readIds);
             
+            // Ẩn badge ngay lập tức
             const badgeEl = document.getElementById('notif-badge');
             if (badgeEl) {
+                badgeEl.innerText = '0';
                 badgeEl.classList.add('hidden');
             }
+
+            // Render lại danh sách thông báo đã đọc
+            window.loadAndRenderNotifications();
         };
 
         window.onload = function() {
