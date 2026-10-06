@@ -197,6 +197,7 @@
                 </div>
             </div>
 
+            <!-- Bảng sản phẩm còn trong kho có cột STT ngoài cùng bên trái -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
                     <div class="flex items-center space-x-2">
@@ -230,7 +231,7 @@
                                         </span>
                                     </div>
                                 </th>
-                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
+                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
                                 <th class="py-3.5 px-4 text-center">Trạng Thái</th>
                                 <th class="py-3.5 px-4 text-center">Thao Tác</th>
                             </tr>
@@ -394,11 +395,11 @@
             </div>
         </div>
 
-        <!-- VIEW 2: HOA HỒNG NHÂN VIÊN -->
+        <!-- VIEW 2: HOA HỒNG NHÂN VIÊN & QUẢN LÝ -->
         <div id="view-commission" class="space-y-4 hidden">
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
                 <div>
-                    <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên</h2>
+                    <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên & Quản Lý</h2>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -533,7 +534,7 @@
                     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Hoa Hồng Đã Trả</p>
                         <h3 id="pf-total-commission" class="text-lg font-black text-purple-600 mt-1">0 ₫</h3>
-                        <span class="text-[11px] text-slate-400 font-medium">Thưởng chốt đơn NV</span>
+                        <span class="text-[11px] text-slate-400 font-medium">Thưởng NV & Quản lý</span>
                     </div>
 
                     <div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm sm:col-span-2 lg:col-span-1">
@@ -578,7 +579,7 @@
                     </div>
                     <div>
                         <h2 class="text-lg font-black text-slate-900">Quản Lý Nhân Sự & Cấp Tài Khoản</h2>
-                        <p class="text-xs text-slate-500 font-medium">Cấp tài khoản đăng nhập nội bộ cho nhân viên cửa hàng</p>
+                        <p class="text-xs text-slate-500 font-medium">Cấp tài khoản đăng nhập nội bộ & phân bổ người bảo trợ</p>
                     </div>
                 </div>
                 <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
@@ -616,10 +617,21 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Chức Danh Phân Quyền <span class="text-rose-500">*</span></label>
-                            <select id="staff-role" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
+                            <select id="staff-role" onchange="handleStaffRoleChange()" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
                                 <option value="staff" selected>Nhân Viên Bán Hàng</option>
                                 <option value="manager">Quản Lý Cửa Hàng</option>
                             </select>
+                        </div>
+
+                        <!-- Trường Người Bảo Trợ (Quản Lý Trực Thuộc) -->
+                        <div id="staff-manager-wrapper">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">
+                                Người Bảo Trợ (Quản Lý Trực Thuộc)
+                            </label>
+                            <select id="staff-manager-id" class="w-full px-3 py-2 text-xs border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-medium bg-purple-50/40 text-slate-800">
+                                <option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>
+                            </select>
+                            <p class="text-[10px] text-slate-400 mt-1">Khi nhân viên bán máy, Quản lý bảo trợ sẽ hưởng hoa hồng = (Giá bán - Vốn - Hoa hồng NV).</p>
                         </div>
 
                         <div id="create-staff-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
@@ -650,12 +662,13 @@
                                     <th class="py-3 px-4">Nhân Sự</th>
                                     <th class="py-3 px-4">Email Đăng Nhập</th>
                                     <th class="py-3 px-4 text-center">Vai Trò</th>
+                                    <th class="py-3 px-4">Người Bảo Trợ</th>
                                     <th class="py-3 px-4 text-right">Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="mgmt-users-tbody" class="divide-y divide-slate-100 font-medium">
                                 <tr>
-                                    <td colspan="4" class="py-8 text-center text-slate-400">Đang tải danh sách nhân sự...</td>
+                                    <td colspan="5" class="py-8 text-center text-slate-400">Đang tải danh sách nhân sự...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -878,7 +891,7 @@
                         <p id="dt-selling-price" class="text-sm font-black text-indigo-600 mt-0.5">0 ₫</p>
                     </div>
                     <div class="bg-purple-50/70 p-3 rounded-2xl border border-purple-100 col-span-2 sm:col-span-1">
-                        <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng NV</span>
+                        <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng (VNĐ)</span>
                         <p id="dt-commission" class="text-sm font-black text-purple-600 mt-0.5">0 ₫</p>
                     </div>
                 </div>
@@ -894,7 +907,7 @@
                     </div>
                     <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Mô Tả / Tình Trạng Máy
+                            <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Tình Trạng Máy
                         </span>
                         <p id="dt-condition" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed whitespace-pre-line">
                             Zin 100%
@@ -914,6 +927,14 @@
                         <div>
                             <span class="text-slate-400 text-[10px] font-semibold">Nhân viên chốt:</span>
                             <p id="dt-seller" class="font-bold text-indigo-700">--</p>
+                        </div>
+                        <div id="dt-manager-row">
+                            <span class="text-slate-400 text-[10px] font-semibold">Người bảo trợ (QL):</span>
+                            <p id="dt-manager" class="font-bold text-purple-700">--</p>
+                        </div>
+                        <div id="dt-manager-comm-row">
+                            <span class="text-slate-400 text-[10px] font-semibold">Hoa hồng bảo trợ:</span>
+                            <p id="dt-manager-commission" class="font-bold text-amber-700">--</p>
                         </div>
                         <div>
                             <span class="text-slate-400 text-[10px] font-semibold">Khách hàng:</span>
@@ -958,7 +979,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm Sản Phẩm -->
+    <!-- Modal Thêm Sản Phẩm Mới Vào Kho -->
     <div id="product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
@@ -1071,6 +1092,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
@@ -1319,6 +1341,7 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
+        // Cấu hình Firebase chính thức từ Console
         const firebaseConfig = {
             apiKey: "AIzaSyDvnLFK5iXODfWVlGZ9PQpPu4GnjQpV6WE",
             authDomain: "aistore-8f52c.firebaseapp.com",
@@ -1348,10 +1371,27 @@
         let sortMode = 'DEFAULT';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
+        const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
         let systemProfilesList = [];
         let unsubscribeProducts = null;
         let unsubscribeNotifs = null;
         let unsubscribeProfiles = null;
+
+        function getDeletedStaffIds() {
+            try {
+                const raw = localStorage.getItem(LOCAL_DELETED_STAFF_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function markStaffAsDeleted(id, email) {
+            const list = getDeletedStaffIds();
+            if (id && !list.includes(id)) list.push(id);
+            if (email && !list.includes(email.toLowerCase())) list.push(email.toLowerCase());
+            localStorage.setItem(LOCAL_DELETED_STAFF_KEY, JSON.stringify(list));
+        }
 
         function getPermissions() {
             const isOwner = (userRole === 'owner' || userRole === 'admin');
@@ -1368,17 +1408,53 @@
             };
         }
 
+        // Kiểm tra xem đơn hàng có thuộc phạm vi quản lý của user hiện tại hay không
+        function isOrderInUserScope(order) {
+            const perm = getPermissions();
+            if (perm.isOwner) return true; // Chủ cửa hàng xem toàn bộ
+            
+            const myName = (currentUserProfile?.full_name || '').trim();
+            const myId = currentUser?.uid || currentUserProfile?.id;
+            
+            if (perm.isManager) {
+                // Đơn hàng do chính Quản lý bán
+                if (order.seller === myName) return true;
+                
+                // Đơn hàng do Quản lý này làm Người bảo trợ (ghi nhận trên đơn)
+                if (order.manager === myName || order.managerId === myId) return true;
+                
+                // Đơn hàng do Nhân viên trực thuộc của Quản lý bán
+                const accounts = getStaffAccounts();
+                const subordinate = accounts.find(a => a.full_name === order.seller);
+                if (subordinate && (subordinate.manager_id === myId || subordinate.manager_name === myName)) {
+                    return true;
+                }
+                return false;
+            }
+            
+            // Nhân viên thường: Chỉ xem đơn của chính mình
+            return order.seller === myName;
+        }
+
         function getStaffAccounts() {
             const raw = localStorage.getItem(LOCAL_STAFF_KEY);
+            const deletedIds = getDeletedStaffIds();
             let accounts = [];
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) accounts = parsed;
+                    if (Array.isArray(parsed)) {
+                        accounts = parsed.filter(a => {
+                            const isDelId = a.id && deletedIds.includes(a.id);
+                            const isDelEmail = a.email && deletedIds.includes(a.email.toLowerCase());
+                            return !isDelId && !isDelEmail;
+                        });
+                    }
                 } catch(e) {}
             }
             
-            if (accounts.length === 0) {
+            // Nếu lần đầu tiên chạy ứng dụng và chưa từng lưu danh sách vào localStorage
+            if (!raw) {
                 accounts = [
                     { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: 'h0ilamgiha', role: 'owner' },
@@ -1386,12 +1462,16 @@
                     { id: 'acc-tuan', full_name: 'Nguyễn Văn Tuấn', email: 'tuannv@gmail.com', role: 'staff' },
                     { id: 'acc-ha', full_name: 'Trần Thu Hà', email: 'hatt@gmail.com', role: 'staff' },
                     { id: 'acc-long', full_name: 'Lê Hoàng Long', email: 'longlh@gmail.com', role: 'staff' }
-                ];
+                ].filter(a => {
+                    const isDelId = a.id && deletedIds.includes(a.id);
+                    const isDelEmail = a.email && deletedIds.includes(a.email.toLowerCase());
+                    return !isDelId && !isDelEmail;
+                });
             } else {
                 const niky = accounts.find(a => a.email && a.email.toLowerCase() === 'saint.niky@gmail.com');
                 if (niky) {
                     niky.role = 'owner';
-                } else {
+                } else if (!deletedIds.includes('saint.niky@gmail.com')) {
                     accounts.unshift({ id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' });
                 }
             }
@@ -1482,23 +1562,26 @@
                         snapshot.forEach((docSnap) => {
                             const item = docSnap.data();
                             cloudProducts.push({
-                            id: item.id || docSnap.id,
-                            brand: item.brand || 'Khác',
-                            name: item.name || '',
-                            ram: item.ram || '',
-                            storage: item.storage || '',
-                            importPrice: Number(item.import_price) || 0,
-                            sellingPrice: Number(item.selling_price) || 0,
-                            commission: Number(item.commission) || 0,
-                            status: item.status || 'AVAILABLE',
-                            imei: item.imei || '',
-                            condition: item.condition || '',
-                            seller: item.seller || '',
-                            customerName: item.customer_name || '',
-                            customerPhone: item.customer_phone || '',
-                            soldAt: item.sold_at || '',
-                            importedAt: item.imported_at || ''
-                        });
+                                id: item.id || docSnap.id,
+                                brand: item.brand || 'Khác',
+                                name: item.name || '',
+                                ram: item.ram || '',
+                                storage: item.storage || '',
+                                importPrice: Number(item.import_price) || 0,
+                                sellingPrice: Number(item.selling_price) || 0,
+                                commission: Number(item.commission) || 0,
+                                status: item.status || 'AVAILABLE',
+                                imei: item.imei || '',
+                                condition: item.condition || '',
+                                seller: item.seller || '',
+                                customerName: item.customer_name || '',
+                                customerPhone: item.customer_phone || '',
+                                soldAt: item.sold_at || '',
+                                importedAt: item.imported_at || '',
+                                manager: item.manager || '',
+                                managerId: item.manager_id || '',
+                                managerCommission: Number(item.manager_commission) || 0
+                            });
                         });
                         products = cloudProducts;
                         localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
@@ -1538,6 +1621,7 @@
             try {
                 unsubscribeProfiles = onSnapshot(collection(db, "profiles"), (snapshot) => {
                     if (!snapshot.empty) {
+                        const deletedIds = getDeletedStaffIds();
                         let accounts = getStaffAccounts();
                         let hasChanges = false;
                         let myRoleChanged = false;
@@ -1545,12 +1629,21 @@
                         snapshot.forEach(docSnap => {
                             const p = docSnap.data();
                             const docId = docSnap.id;
-                            const idx = accounts.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === p.email.toLowerCase()));
+                            const pEmailLower = (p.email || '').toLowerCase();
+
+                            // Bỏ qua nếu tài khoản này đã bị xóa
+                            if (deletedIds.includes(docId) || (p.id && deletedIds.includes(p.id)) || (pEmailLower && deletedIds.includes(pEmailLower))) {
+                                return;
+                            }
+
+                            const idx = accounts.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === pEmailLower) || a.id === docId);
                             
                             if (idx >= 0) {
-                                if (accounts[idx].full_name !== p.full_name || accounts[idx].role !== p.role) {
+                                if (accounts[idx].full_name !== p.full_name || accounts[idx].role !== p.role || accounts[idx].manager_id !== p.manager_id) {
                                     accounts[idx].full_name = p.full_name || accounts[idx].full_name;
                                     accounts[idx].role = p.role || accounts[idx].role;
+                                    accounts[idx].manager_id = p.manager_id || accounts[idx].manager_id;
+                                    accounts[idx].manager_name = p.manager_name || accounts[idx].manager_name;
                                     hasChanges = true;
 
                                     if (currentUser && (accounts[idx].email?.toLowerCase() === currentUser.email?.toLowerCase() || accounts[idx].id === currentUser.uid)) {
@@ -1567,6 +1660,8 @@
                                     email: p.email,
                                     full_name: p.full_name,
                                     role: p.role || 'staff',
+                                    manager_id: p.manager_id || '',
+                                    manager_name: p.manager_name || '',
                                     password: ''
                                 });
                                 hasChanges = true;
@@ -1575,6 +1670,7 @@
 
                         if (hasChanges) {
                             saveStaffAccounts(accounts);
+                            populateManagerOptions();
                             if (currentTab === 'management') {
                                 renderProfilesTable(accounts);
                             }
@@ -2077,14 +2173,16 @@
 
             let soldList = products.filter(p => {
                 if (p.status !== 'SOLD') return false;
-                if (!perm.canViewProfitTab && p.seller !== currentStaffName) return false;
+                if (!isOrderInUserScope(p)) return false;
+                
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
                                     (p.brand || '').toLowerCase().includes(searchVal) || 
                                     (p.imei || '').toLowerCase().includes(searchVal) ||
                                     (p.condition || '').toLowerCase().includes(searchVal) ||
                                     (p.customerName || '').toLowerCase().includes(searchVal) ||
                                     (p.customerPhone || '').toLowerCase().includes(searchVal) ||
-                                    (p.seller || '').toLowerCase().includes(searchVal);
+                                    (p.seller || '').toLowerCase().includes(searchVal) ||
+                                    (p.manager || '').toLowerCase().includes(searchVal);
                 return matchSearch;
             });
 
@@ -2101,7 +2199,9 @@
                     if (emptySoldState) emptySoldState.classList.remove('hidden');
                 } else {
                     if (emptySoldState) emptySoldState.classList.add('hidden');
-                    tbodySold.innerHTML = soldList.map(p => `
+                    tbodySold.innerHTML = soldList.map(p => {
+                        const isMyDirectOrder = (p.seller === currentStaffName);
+                        return `
                         <tr class="hover:bg-slate-50 transition">
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
@@ -2122,11 +2222,24 @@
                                 </div>
                             </td>
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                            <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
+                            <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
+                                <div>${formatVND(p.commission)}</div>
+                                ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
+                                    <div class="text-[10px] font-bold text-amber-600" title="Hoa hồng Quản lý bảo trợ">+${formatVND(p.managerCommission)} (QL)</div>
+                                ` : ''}
+                            </td>
                             <td class="py-3 px-4">
-                                <span class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2 py-1 rounded-lg inline-block">
-                                    <i class="fa-solid fa-user-tag mr-1 text-[10px]"></i>${escapeHtml(p.seller || '--')}
-                                </span>
+                                <div class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2 py-1 rounded-lg inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-user-tag text-[10px]"></i>
+                                    <span>${escapeHtml(p.seller || '--')}</span>
+                                    ${isMyDirectOrder ? '<span class="text-[9px] bg-emerald-500 text-white px-1 rounded-sm ml-1">Bạn</span>' : ''}
+                                </div>
+                                ${p.manager ? `
+                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium">
+                                        <i class="fa-solid fa-user-shield text-[9px] text-purple-500"></i>
+                                        <span>QL: ${escapeHtml(p.manager)}</span>
+                                    </div>
+                                ` : ''}
                             </td>
                             <td class="py-3 px-4 text-xs">
                                 <div class="font-bold text-slate-800">${escapeHtml(p.customerName || 'Khách Lẻ')}</div>
@@ -2138,7 +2251,7 @@
                                 </button>
                             </td>
                         </tr>
-                    `).join('');
+                    `;}).join('');
                 }
             }
         };
@@ -2148,7 +2261,7 @@
             const emptyState = document.getElementById('customers-empty-state');
             const searchVal = document.getElementById('customer-search-input')?.value.toLowerCase().trim() || '';
 
-            const soldItems = products.filter(p => p.status === 'SOLD');
+            const soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
 
             const customersMap = {};
             soldItems.forEach(p => {
@@ -2240,7 +2353,7 @@
 
         window.openCustomerHistoryModal = function(encodedKey) {
             const customerKey = decodeURIComponent(encodedKey);
-            const soldItems = products.filter(p => p.status === 'SOLD');
+            const soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
             const matchingItems = soldItems.filter(p => {
                 const phone = (p.customerPhone || '').trim();
                 const name = (p.customerName || 'Khách Lẻ').trim();
@@ -2302,88 +2415,174 @@
             if (modal) modal.classList.add('hidden');
         };
 
-        window.renderApp = function() {
-            if (currentTab === 'inventory') renderInventoryTable();
-            else if (currentTab === 'sales-history') window.renderSalesHistoryView();
-            else if (currentTab === 'commission') window.renderCommissionReport();
-            else if (currentTab === 'profit') window.renderProfitReport();
-        };
+        window.renderCommissionReport = function() {
+            const grid = document.getElementById('commission-grid');
+            const tbody = document.getElementById('commission-table-body');
+            const emptyState = document.getElementById('comm-empty-state');
+            const countBadge = document.getElementById('comm-sold-count');
 
-        function renderInventoryTable() {
-            const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
-            const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
             const perm = getPermissions();
+            const currentStaffName = (currentUserProfile?.full_name || '').trim();
 
-            let availableList = products.filter(p => {
-                if (p.status === 'SOLD') return false;
-                const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
-                                    (p.imei || '').toLowerCase().includes(searchVal) ||
-                                    (p.condition || '').toLowerCase().includes(searchVal);
-                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
-                return matchSearch && matchBrand;
+            let soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
+            const filteredSold = filterItemsByDate(soldItems, 'comm');
+
+            if (countBadge) countBadge.innerText = `${filteredSold.length} máy đã bán`;
+
+            const staffMap = {};
+            let myDirectSales = 0;
+            let myDirectComm = 0;
+            let myTeamSales = 0;
+            let myManagerCommTotal = 0;
+
+            filteredSold.forEach(p => {
+                const sellerName = p.seller || 'Chưa gán';
+                if (!staffMap[sellerName]) {
+                    staffMap[sellerName] = { name: sellerName, count: 0, comm: 0, totalSales: 0, isDirect: (sellerName === currentStaffName) };
+                }
+                staffMap[sellerName].count++;
+                staffMap[sellerName].comm += (p.commission || 0);
+                staffMap[sellerName].totalSales += (p.sellingPrice || 0);
+
+                if (sellerName === currentStaffName) {
+                    myDirectSales += (p.sellingPrice || 0);
+                    myDirectComm += (p.commission || 0);
+                } else {
+                    myTeamSales += (p.sellingPrice || 0);
+                }
+
+                if (perm.isManager && p.manager === currentStaffName) {
+                    myManagerCommTotal += (p.managerCommission || 0);
+                }
             });
 
-            const applySort = (list) => {
-                if (sortMode === 'PRICE_DESC') {
-                    list.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
-                } else if (sortMode === 'PRICE_ASC') {
-                    list.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
-                } else if (sortMode === 'NAME_ASC') {
-                    list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                } else if (sortMode === 'NAME_DESC') {
-                    list.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            if (grid) {
+                const staffList = Object.values(staffMap);
+                
+                let headerTeamCard = '';
+                if (perm.isManager) {
+                    const totalMyGroupSales = myDirectSales + myTeamSales;
+                    const totalMyIncome = myDirectComm + myManagerCommTotal;
+                    headerTeamCard = `
+                        <div class="col-span-full bg-gradient-to-r from-purple-700 via-indigo-700 to-indigo-800 text-white rounded-2xl p-4 sm:p-5 shadow-lg space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-white/15">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-sm font-black">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-black text-sm sm:text-base">Tổng Hợp Đội Nhóm Của Bạn (Quản Lý: ${escapeHtml(currentStaffName)})</h3>
+                                        <p class="text-[11px] text-purple-200">Bao gồm doanh số cá nhân và nhân viên trực thuộc bạn bảo trợ</p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-400 text-slate-950">
+                                    ĐỘI NHÓM
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                <div class="bg-white/10 rounded-xl p-2.5">
+                                    <span class="text-purple-200 text-[10px] uppercase font-bold">Doanh số cá nhân</span>
+                                    <p class="text-sm font-black text-white mt-0.5">${formatVND(myDirectSales)}</p>
+                                    <span class="text-[10px] text-emerald-300">Hoa hồng bán: ${formatVND(myDirectComm)}</span>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-2.5">
+                                    <span class="text-purple-200 text-[10px] uppercase font-bold">Doanh số tuyến dưới</span>
+                                    <p class="text-sm font-black text-cyan-200 mt-0.5">${formatVND(myTeamSales)}</p>
+                                    <span class="text-[10px] text-amber-300">HH Bảo trợ: ${formatVND(myManagerCommTotal)}</span>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-2.5">
+                                    <span class="text-purple-200 text-[10px] uppercase font-bold">Tổng doanh số nhóm</span>
+                                    <p class="text-base font-black text-yellow-300 mt-0.5">${formatVND(totalMyGroupSales)}</p>
+                                </div>
+                                <div class="bg-white/20 border border-amber-300/40 rounded-xl p-2.5">
+                                    <span class="text-amber-200 text-[10px] uppercase font-black">Tổng thu nhập của bạn</span>
+                                    <p class="text-base font-black text-amber-300 mt-0.5">${formatVND(totalMyIncome)}</p>
+                                    <span class="text-[10px] text-white/80">Cá nhân + Bảo trợ</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
-            };
-            applySort(availableList);
 
-            const badgeAvailable = document.getElementById('badge-available-count');
-            if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
+                if (staffList.length === 0) {
+                    grid.innerHTML = headerTeamCard + `<div class="col-span-full p-8 bg-white rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs font-semibold">Chưa có giao dịch hoa hồng nào trong phạm vi quản lý của bạn kỳ này.</div>`;
+                } else {
+                    grid.innerHTML = headerTeamCard + staffList.map(s => {
+                        const isMe = (s.name === currentStaffName);
+                        return `
+                        <div class="bg-white rounded-2xl border ${isMe ? 'border-purple-300 ring-2 ring-purple-100' : 'border-slate-200/80'} p-4 shadow-sm hover:shadow-md transition">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-lg ${isMe ? 'bg-purple-600 text-white' : 'bg-indigo-50 text-indigo-600'} font-black flex items-center justify-center text-xs">
+                                        ${escapeHtml(s.name.charAt(0).toUpperCase())}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-1.5">
+                                            <span>${escapeHtml(s.name)}</span>
+                                            ${isMe ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold">Bạn</span>' : ''}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                                    ${s.count} đơn
+                                </span>
+                            </div>
+                            <div class="mt-3 flex justify-between items-center text-xs">
+                                <span class="text-slate-400 font-medium">Doanh số:</span>
+                                <span class="font-bold text-slate-700">${formatVND(s.totalSales)}</span>
+                            </div>
+                            <div class="mt-1 flex justify-between items-center text-xs">
+                                <span class="text-slate-500 font-bold">Hoa hồng nhận:</span>
+                                <span class="font-black text-purple-600 text-sm">${formatVND(s.comm)}</span>
+                            </div>
+                        </div>
+                    `;}).join('');
+                }
+            }
 
-            const tbodyAvailable = document.getElementById('product-table-body');
-            const emptyState = document.getElementById('empty-state');
-            if (tbodyAvailable) {
-                if (availableList.length === 0) {
-                    tbodyAvailable.innerHTML = '';
+            if (tbody) {
+                if (filteredSold.length === 0) {
+                    tbody.innerHTML = '';
                     if (emptyState) emptyState.classList.remove('hidden');
                 } else {
                     if (emptyState) emptyState.classList.add('hidden');
-                    tbodyAvailable.innerHTML = availableList.map((p, idx) => `
+                    tbody.innerHTML = filteredSold.map(p => `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">${idx + 1}</td>
                             <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-sm"></i>
+                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
+                                    <i class="fa-solid fa-eye text-xs"></i>
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${p.importedAt || p.soldAt || new Date().toISOString().split('T')[0]}
+                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
                             </td>
                             <td class="py-3 px-4">
                                 <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                 <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    <span class="text-xs text-slate-400">${p.ram || ''} ${p.storage || ''}</span>
-                                    ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
-                                </div>
+                                <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-xs">${escapeHtml(p.condition || '')}</p>
                             </td>
-                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                            <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
-                            <td class="py-3 px-4 text-center">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                    Còn hàng
-                                </span>
+                            <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
+                                <div>${formatVND(p.commission)}</div>
+                                ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
+                                    <div class="text-[10px] font-bold text-amber-600">+${formatVND(p.managerCommission)} (QL)</div>
+                                ` : ''}
                             </td>
+                            <td class="py-3 px-4">
+                                <div class="font-bold text-xs text-indigo-700">${escapeHtml(p.seller || '--')}</div>
+                                ${p.manager ? `<div class="text-[10px] text-slate-400 font-medium">Bảo trợ: ${escapeHtml(p.manager)}</div>` : ''}
+                            </td>
+                            <td class="py-3 px-4 text-xs font-medium text-slate-700">${escapeHtml(p.customerName || 'Khách Lẻ')}</td>
                             <td class="py-3 px-4 text-center">
-                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
-                                    <i class="fa-solid fa-cart-shopping"></i> Bán
+                                <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto">
+                                    <i class="fa-solid fa-receipt text-indigo-600"></i> Hóa đơn
                                 </button>
                             </td>
                         </tr>
                     `).join('');
                 }
             }
-        }
+        };
 
         function filterItemsByDate(items, prefix) {
             const periodSelect = document.getElementById(`${prefix}-period-type`);
@@ -2419,116 +2618,20 @@
             });
         }
 
-        window.renderCommissionReport = function() {
-            const grid = document.getElementById('commission-grid');
-            const tbody = document.getElementById('commission-table-body');
-            const emptyState = document.getElementById('comm-empty-state');
-            const countBadge = document.getElementById('comm-sold-count');
-
-            const perm = getPermissions();
-            const currentStaffName = currentUserProfile?.full_name || '';
-
-            let soldItems = products.filter(p => p.status === 'SOLD');
-            
-            if (!perm.canViewProfitTab) {
-                soldItems = soldItems.filter(p => p.seller === currentStaffName);
-            }
-
-            const filteredSold = filterItemsByDate(soldItems, 'comm');
-
-            if (countBadge) countBadge.innerText = `${filteredSold.length} máy đã bán`;
-
-            const staffMap = {};
-            filteredSold.forEach(p => {
-                const sellerName = p.seller || 'Chưa gán';
-                if (!staffMap[sellerName]) {
-                    staffMap[sellerName] = { name: sellerName, count: 0, comm: 0, totalSales: 0 };
-                }
-                staffMap[sellerName].count++;
-                staffMap[sellerName].comm += (p.commission || 0);
-                staffMap[sellerName].totalSales += (p.sellingPrice || 0);
-            });
-
-            if (grid) {
-                const staffList = Object.values(staffMap);
-                if (staffList.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full p-8 bg-white rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs font-semibold">Chưa có giao dịch hoa hồng nào của bạn trong kỳ đã chọn.</div>`;
-                } else {
-                    grid.innerHTML = staffList.map(s => `
-                        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition">
-                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 font-black flex items-center justify-center text-xs">
-                                        ${escapeHtml(s.name.charAt(0).toUpperCase())}
-                                    </div>
-                                    <h4 class="font-extrabold text-slate-800 text-sm">${escapeHtml(s.name)}</h4>
-                                </div>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                                    ${s.count} đơn
-                                </span>
-                            </div>
-                            <div class="mt-3 flex justify-between items-center text-xs">
-                                <span class="text-slate-400 font-medium">Doanh số:</span>
-                                <span class="font-bold text-slate-700">${formatVND(s.totalSales)}</span>
-                            </div>
-                            <div class="mt-1 flex justify-between items-center text-xs">
-                                <span class="text-slate-500 font-bold">Hoa hồng nhận:</span>
-                                <span class="font-black text-purple-600 text-sm">${formatVND(s.comm)}</span>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            }
-
-            if (tbody) {
-                if (filteredSold.length === 0) {
-                    tbody.innerHTML = '';
-                    if (emptyState) emptyState.classList.remove('hidden');
-                } else {
-                    if (emptyState) emptyState.classList.add('hidden');
-                    tbody.innerHTML = filteredSold.map(p => `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-xs"></i>
-                                </button>
-                            </td>
-                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
-                            </td>
-                            <td class="py-3 px-4">
-                                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
-                                <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
-                                <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-xs">${escapeHtml(p.condition || '')}</p>
-                            </td>
-                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                            <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
-                            <td class="py-3 px-4 font-bold text-xs text-indigo-700">${escapeHtml(p.seller || '--')}</td>
-                            <td class="py-3 px-4 text-xs font-medium text-slate-700">${escapeHtml(p.customerName || 'Khách Lẻ')}</td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto">
-                                    <i class="fa-solid fa-receipt text-indigo-600"></i> Hóa đơn
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-            }
-        };
-
         window.renderProfitReport = function() {
-            let soldItems = products.filter(p => p.status === 'SOLD');
+            let soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
             soldItems = filterItemsByDate(soldItems, 'profit');
 
             const totalRev = soldItems.reduce((s, p) => s + (p.sellingPrice || 0), 0);
             const totalCost = soldItems.reduce((s, p) => s + (p.importPrice || 0), 0);
             const totalComm = soldItems.reduce((s, p) => s + (p.commission || 0), 0);
-            const net = totalRev - totalCost - totalComm;
+            const totalMgrComm = soldItems.reduce((s, p) => s + (p.managerCommission || 0), 0);
+            const net = totalRev - totalCost - totalComm - totalMgrComm;
 
             document.getElementById('pf-total-revenue').innerText = formatVND(totalRev);
             document.getElementById('pf-sold-count').innerText = `${soldItems.length} máy đã bán`;
             document.getElementById('pf-total-import').innerText = formatVND(totalCost);
-            document.getElementById('pf-total-commission').innerText = formatVND(totalComm);
+            document.getElementById('pf-total-commission').innerText = formatVND(totalComm + totalMgrComm);
             document.getElementById('pf-net-profit').innerText = formatVND(net);
             document.getElementById('pf-profit-margin').innerText = `Tỷ suất: ${totalRev > 0 ? ((net / totalRev) * 100).toFixed(1) : 0}%`;
 
@@ -2542,11 +2645,17 @@
                 <tr class="hover:bg-slate-50">
                     <td class="py-3 px-4 text-xs font-mono">${p.soldAt || '--'}</td>
                     <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(p.name)}</td>
-                    <td class="py-3 px-4 text-xs font-bold text-indigo-600">${escapeHtml(p.seller || '--')}</td>
+                    <td class="py-3 px-4 text-xs font-bold text-indigo-600">
+                        <div>${escapeHtml(p.seller || '--')}</div>
+                        ${p.manager ? `<div class="text-[10px] text-purple-600 font-medium">QL: ${escapeHtml(p.manager)}</div>` : ''}
+                    </td>
                     <td class="py-3 px-4 text-right font-medium text-slate-600">${formatVND(p.importPrice)}</td>
                     <td class="py-3 px-4 text-right font-bold text-indigo-600">${formatVND(p.sellingPrice)}</td>
-                    <td class="py-3 px-4 text-right font-bold text-purple-600">${formatVND(p.commission)}</td>
-                    <td class="py-3 px-4 text-right font-black text-emerald-600">${formatVND(p.sellingPrice - p.importPrice - p.commission)}</td>
+                    <td class="py-3 px-4 text-right font-bold text-purple-600">
+                        <div>${formatVND(p.commission)}</div>
+                        ${p.managerCommission > 0 ? `<div class="text-[10px] text-amber-600">+${formatVND(p.managerCommission)} (QL)</div>` : ''}
+                    </td>
+                    <td class="py-3 px-4 text-right font-black text-emerald-600">${formatVND(p.sellingPrice - p.importPrice - p.commission - (p.managerCommission || 0))}</td>
                 </tr>
             `).join('');
         };
@@ -2562,8 +2671,6 @@
             document.getElementById('dt-brand').innerText = p.brand || '--';
             document.getElementById('dt-ram').innerText = p.ram || '--';
             document.getElementById('dt-storage').innerText = p.storage || '--';
-            const dtId = document.getElementById('dt-id');
-            if (dtId) dtId.innerText = p.id || '--';
 
             const importBox = document.getElementById('dt-box-import');
             if (importBox) importBox.style.display = perm.canViewCosts ? 'block' : 'none';
@@ -2587,6 +2694,12 @@
                 const dtDate = document.getElementById('dt-sold-date');
                 if (dtDate) dtDate.innerText = p.soldAt || 'Mới đây';
                 document.getElementById('dt-seller').innerText = p.seller || '--';
+                
+                const dtManager = document.getElementById('dt-manager');
+                const dtManagerComm = document.getElementById('dt-manager-commission');
+                if (dtManager) dtManager.innerText = p.manager ? `${p.manager}` : 'Không có';
+                if (dtManagerComm) dtManagerComm.innerText = p.managerCommission ? formatVND(p.managerCommission) : '0 ₫';
+                
                 document.getElementById('dt-customer-name').innerText = p.customerName || 'Khách Lẻ';
                 document.getElementById('dt-customer-phone').innerText = p.customerPhone || 'Không có';
             } else {
@@ -2899,6 +3012,35 @@
                 p.seller = seller;
                 p.customerName = document.getElementById('sell-customer-name').value.trim();
                 p.customerPhone = document.getElementById('sell-customer-phone').value.trim();
+
+                const accounts = getStaffAccounts();
+                const sellerAccount = accounts.find(a => a.full_name === seller);
+                
+                let sponsorManagerName = '';
+                let sponsorManagerId = '';
+                let managerCommission = 0;
+
+                if (sellerAccount && sellerAccount.manager_id) {
+                    const managerAcc = accounts.find(a => a.id === sellerAccount.manager_id || a.email === sellerAccount.manager_id);
+                    if (managerAcc) {
+                        sponsorManagerName = managerAcc.full_name;
+                        sponsorManagerId = managerAcc.id;
+                    }
+                } else if (sellerAccount && sellerAccount.manager_name) {
+                    sponsorManagerName = sellerAccount.manager_name;
+                }
+
+                // Tính toán hoa hồng người bảo trợ: (Giá bán - Giá vốn - Hoa hồng NV)
+                if (sponsorManagerName) {
+                    const grossProfit = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0);
+                    const staffComm = Number(p.commission) || 0;
+                    const calculatedMgrComm = grossProfit - staffComm;
+                    managerCommission = calculatedMgrComm > 0 ? calculatedMgrComm : 0;
+                }
+
+                p.manager = sponsorManagerName;
+                p.managerId = sponsorManagerId;
+                p.managerCommission = managerCommission;
                 
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
                 
@@ -2909,13 +3051,19 @@
                         sold_at: p.soldAt,
                         seller: p.seller,
                         customer_name: p.customerName,
-                        customer_phone: p.customerPhone
+                        customer_phone: p.customerPhone,
+                        manager: p.manager,
+                        manager_id: p.managerId,
+                        manager_commission: p.managerCommission
                     }, { merge: true });
                 } catch (e) {
                     console.warn("Lỗi đồng bộ Firebase:", e);
                 }
 
-                window.pushNotification('Đã chốt đơn', `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}.`, 'sell');
+                const notifMsg = sponsorManagerName 
+                    ? `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}. Quản lý bảo trợ ${sponsorManagerName} nhận ${formatVND(managerCommission)}.`
+                    : `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}.`;
+                window.pushNotification('Đã chốt đơn', notifMsg, 'sell');
                 
                 window.closeSellModal();
                 window.renderApp();
@@ -2929,11 +3077,12 @@
             if (!tbody) return;
 
             const perm = getPermissions();
+            const managersList = accounts.filter(a => a.role === 'manager');
 
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
 
             if (accounts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo.</td></tr>`;
                 return;
             }
 
@@ -2941,12 +3090,12 @@
                 const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name || (u.email && u.email === currentUser?.email);
                 const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
                 const isProtectedRoot = u.email === 'saint.niky@gmail.com' || u.email === 'admin@gmail.com' || u.email === 'nik90@gmail.com';
+                const isStaff = (u.role === 'staff');
                 
                 let roleHtml = '';
                 if (perm.canManageStaff && !isCurrent && !isProtectedRoot) {
                     roleHtml = `
                         <select onchange="changeUserRole('${u.id}', '${escapeHtml(u.email || '')}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-black outline-none cursor-pointer border shadow-sm transition-all ${isOwnerAccount ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200' : (u.role === 'manager' ? 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200' : 'bg-blue-100 text-blue-900 border-blue-300 hover:bg-blue-200')}">
-                            <option value="owner" class="font-bold text-amber-900 bg-white" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
                             <option value="manager" class="font-bold text-purple-900 bg-white" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
                             <option value="staff" class="font-bold text-blue-900 bg-white" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
                         </select>
@@ -2959,6 +3108,26 @@
                     `;
                 }
 
+                let sponsorHtml = '';
+                if (isStaff) {
+                    if (perm.canManageStaff) {
+                        sponsorHtml = `
+                            <select onchange="changeUserSponsor('${u.id}', this.value)" class="px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-purple-500">
+                                <option value="">-- Trực thuộc Cửa hàng --</option>
+                                ${managersList.map(m => `
+                                    <option value="${escapeHtml(m.id || m.email)}" ${(u.manager_id === m.id || u.manager_id === m.email || u.manager_name === m.full_name) ? 'selected' : ''}>
+                                        ${escapeHtml(m.full_name)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        `;
+                    } else {
+                        sponsorHtml = `<span class="text-xs font-semibold text-purple-700">${escapeHtml(u.manager_name || 'Cửa hàng')}</span>`;
+                    }
+                } else {
+                    sponsorHtml = `<span class="text-slate-400 text-[11px] italic">Không áp dụng</span>`;
+                }
+
                 return `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
@@ -2968,6 +3137,9 @@
                         <td class="py-3 px-4 font-mono text-slate-600">${escapeHtml(u.email || '--')}</td>
                         <td class="py-3 px-4 text-center">
                             ${roleHtml}
+                        </td>
+                        <td class="py-3 px-4">
+                            ${sponsorHtml}
                         </td>
                         <td class="py-3 px-4 text-right">
                             ${perm.canManageStaff && !isCurrent && !isOwnerAccount ? `
@@ -2981,32 +3153,64 @@
             }).join('');
         }
 
+        window.handleStaffRoleChange = function() {
+            const roleSel = document.getElementById('staff-role');
+            const wrapper = document.getElementById('staff-manager-wrapper');
+            if (roleSel && wrapper) {
+                wrapper.style.display = (roleSel.value === 'staff') ? 'block' : 'none';
+            }
+        };
+
+        function populateManagerOptions() {
+            const sel = document.getElementById('staff-manager-id');
+            if (!sel) return;
+            const accounts = getStaffAccounts();
+            const managers = accounts.filter(a => a.role === 'manager');
+            
+            sel.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
+                managers.map(m => `<option value="${escapeHtml(m.id || m.email)}">${escapeHtml(m.full_name)} (${escapeHtml(m.email || 'Quản lý')})</option>`).join('');
+        }
+
         window.loadProfilesList = async function() {
             let accounts = getStaffAccounts();
+            populateManagerOptions();
             renderProfilesTable(accounts);
 
             try {
                 const querySnapshot = await getDocs(collection(db, "profiles"));
                 if (!querySnapshot.empty) {
+                    const deletedIds = getDeletedStaffIds();
                     let merged = [...accounts];
                     let hasChanges = false;
                     
                     querySnapshot.forEach(docSnap => {
                         const p = docSnap.data();
-                        const idx = merged.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === p.email.toLowerCase()));
+                        const docId = docSnap.id;
+                        const pEmailLower = (p.email || '').toLowerCase();
+
+                        // Bỏ qua tài khoản đã bị xóa
+                        if (deletedIds.includes(docId) || (p.id && deletedIds.includes(p.id)) || (pEmailLower && deletedIds.includes(pEmailLower))) {
+                            return;
+                        }
+
+                        const idx = merged.findIndex(a => (p.id && a.id === p.id) || (p.email && a.email && a.email.toLowerCase() === pEmailLower) || a.id === docId);
                         
                         if (idx >= 0) {
-                            if (merged[idx].full_name !== p.full_name || merged[idx].role !== p.role) {
+                            if (merged[idx].full_name !== p.full_name || merged[idx].role !== p.role || merged[idx].manager_id !== p.manager_id) {
                                 merged[idx].full_name = p.full_name || merged[idx].full_name;
                                 merged[idx].role = p.role || merged[idx].role;
+                                merged[idx].manager_id = p.manager_id || merged[idx].manager_id;
+                                merged[idx].manager_name = p.manager_name || merged[idx].manager_name;
                                 hasChanges = true;
                             }
                         } else {
                             merged.push({
-                                id: p.id || docSnap.id,
+                                id: p.id || docId,
                                 email: p.email,
                                 full_name: p.full_name,
                                 role: p.role || 'staff',
+                                manager_id: p.manager_id || '',
+                                manager_name: p.manager_name || '',
                                 password: '' 
                             });
                             hasChanges = true;
@@ -3016,12 +3220,42 @@
                     if (hasChanges) {
                         accounts = merged;
                         saveStaffAccounts(accounts);
+                        populateManagerOptions();
                         renderProfilesTable(accounts);
                     }
                 }
             } catch(e) {
                 console.warn("Lỗi đồng bộ profiles:", e);
             }
+        };
+
+        window.changeUserSponsor = async function(userId, sponsorId) {
+            let accounts = getStaffAccounts();
+            const targetIdx = accounts.findIndex(a => a.id === userId);
+            if (targetIdx === -1) return;
+
+            const targetUser = accounts[targetIdx];
+            let sponsorName = '';
+            if (sponsorId) {
+                const managerAcc = accounts.find(a => a.id === sponsorId || a.email === sponsorId);
+                if (managerAcc) sponsorName = managerAcc.full_name;
+            }
+
+            targetUser.manager_id = sponsorId;
+            targetUser.manager_name = sponsorName;
+            saveStaffAccounts(accounts);
+
+            try {
+                await setDoc(doc(db, "profiles", userId), {
+                    manager_id: sponsorId,
+                    manager_name: sponsorName
+                }, { merge: true });
+            } catch(e) {
+                console.warn("Lỗi cập nhật sponsor lên Firebase:", e);
+            }
+
+            showToast(`Đã gán Người bảo trợ "${sponsorName || 'Trực thuộc Cửa hàng'}" cho ${targetUser.full_name}!`, 'success');
+            renderProfilesTable(accounts);
         };
 
         window.changeUserRole = async function(userId, userEmail, newRole) {
@@ -3039,6 +3273,10 @@
             }
 
             targetUser.role = newRole;
+            if (newRole === 'manager') {
+                targetUser.manager_id = '';
+                targetUser.manager_name = '';
+            }
             saveStaffAccounts(accounts);
 
             if (currentUser && (targetUser.id === currentUser.uid || (targetUser.email && targetUser.email.toLowerCase() === currentUser.email?.toLowerCase()))) {
@@ -3053,7 +3291,9 @@
                     id: userId,
                     role: newRole,
                     email: targetUser.email || userEmail,
-                    full_name: targetUser.full_name 
+                    full_name: targetUser.full_name,
+                    manager_id: targetUser.manager_id || '',
+                    manager_name: targetUser.manager_name || ''
                 }, { merge: true });
 
                 const querySnap = await getDocs(collection(db, "profiles"));
@@ -3079,6 +3319,7 @@
             const accountInput = document.getElementById('staff-email');
             const pwdInput = document.getElementById('staff-password');
             const roleInput = document.getElementById('staff-role');
+            const managerSelect = document.getElementById('staff-manager-id');
             const msgBox = document.getElementById('create-staff-msg');
             const submitBtn = document.getElementById('btn-create-staff');
 
@@ -3092,6 +3333,14 @@
 
             const password = pwdInput.value;
             const role = roleInput.value;
+            const managerId = (role === 'staff' && managerSelect) ? managerSelect.value : '';
+
+            const accounts = getStaffAccounts();
+            let managerName = '';
+            if (managerId) {
+                const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
+                if (mgrAcc) managerName = mgrAcc.full_name;
+            }
 
             if (!name || !accountValue || !password) {
                 msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
@@ -3105,7 +3354,6 @@
                 return;
             }
 
-            const accounts = getStaffAccounts();
             const lowerAccount = accountValue.toLowerCase();
             if (accounts.some(a => (a.email && a.email.toLowerCase() === lowerAccount) || a.full_name.toLowerCase() === name.toLowerCase())) {
                 msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
@@ -3129,7 +3377,9 @@
                         id: cloudId,
                         email: accountValue,
                         full_name: name,
-                        role: role
+                        role: role,
+                        manager_id: managerId,
+                        manager_name: managerName
                     }, { merge: true });
 
                     await signOut(secondaryAuth);
@@ -3145,7 +3395,9 @@
                 full_name: name, 
                 email: accountValue, 
                 password: password, 
-                role: role 
+                role: role,
+                manager_id: managerId,
+                manager_name: managerName
             };
             accounts.push(newAcc);
             saveStaffAccounts(accounts);
@@ -3154,7 +3406,7 @@
             submitBtn.innerHTML = origBtnHtml;
 
             msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 block';
-            msgBox.innerText = `Đã cấp tài khoản thành công cho "${name}"!`;
+            msgBox.innerText = `Đã cấp tài khoản thành công cho "${name}"${managerName ? ` (Bảo trợ: ${managerName})` : ''}!`;
             document.getElementById('create-staff-form').reset();
             window.loadProfilesList();
             showToast(`Đã thêm nhân viên: ${name}!`, 'success');
@@ -3170,17 +3422,46 @@
                 return;
             }
 
-            accounts = accounts.filter(a => a.id !== id);
+            const targetEmail = (target.email || '').toLowerCase();
+
+            // 1. Đánh dấu vào danh sách đã xóa vĩnh viễn (chặn không cho load lại)
+            markStaffAsDeleted(target.id, targetEmail);
+
+            // 2. Lọc bỏ tài khoản khỏi danh sách hiện tại
+            accounts = accounts.filter(a => a.id !== id && (targetEmail ? a.email?.toLowerCase() !== targetEmail : true));
             saveStaffAccounts(accounts);
 
+            // 3. Xóa các liên kết Người bảo trợ nếu người bị xóa đang bảo trợ ai đó
+            accounts.forEach(a => {
+                if (a.manager_id === id || a.manager_id === targetEmail || a.manager_name === target.full_name) {
+                    a.manager_id = '';
+                    a.manager_name = '';
+                }
+            });
+            saveStaffAccounts(accounts);
+
+            // 4. Xóa tài liệu trên Firestore (xóa cả doc theo id và quét query theo email nếu có)
             try {
                 await deleteDoc(doc(db, "profiles", id));
             } catch(e) {
                 console.warn("Lỗi xóa document Firebase:", e);
             }
 
-            window.loadProfilesList();
-            showToast(`Đã xóa tài khoản "${target.full_name}"!`);
+            if (targetEmail) {
+                try {
+                    const snap = await getDocs(collection(db, "profiles"));
+                    snap.forEach(async (d) => {
+                        const data = d.data();
+                        if (data.email && data.email.toLowerCase() === targetEmail) {
+                            try { await deleteDoc(doc(db, "profiles", d.id)); } catch(err) {}
+                        }
+                    });
+                } catch(e) {}
+            }
+
+            populateManagerOptions();
+            renderProfilesTable(accounts);
+            showToast(`Đã xóa vĩnh viễn tài khoản "${target.full_name}"!`, 'success');
         };
 
         window.openInvoiceModal = function(id) {
@@ -3267,7 +3548,7 @@
             }
 
             const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI & Mô Tả', 'Ngày Nhập', 'Nhân Viên Bán', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
+            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Tình Trạng Máy', 'Ngày Nhập', 'Nhân Viên Bán', 'Người Bảo Trợ (QL)', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
 
             const rows = products.map(p => {
                 const row = [
@@ -3280,9 +3561,11 @@
                     p.sellingPrice || 0,
                     p.commission || 0,
                     `"${p.status === 'SOLD' ? 'Đã bán' : 'Còn hàng'}"`,
+                    `"${p.imei || ''}"`,
                     `"${(p.condition || '').replace(/"/g, '""')}"`,
                     `"${p.importedAt || ''}"`,
                     `"${p.seller || ''}"`,
+                    `"${p.manager || ''}"`,
                     `"${p.customerName || ''}"`,
                     `"${p.customerPhone || ''}"`,
                     `"${p.soldAt || ''}"`
@@ -3329,11 +3612,14 @@
                             sellingPrice: parseNumberInput(cols[6]),
                             commission: parseNumberInput(cols[7]),
                             status: (cols[8] && cols[8].toLowerCase().includes('bán')) ? 'SOLD' : 'AVAILABLE',
-                            condition: cols[9] || '',
-                            seller: cols[10] || '',
-                            customerName: cols[11] || '',
-                            customerPhone: cols[12] || '',
-                            soldAt: cols[13] || ''
+                            imei: cols[9] || '',
+                            condition: cols[10] || '',
+                            importedAt: cols[11] || new Date().toISOString().split('T')[0],
+                            seller: cols[12] || '',
+                            manager: cols[13] || '',
+                            customerName: cols[14] || '',
+                            customerPhone: cols[15] || '',
+                            soldAt: cols[16] || ''
                         };
                         products.unshift(newProd);
                         importedCount++;
@@ -3461,7 +3747,7 @@
                     readIds.add(String(n.id));
                 }
             });
-            saveReadNotifIds(readIds);
+            saveReadReadIds(readIds);
             
             const badgeEl = document.getElementById('notif-badge');
             if (badgeEl) {
@@ -3471,6 +3757,96 @@
 
             window.loadAndRenderNotifications();
         };
+
+        function saveReadReadIds(idSet) {
+            try {
+                localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(Array.from(idSet)));
+            } catch (e) {}
+        }
+
+        window.renderApp = function() {
+            if (currentTab === 'inventory') renderInventoryTable();
+            else if (currentTab === 'sales-history') window.renderSalesHistoryView();
+            else if (currentTab === 'commission') window.renderCommissionReport();
+            else if (currentTab === 'profit') window.renderProfitReport();
+        };
+
+        function renderInventoryTable() {
+            const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
+            const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
+            const perm = getPermissions();
+
+            let availableList = products.filter(p => {
+                if (p.status === 'SOLD') return false;
+                const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.imei || '').toLowerCase().includes(searchVal) || 
+                                    (p.condition || '').toLowerCase().includes(searchVal);
+                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
+                return matchSearch && matchBrand;
+            });
+
+            if (sortMode === 'PRICE_DESC') {
+                availableList.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+            } else if (sortMode === 'PRICE_ASC') {
+                availableList.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+            } else if (sortMode === 'NAME_ASC') {
+                availableList.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            } else if (sortMode === 'NAME_DESC') {
+                availableList.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            }
+
+            const badgeAvailable = document.getElementById('badge-available-count');
+            if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
+
+            const tbodyAvailable = document.getElementById('product-table-body');
+            const emptyState = document.getElementById('empty-state');
+            if (tbodyAvailable) {
+                if (availableList.length === 0) {
+                    tbodyAvailable.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                } else {
+                    if (emptyState) emptyState.classList.add('hidden');
+                    tbodyAvailable.innerHTML = availableList.map((p, index) => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">
+                                ${index + 1}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                            </td>
+                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${p.importedAt || new Date().toISOString().split('T')[0]}
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
+                                    ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
+                                </div>
+                            </td>
+                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
+                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                    Còn hàng
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
+                                    <i class="fa-solid fa-cart-shopping"></i> Bán
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
 
         window.onload = function() {
             initApp();
