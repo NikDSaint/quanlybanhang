@@ -618,7 +618,6 @@
                             <select id="staff-role" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
                                 <option value="staff" selected>Nhân Viên Bán Hàng</option>
                                 <option value="manager">Quản Lý Cửa Hàng</option>
-                                <option value="owner">Chủ Cửa Hàng</option>
                             </select>
                         </div>
 
@@ -827,16 +826,19 @@
     </div>
 
     <!-- Modal: Xem Chi Tiết Sản Phẩm -->
-    <div id="detail-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
-            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-sm">
+            <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-base shadow-xs">
                         <i class="fa-solid fa-mobile-screen"></i>
                     </div>
-                    <h3 class="font-extrabold text-base sm:text-lg">Chi Tiết Thông Tin Sản Phẩm</h3>
+                    <div>
+                        <h3 class="font-extrabold text-base sm:text-lg text-slate-900 leading-tight">Chi Tiết Thông Tin Sản Phẩm</h3>
+                        <p class="text-[11px] text-slate-400 font-medium">Hồ sơ thông số kỹ thuật & định giá máy</p>
+                    </div>
                 </div>
-                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -884,13 +886,23 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI & Tình Trạng Máy Thực Tế
-                    </span>
-                    <p id="dt-condition" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed whitespace-pre-line">
-                        Zin 100%
-                    </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI
+                        </span>
+                        <p id="dt-imei" class="text-xs font-mono font-bold text-slate-800 mt-1 truncate">
+                            --
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Mô Tả / Tình Trạng Máy
+                        </span>
+                        <p id="dt-condition" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed whitespace-pre-line">
+                            Zin 100%
+                        </p>
+                    </div>
                 </div>
 
                 <div id="dt-sold-info-box" class="hidden bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-2xl space-y-2">
@@ -950,16 +962,24 @@
     </div>
 
     <!-- Modal Thêm Sản Phẩm -->
-    <div id="product-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all border border-slate-100">
-            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
-                <h3 id="modal-title" class="font-extrabold text-base sm:text-lg">Thêm Máy Mới Vào Kho</h3>
-                <button onclick="closeProductModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+    <div id="product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all border border-slate-100 flex flex-col max-h-[92vh]">
+            <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base shadow-xs">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="font-extrabold text-base sm:text-lg text-slate-900 leading-tight">Thêm Máy Mới Vào Kho</h3>
+                        <p class="text-[11px] text-slate-400 font-medium">Nhập thông số kỹ thuật và định giá sản phẩm</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProductModal()" class="text-slate-400 hover:text-slate-700 transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             
-            <form id="product-form" onsubmit="handleProductSubmit(event)" class="p-6 space-y-4">
+            <form id="product-form" onsubmit="handleProductSubmit(event)" class="p-6 space-y-4 overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="form-product-id">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -982,22 +1002,24 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Tên Model Sản Phẩm <span class="text-rose-500">*</span></label>
-                        <input type="text" id="form-name" required placeholder="VD: iPhone 16 Pro Max Titan" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        <input type="text" id="form-name" required placeholder="Nhập tên..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng RAM</label>
-                        <select id="form-ram" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <select id="form-ram" onchange="handleRamChange()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                             <option value="">Không chọn</option>
+                            <option value="3GB">3GB</option>
                             <option value="4GB">4GB</option>
                             <option value="6GB">6GB</option>
                             <option value="8GB">8GB</option>
                             <option value="12GB">12GB</option>
                             <option value="16GB">16GB</option>
-                            <option value="24GB">24GB</option>
+                            <option value="CUSTOM">Khác (Tự điền)</option>
                         </select>
+                        <input type="text" id="form-ram-custom" placeholder="Nhập dung lượng RAM (VD: 2GB, 32GB...)" class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Bộ Nhớ Trong (ROM)</label>
@@ -1045,17 +1067,26 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng NV Chốt Đơn (VNĐ)</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng (VNĐ)</label>
                         <div class="relative flex items-center">
                             <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-purple-600">
                             <span class="absolute right-3 text-purple-400 font-bold text-xs pointer-events-none">₫</span>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Mô Tả / Số IMEI / Tình Trạng Máy</label>
-                    <input type="text" id="form-condition" placeholder="VD: IMEI: 358912345678901 - Zin áp keng 99%, pin 98%..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Số IMEI
+                        </label>
+                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tình Trạng Máy
+                        </label>
+                        <input type="text" id="form-condition" placeholder="Mô tả..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                    </div>
                 </div>
 
                 <div class="pt-3 flex justify-end space-x-2 border-t border-slate-100">
@@ -1066,17 +1097,22 @@
         </div>
     </div>
 
-    <!-- Modal Xuất Bán -->
+    <!-- Modal Xuất Bán Hàng -->
     <div id="sell-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
-                <h3 class="font-extrabold text-base sm:text-lg"><i class="fa-solid fa-cart-shopping mr-2"></i> Xác Nhận Bán Hàng</h3>
-                <button onclick="closeSellModal()" class="text-emerald-200 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-700">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white text-sm">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <h3 class="font-extrabold text-base sm:text-lg">Xác Nhận Xuất Bán</h3>
+                </div>
+                <button type="button" onclick="closeSellModal()" class="text-emerald-100 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-700">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             
-            <form onsubmit="handleQuickSellSubmit(event)" class="p-6 space-y-4">
+            <form onsubmit="handleQuickSellSubmit(event)" class="p-6 space-y-4 overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="sell-product-id">
                 
                 <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3.5 text-sm">
@@ -1104,11 +1140,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Họ Tên Khách Hàng</label>
-                        <input type="text" id="sell-customer-name" placeholder="Nguyễn Văn A" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                        <input type="text" id="sell-customer-name" placeholder="VD: Anh Nam..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Số Điện Thoại</label>
-                        <input type="text" id="sell-customer-phone" placeholder="0987xxx..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                        <input type="text" id="sell-customer-phone" placeholder="VD: 0988..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
                     </div>
                 </div>
 
@@ -1449,22 +1485,23 @@
                         snapshot.forEach((docSnap) => {
                             const item = docSnap.data();
                             cloudProducts.push({
-                                id: item.id || docSnap.id,
-                                brand: item.brand || 'Khác',
-                                name: item.name || '',
-                                ram: item.ram || '',
-                                storage: item.storage || '',
-                                importPrice: Number(item.import_price) || 0,
-                                sellingPrice: Number(item.selling_price) || 0,
-                                commission: Number(item.commission) || 0,
-                                status: item.status || 'AVAILABLE',
-                                condition: item.condition || '',
-                                seller: item.seller || '',
-                                customerName: item.customer_name || '',
-                                customerPhone: item.customer_phone || '',
-                                soldAt: item.sold_at || '',
-                                importedAt: item.imported_at || ''
-                            });
+                            id: item.id || docSnap.id,
+                            brand: item.brand || 'Khác',
+                            name: item.name || '',
+                            ram: item.ram || '',
+                            storage: item.storage || '',
+                            importPrice: Number(item.import_price) || 0,
+                            sellingPrice: Number(item.selling_price) || 0,
+                            commission: Number(item.commission) || 0,
+                            status: item.status || 'AVAILABLE',
+                            imei: item.imei || '',
+                            condition: item.condition || '',
+                            seller: item.seller || '',
+                            customerName: item.customer_name || '',
+                            customerPhone: item.customer_phone || '',
+                            soldAt: item.sold_at || '',
+                            importedAt: item.imported_at || ''
+                        });
                         });
                         products = cloudProducts;
                         localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
@@ -2046,6 +2083,7 @@
                 if (!perm.canViewProfitTab && p.seller !== currentStaffName) return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
                                     (p.brand || '').toLowerCase().includes(searchVal) || 
+                                    (p.imei || '').toLowerCase().includes(searchVal) ||
                                     (p.condition || '').toLowerCase().includes(searchVal) ||
                                     (p.customerName || '').toLowerCase().includes(searchVal) ||
                                     (p.customerPhone || '').toLowerCase().includes(searchVal) ||
@@ -2081,7 +2119,10 @@
                                     <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                     <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500 mt-0.5 font-mono truncate max-w-xs" title="${escapeHtml(p.condition)}">${escapeHtml(p.condition || '')}</p>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
+                                    <span class="text-[11px] text-slate-500 font-medium truncate max-w-xs" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || '')}</span>
+                                </div>
                             </td>
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
@@ -2279,6 +2320,7 @@
             let availableList = products.filter(p => {
                 if (p.status === 'SOLD') return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.imei || '').toLowerCase().includes(searchVal) ||
                                     (p.condition || '').toLowerCase().includes(searchVal);
                 const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
                 return matchSearch && matchBrand;
@@ -2321,7 +2363,10 @@
                             <td class="py-3 px-4">
                                 <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                 <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
-                                <p class="text-xs text-slate-400 mt-0.5">${p.ram || ''} ${p.storage || ''}</p>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-xs text-slate-400">${p.ram || ''} ${p.storage || ''}</span>
+                                    ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
+                                </div>
                             </td>
                             ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
@@ -2527,6 +2572,9 @@
             document.getElementById('dt-import-price').innerText = formatVND(p.importPrice);
             document.getElementById('dt-selling-price').innerText = formatVND(p.sellingPrice);
             document.getElementById('dt-commission').innerText = formatVND(p.commission);
+            
+            const dtImei = document.getElementById('dt-imei');
+            if (dtImei) dtImei.innerText = p.imei || '--';
             document.getElementById('dt-condition').innerText = p.condition || 'Zin nguyên bản 100%';
 
             const isSold = p.status === 'SOLD';
@@ -2620,14 +2668,34 @@
             document.getElementById('modal-title').innerText = 'Thêm Máy Mới Vào Kho';
             document.getElementById('form-product-id').value = '';
             document.getElementById('product-form').reset();
+            const imeiInput = document.getElementById('form-imei');
+            if (imeiInput) imeiInput.value = '';
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            const customRam = document.getElementById('form-ram-custom');
+            if (customRam) {
+                customRam.value = '';
+                customRam.classList.add('hidden');
+            }
             const customStorage = document.getElementById('form-storage-custom');
             if (customStorage) {
                 customStorage.value = '';
                 customStorage.classList.add('hidden');
             }
             document.getElementById('product-modal').classList.remove('hidden');
+        };
+
+        window.handleRamChange = function() {
+            const sel = document.getElementById('form-ram');
+            const customInput = document.getElementById('form-ram-custom');
+            if (!sel || !customInput) return;
+            if (sel.value === 'CUSTOM') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
         };
 
         window.handleStorageChange = function() {
@@ -2652,7 +2720,23 @@
             document.getElementById('form-product-id').value = p.id;
             document.getElementById('form-brand').value = p.brand || 'iPhone';
             document.getElementById('form-name').value = p.name || '';
-            document.getElementById('form-ram').value = p.ram || '';
+            
+            const standardRams = ['', '3GB', '4GB', '6GB', '8GB', '12GB', '16GB'];
+            const ramSel = document.getElementById('form-ram');
+            const customRam = document.getElementById('form-ram-custom');
+            if (standardRams.includes(p.ram || '')) {
+                ramSel.value = p.ram || '';
+                if (customRam) {
+                    customRam.value = '';
+                    customRam.classList.add('hidden');
+                }
+            } else {
+                ramSel.value = 'CUSTOM';
+                if (customRam) {
+                    customRam.value = p.ram || '';
+                    customRam.classList.remove('hidden');
+                }
+            }
             
             const standardStorages = ['', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB'];
             const storageSel = document.getElementById('form-storage');
@@ -2674,6 +2758,9 @@
             document.getElementById('form-selling-price').value = new Intl.NumberFormat('vi-VN').format(p.sellingPrice || 0);
             document.getElementById('form-status').value = p.status || 'AVAILABLE';
             document.getElementById('form-commission').value = new Intl.NumberFormat('vi-VN').format(p.commission || 0);
+            
+            const imeiInput = document.getElementById('form-imei');
+            if (imeiInput) imeiInput.value = p.imei || '';
             document.getElementById('form-condition').value = p.condition || '';
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
@@ -2688,6 +2775,10 @@
         window.handleProductSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('form-product-id').value || ('prod-' + Date.now());
+            const ramSelVal = document.getElementById('form-ram').value;
+            const ramVal = ramSelVal === 'CUSTOM'
+                ? (document.getElementById('form-ram-custom')?.value.trim() || 'Khác')
+                : ramSelVal;
             const storageSelVal = document.getElementById('form-storage').value;
             const storageVal = storageSelVal === 'CUSTOM'
                 ? (document.getElementById('form-storage-custom')?.value.trim() || 'Khác')
@@ -2698,12 +2789,13 @@
                 id,
                 brand: document.getElementById('form-brand').value,
                 name: document.getElementById('form-name').value.trim(),
-                ram: document.getElementById('form-ram').value,
+                ram: ramVal,
                 storage: storageVal,
                 importPrice: parseNumberInput(document.getElementById('form-import-price').value),
                 sellingPrice: parseNumberInput(document.getElementById('form-selling-price').value),
                 status: document.getElementById('form-status').value,
                 commission: parseNumberInput(document.getElementById('form-commission').value),
+                imei: document.getElementById('form-imei')?.value.trim() || '',
                 condition: document.getElementById('form-condition').value.trim(),
                 importedAt: importDateVal,
                 seller: '', customerName: '', customerPhone: '', soldAt: ''
@@ -2731,6 +2823,7 @@
                     selling_price: newProd.sellingPrice,
                     commission: newProd.commission,
                     status: newProd.status,
+                    imei: newProd.imei,
                     condition: newProd.condition,
                     seller: newProd.seller,
                     customer_name: newProd.customerName,
@@ -2785,7 +2878,8 @@
         window.closeSellModal = function() {
             const sel = document.getElementById('sell-seller-name');
             if (sel) sel.disabled = false;
-            document.getElementById('sell-modal').classList.add('hidden');
+            const modal = document.getElementById('sell-modal');
+            if (modal) modal.classList.add('hidden');
         };
 
         window.handleQuickSellSubmit = async function(e) {
@@ -3099,7 +3193,7 @@
             document.getElementById('inv-customer-phone').innerText = p.customerPhone || '--';
             document.getElementById('inv-seller-name').innerText = p.seller || '--';
             document.getElementById('inv-prod-name').innerText = `${p.brand} ${p.name}`;
-            document.getElementById('inv-prod-cond').innerText = p.condition || 'Zin keng';
+            document.getElementById('inv-prod-cond').innerText = `${p.imei ? 'IMEI: ' + p.imei + ' | ' : ''}${p.condition || 'Zin keng'}`;
             document.getElementById('inv-prod-price').innerText = formatVND(p.sellingPrice);
             document.getElementById('inv-total-price').innerText = formatVND(p.sellingPrice);
             document.getElementById('invoice-modal').classList.remove('hidden');
