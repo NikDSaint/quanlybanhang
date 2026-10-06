@@ -3142,16 +3142,186 @@
                             ${sponsorHtml}
                         </td>
                         <td class="py-3 px-4 text-right">
-                            ${perm.canManageStaff && !isCurrent && !isOwnerAccount ? `
-                                <button onclick="deleteStaffAccount('${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs p-1">
-                                    <i class="fa-solid fa-trash-can"></i> Xóa
-                                </button>
+                            ${perm.canManageStaff && !isOwnerAccount ? `
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button onclick="openEditStaffModal('${u.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs px-2 py-1 rounded-lg hover:bg-indigo-50 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> <span>Sửa</span>
+                                    </button>
+                                    ${!isCurrent ? `
+                                        <button onclick="deleteStaffAccount('${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs px-2 py-1 rounded-lg hover:bg-rose-50 transition flex items-center gap-1">
+                                            <i class="fa-solid fa-trash-can"></i> <span>Xóa</span>
+                                        </button>
+                                    ` : ''}
+                                </div>
                             ` : '<span class="text-slate-300 text-[10px]">Cố định</span>'}
                         </td>
                     </tr>
                 `;
             }).join('');
         }
+
+        window.openEditStaffModal = function(id) {
+            const accounts = getStaffAccounts();
+            const target = accounts.find(a => a.id === id);
+            if (!target) return;
+
+            document.getElementById('edit-staff-id').value = target.id;
+            document.getElementById('edit-staff-name').value = target.full_name || '';
+            document.getElementById('edit-staff-email').value = target.email || '';
+            document.getElementById('edit-staff-password').value = '';
+            document.getElementById('edit-staff-role').value = target.role || 'staff';
+
+            // Cập nhật danh sách người quản lý bảo trợ trong modal sửa
+            const mgrSelect = document.getElementById('edit-staff-manager-id');
+            const managers = accounts.filter(a => a.role === 'manager' && a.id !== target.id);
+            mgrSelect.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
+                managers.map(m => `<option value="${escapeHtml(m.id || m.email)}" ${(target.manager_id === m.id || target.manager_id === m.email || target.manager_name === m.full_name) ? 'selected' : ''}>${escapeHtml(m.full_name)} (${escapeHtml(m.email || 'Quản lý')})</option>`).join('');
+
+            window.handleEditStaffRoleChange();
+
+            const msgBox = document.getElementById('edit-staff-msg');
+            if (msgBox) msgBox.classList.add('hidden');
+
+            const modal = document.getElementById('edit-staff-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeEditStaffModal = function() {
+            const modal = document.getElementById('edit-staff-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.handleEditStaffRoleChange = function() {
+            const role = document.getElementById('edit-staff-role')?.value;
+            const wrapper = document.getElementById('edit-staff-manager-wrapper');
+            if (wrapper) {
+                wrapper.style.display = (role === 'staff') ? 'block' : 'none';
+            }
+        };
+
+        window.handleEditStaffSubmit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-staff-id').value;
+            const name = document.getElementById('edit-staff-name').value.trim();
+            let email = document.getElementById('edit-staff-email').value.trim();
+            const newPassword = document.getElementById('edit-staff-password').value;
+            const role = document.getElementById('edit-staff-role').value;
+            const managerId = (role === 'staff') ? document.getElementById('edit-staff-manager-id').value : '';
+            const msgBox = document.getElementById('edit-staff-msg');
+            const submitBtn = document.getElementById('btn-save-edit-staff');
+
+            if (email && !email.includes('@')) {
+                email += '@gmail.com';
+                document.getElementById('edit-staff-email').value = email;
+            }
+
+            if (!name || !email) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Vui lòng điền họ tên và tên đăng nhập / email!';
+                return;
+            }
+
+            if (newPassword && newPassword.length < 6) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+                return;
+            }
+
+            let accounts = getStaffAccounts();
+            const targetIdx = accounts.findIndex(a => a.id === id);
+            if (targetIdx === -1) return;
+
+            // Kiểm tra trùng email với tài khoản khác
+            const lowerEmail = email.toLowerCase();
+            const isDuplicate = accounts.some((a, idx) => idx !== targetIdx && a.email && a.email.toLowerCase() === lowerEmail);
+            if (isDuplicate) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Tên đăng nhập / Email này đã được sử dụng bởi nhân sự khác!';
+                return;
+            }
+
+            let managerName = '';
+            if (managerId) {
+                const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
+                if (mgrAcc) managerName = mgrAcc.full_name;
+            }
+
+            const origBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang lưu...';
+
+            const oldName = accounts[targetIdx].full_name;
+
+            // 1. Cập nhật trong bộ nhớ tài khoản
+            accounts[targetIdx].full_name = name;
+            accounts[targetIdx].email = email;
+            accounts[targetIdx].role = role;
+            accounts[targetIdx].manager_id = managerId;
+            accounts[targetIdx].manager_name = managerName;
+            if (newPassword) {
+                accounts[targetIdx].password = newPassword;
+            }
+
+            // Nếu đổi tên quản lý, cập nhật manager_name của các nhân viên trực thuộc
+            if (oldName !== name) {
+                accounts.forEach(a => {
+                    if (a.manager_id === id || a.manager_name === oldName) {
+                        a.manager_name = name;
+                    }
+                });
+            }
+
+            saveStaffAccounts(accounts);
+
+            // 2. Nếu người đang sửa chính là tài khoản đang đăng nhập
+            if (currentUser && (id === currentUser.uid || accounts[targetIdx].email?.toLowerCase() === currentUser.email?.toLowerCase())) {
+                if (currentUserProfile) {
+                    currentUserProfile.full_name = name;
+                    currentUserProfile.email = email;
+                    currentUserProfile.role = role;
+                }
+                userRole = role;
+                updateUserUI();
+            }
+
+            // 3. Đồng bộ lên Firebase Firestore
+            try {
+                const updatePayload = {
+                    id: id,
+                    full_name: name,
+                    email: email,
+                    role: role,
+                    manager_id: managerId,
+                    manager_name: managerName
+                };
+                await setDoc(doc(db, "profiles", id), updatePayload, { merge: true });
+
+                // Cập nhật các document khác nếu trùng email cũ
+                const querySnap = await getDocs(collection(db, "profiles"));
+                querySnap.forEach(d => {
+                    const data = d.data();
+                    if (d.id === id || (data.email && data.email.toLowerCase() === lowerEmail)) {
+                        setDoc(doc(db, "profiles", d.id), updatePayload, { merge: true });
+                    }
+                });
+            } catch (err) {
+                console.warn("Lỗi lưu thông tin nhân sự lên Firebase:", err);
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+
+            window.closeEditStaffModal();
+            populateManagerOptions();
+            renderProfilesTable(accounts);
+            showToast(`Đã cập nhật thông tin nhân viên "${name}" thành công!`, 'success');
+        };
 
         window.handleStaffRoleChange = function() {
             const roleSel = document.getElementById('staff-role');
