@@ -210,6 +210,7 @@
                     <table class="w-full text-left text-sm border-collapse">
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
                             <tr>
+                                <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
                                 <th class="py-3.5 px-4 text-center w-16">Xem</th>
                                 <th class="py-3.5 px-4 whitespace-nowrap">Ngày Nhập</th>
                                 <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
@@ -852,7 +853,7 @@
                     <span id="dt-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold">Còn hàng</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div class="grid grid-cols-3 gap-2.5">
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Hãng</span>
                         <p id="dt-brand" class="text-xs font-black text-slate-800 mt-0.5">Apple</p>
@@ -864,10 +865,6 @@
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Lưu Trữ</span>
                         <p id="dt-storage" class="text-xs font-black text-slate-800 mt-0.5">256GB</p>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Mã Kho</span>
-                        <p id="dt-id" class="text-xs font-mono font-bold text-slate-600 mt-0.5 truncate">--</p>
                     </div>
                 </div>
 
@@ -2350,8 +2347,9 @@
                     if (emptyState) emptyState.classList.remove('hidden');
                 } else {
                     if (emptyState) emptyState.classList.add('hidden');
-                    tbodyAvailable.innerHTML = availableList.map(p => `
+                    tbodyAvailable.innerHTML = availableList.map((p, idx) => `
                         <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">${idx + 1}</td>
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
                                     <i class="fa-solid fa-eye text-sm"></i>
@@ -2564,7 +2562,8 @@
             document.getElementById('dt-brand').innerText = p.brand || '--';
             document.getElementById('dt-ram').innerText = p.ram || '--';
             document.getElementById('dt-storage').innerText = p.storage || '--';
-            document.getElementById('dt-id').innerText = p.id || '--';
+            const dtId = document.getElementById('dt-id');
+            if (dtId) dtId.innerText = p.id || '--';
 
             const importBox = document.getElementById('dt-box-import');
             if (importBox) importBox.style.display = perm.canViewCosts ? 'block' : 'none';
