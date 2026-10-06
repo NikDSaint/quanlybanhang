@@ -3161,32 +3161,40 @@
         }
 
         window.openEditStaffModal = function(id) {
+            const modal = document.getElementById('edit-staff-modal');
+            if (!modal) return;
+
             const accounts = getStaffAccounts();
             const target = accounts.find(a => a.id === id);
             if (!target) return;
 
-            document.getElementById('edit-staff-id').value = target.id;
-            document.getElementById('edit-staff-name').value = target.full_name || '';
-            document.getElementById('edit-staff-email').value = target.email || '';
-            document.getElementById('edit-staff-password').value = '';
-            document.getElementById('edit-staff-role').value = target.role || 'staff';
+            const idEl = document.getElementById('edit-staff-id');
+            const nameEl = document.getElementById('edit-staff-name');
+            const emailEl = document.getElementById('edit-staff-email');
+            const pwdEl = document.getElementById('edit-staff-password');
+            const roleEl = document.getElementById('edit-staff-role');
+            const mgrSelect = document.getElementById('edit-staff-manager-id');
+
+            if (idEl) idEl.value = target.id;
+            if (nameEl) nameEl.value = target.full_name || '';
+            if (emailEl) emailEl.value = target.email || '';
+            if (pwdEl) pwdEl.value = '';
+            if (roleEl) roleEl.value = target.role || 'staff';
 
             // Cập nhật danh sách người quản lý bảo trợ trong modal sửa
-            const mgrSelect = document.getElementById('edit-staff-manager-id');
-            const managers = accounts.filter(a => a.role === 'manager' && a.id !== target.id);
-            mgrSelect.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
-                managers.map(m => `<option value="${escapeHtml(m.id || m.email)}" ${(target.manager_id === m.id || target.manager_id === m.email || target.manager_name === m.full_name) ? 'selected' : ''}>${escapeHtml(m.full_name)} (${escapeHtml(m.email || 'Quản lý')})</option>`).join('');
+            if (mgrSelect) {
+                const managers = accounts.filter(a => a.role === 'manager' && a.id !== target.id);
+                mgrSelect.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
+                    managers.map(m => `<option value="${escapeHtml(m.id || m.email)}" ${(target.manager_id === m.id || target.manager_id === m.email || target.manager_name === m.full_name) ? 'selected' : ''}>${escapeHtml(m.full_name)} (${escapeHtml(m.email || 'Quản lý')})</option>`).join('');
+            }
 
             window.handleEditStaffRoleChange();
 
             const msgBox = document.getElementById('edit-staff-msg');
             if (msgBox) msgBox.classList.add('hidden');
 
-            const modal = document.getElementById('edit-staff-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         window.closeEditStaffModal = function() {
