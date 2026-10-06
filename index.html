@@ -122,6 +122,12 @@
                     <span>Tổng Quan Kho</span>
                 </button>
 
+                <!-- LỊCH SỬ BÁN HÀNG -->
+                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
+                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-emerald-500"></i>
+                    <span>Lịch Sử Bán Hàng</span>
+                </button>
+
                 <!-- 5. HOA HỒNG -->
                 <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
                     <i class="fa-solid fa-hand-holding-dollar w-4 text-center"></i>
@@ -148,7 +154,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- VIEW 1: TỔNG QUAN KHO (INVENTORY) -->
+        <!-- VIEW 1: TỔNG QUAN KHO (INVENTORY - CHỈ HIỂN THỊ MÁY CÒN TRONG KHO) -->
         <div id="view-inventory" class="space-y-6">
             <!-- Filter & Action Bar -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
@@ -203,7 +209,7 @@
                 </div>
             </div>
 
-            <!-- PHẦN 1: SẢN PHẨM CÒN TRONG KHO -->
+            <!-- SẢN PHẨM CÒN TRONG KHO -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                 <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
                     <div class="flex items-center space-x-2">
@@ -255,39 +261,151 @@
                     <p class="text-slate-400 text-xs mt-0.5">Bấm "Thêm Máy Mới" để bổ sung sản phẩm vào kho.</p>
                 </div>
             </div>
+        </div>
 
-            <!-- PHẦN 2: SẢN PHẨM ĐÃ BÁN -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div class="p-3.5 px-4 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                        <h3 class="font-extrabold text-sm text-rose-900 uppercase tracking-wide">Sản Phẩm Đã Bán</h3>
+        <!-- VIEW MỚI: LỊCH SỬ BÁN HÀNG & DANH SÁCH KHÁCH HÀNG -->
+        <div id="view-sales-history" class="space-y-6 hidden">
+            <!-- Header Tóm Tắt & Bộ Chọn Tab Phụ -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-black shadow-xs">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
-                    <span id="badge-sold-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">0 máy</span>
+                    <div>
+                        <h2 class="text-base font-black text-slate-900">Lịch Sử Bán Hàng & Khách Hàng</h2>
+                        <p class="text-xs text-slate-500 font-medium">Tra cứu các máy đã xuất kho và hồ sơ người mua</p>
+                    </div>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
-                            <tr>
-                                <th class="py-3.5 px-4 text-center w-16">Xem</th>
-                                <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
-                                <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
-                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
-                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
-                                <th class="py-3.5 px-4">Người Bán</th>
-                                <th class="py-3.5 px-4">Khách Hàng</th>
-                                <th class="py-3.5 px-4 text-center">Hóa Đơn</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sold-table-body" class="divide-y divide-slate-100 font-medium">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                <!-- Sub-tabs chuyển giữa Máy Đã Bán & Khách Hàng -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+                    <button id="subtab-btn-sold-items" onclick="switchSalesSubTab('items')" class="flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition">
+                        <i class="fa-solid fa-mobile-screen mr-1.5 text-rose-500"></i> Máy Đã Bán
+                    </button>
+                    <button id="subtab-btn-customers" onclick="switchSalesSubTab('customers')" class="flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+                        <i class="fa-solid fa-users mr-1.5 text-purple-600"></i> Danh Sách Khách Hàng
+                    </button>
+                </div>
+            </div>
+
+            <!-- PHÂN MỤC 1: BẢNG SẢN PHẨM ĐÃ BÁN (ĐÃ CHUYỂN TỪ TỔNG QUAN KHO SANG ĐÂY) -->
+            <div id="sales-section-items" class="space-y-4">
+                <!-- Thanh tìm kiếm máy đã bán -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center gap-2.5 justify-between">
+                    <div class="relative flex-1 min-w-[240px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="sales-search-input" oninput="renderSalesHistoryView()" placeholder="Tìm theo tên máy, số IMEI, khách hàng, nhân viên bán..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                    </div>
+                    <span id="badge-sold-count" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-100">
+                        0 máy đã bán
+                    </span>
                 </div>
 
-                <div id="empty-sold-state" class="hidden p-8 text-center">
-                    <p class="text-slate-400 text-xs">Chưa có sản phẩm nào được bán.</p>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-3.5 px-4 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                            <h3 class="font-extrabold text-sm text-rose-900 uppercase tracking-wide">Chi Tiết Sản Phẩm Đã Bán</h3>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                                <tr>
+                                    <th class="py-3.5 px-4 text-center w-16">Xem</th>
+                                    <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
+                                    <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
+                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
+                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
+                                    <th class="py-3.5 px-4">Người Bán</th>
+                                    <th class="py-3.5 px-4">Khách Hàng</th>
+                                    <th class="py-3.5 px-4 text-center">Hóa Đơn</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sold-table-body" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="empty-sold-state" class="hidden p-8 text-center">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <p class="text-slate-600 font-bold text-sm">Chưa có sản phẩm nào được bán</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Các máy được xuất bán tại Kho Hàng sẽ xuất hiện tại đây.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHÂN MỤC 2: BẢNG DANH SÁCH KHÁCH HÀNG & THỐNG KÊ CHI TIÊU -->
+            <div id="sales-section-customers" class="space-y-4 hidden">
+                <!-- Thẻ thống kê khách hàng -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Khách Hàng</p>
+                            <h3 id="cust-stat-total" class="text-lg font-black text-slate-800 mt-0.5">0</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Lượt Mua</p>
+                            <h3 id="cust-stat-orders" class="text-lg font-black text-emerald-600 mt-0.5">0 máy</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-cart-check"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Doanh Thu</p>
+                            <h3 id="cust-stat-revenue" class="text-lg font-black text-indigo-600 mt-0.5">0 ₫</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bảng Khách Hàng -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-3.5 px-4 bg-slate-50 border-b border-slate-200/80 flex flex-wrap justify-between items-center gap-2">
+                        <div class="relative flex-1 min-w-[220px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="customer-search-input" oninput="renderCustomersView()" placeholder="Tìm khách theo tên hoặc số điện thoại..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                        </div>
+                        <span id="cust-count-badge" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700">0 khách</span>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                                <tr>
+                                    <th class="py-3.5 px-4">Khách Hàng</th>
+                                    <th class="py-3.5 px-4">Số Điện Thoại</th>
+                                    <th class="py-3.5 px-4 text-center">Số Máy Đã Mua</th>
+                                    <th class="py-3.5 px-4 text-right">Tổng Tiền Đã Mua</th>
+                                    <th class="py-3.5 px-4">Lần Mua Gần Nhất</th>
+                                    <th class="py-3.5 px-4 text-center">Lịch Sử Mua</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table-body" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="customers-empty-state" class="hidden p-8 text-center">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <p class="text-slate-600 font-bold text-sm">Chưa có thông tin khách hàng nào</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,81 +417,140 @@
                     <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên</h2>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                    <select id="comm-period-type" onchange="handlePeriodTypeChange('comm')" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-700">
-                        <option value="ALL">Toàn Bộ Lịch Sử</option>
-                        <option value="MONTH" selected>Theo Tháng</option>
-                        <option value="QUARTER">Theo Quý (3 tháng)</option>
-                        <option value="YEAR">Theo Năm</option>
-                    </select>
+        <!-- VIEW MỚI: LỊCH SỬ BÁN HÀNG & KHÁCH HÀNG (SALES HISTORY) -->
+        <div id="view-saleshistory" class="space-y-6 hidden">
+            <!-- Header & Thẻ thống kê tổng quan -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-black">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Lịch Sử Bán Hàng & Danh Sách Khách Hàng</h2>
+                        <p class="text-xs text-slate-400 font-medium">Theo dõi chi tiết các máy đã xuất bán và thông tin khách mua máy</p>
+                    </div>
+                </div>
 
-                    <select id="comm-filter-month" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium">
-                        <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
-                        <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
-                        <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
-                        <option value="10" selected>Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
-                    </select>
-
-                    <select id="comm-filter-quarter" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium hidden">
-                        <option value="1">Quý 1 (T1 - T3)</option>
-                        <option value="2">Quý 2 (T4 - T6)</option>
-                        <option value="3">Quý 3 (T7 - T9)</option>
-                        <option value="4" selected>Quý 4 (T10 - T12)</option>
-                    </select>
-
-                    <select id="comm-filter-year" onchange="renderCommissionReport()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium">
-                        <option value="2026" selected>Năm 2026</option>
-                        <option value="2025">Năm 2025</option>
-                        <option value="2024">Năm 2024</option>
-                    </select>
+                <!-- Chuyển đổi giữa 2 chế độ xem con: Máy đã bán VS Danh sách khách -->
+                <div class="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200/70 w-full sm:w-auto">
+                    <button id="btn-subtab-soldmachines" onclick="switchSalesHistorySubTab('soldmachines')" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white text-indigo-700 shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                        <span>Máy Đã Bán</span>
+                    </button>
+                    <button id="btn-subtab-customers" onclick="switchSalesHistorySubTab('customers')" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Danh Sách Khách Hàng</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Commission Cards Grid -->
-            <div id="commission-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Populated dynamically -->
+            <!-- Thẻ chỉ số tổng hợp nhanh -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Đơn Xuất Bán</p>
+                        <h3 id="sh-stat-total-orders" class="text-lg font-black text-slate-800">0 đơn</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Khách Hàng Đã Mua</p>
+                        <h3 id="sh-stat-total-customers" class="text-lg font-black text-slate-800">0 khách</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng Tiền Bán</p>
+                        <h3 id="sh-stat-total-sales" class="text-lg font-black text-emerald-700">0 ₫</h3>
+                    </div>
+                </div>
             </div>
 
-            <!-- Bảng Chi Tiết Đã Bán Trong Kỳ -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
-                            <i class="fa-solid fa-clipboard-check"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-sm">Danh Sách Máy Đã Bán & Lịch Sử Chốt Đơn</h3>
-                            <p class="text-[11px] text-slate-400">Các máy đã bán được lưu lại tại đây kèm thông tin hoa hồng và hóa đơn</p>
-                        </div>
+            <!-- SUB-VIEW A: DANH SÁCH MÁY ĐÃ BÁN -->
+            <div id="subview-soldmachines" class="space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
+                    <div class="relative w-full md:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="sh-search-sold" oninput="renderSalesHistoryView()" placeholder="Tìm máy, IMEI, khách hàng, người bán..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
                     </div>
-                    <span id="comm-sold-count" class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">0 máy đã bán</span>
+                    <span id="sh-sold-count-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">0 máy đã bán</span>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
-                            <tr>
-                                <th class="py-3.5 px-4 text-center w-14">Xem</th>
-                                <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
-                                <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
-                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
-                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng</th>
-                                <th class="py-3.5 px-4">Nhân Viên Bán</th>
-                                <th class="py-3.5 px-4">Khách Hàng</th>
-                                <th class="py-3.5 px-4 text-center whitespace-nowrap">Hóa Đơn</th>
-                            </tr>
-                        </thead>
-                        <tbody id="commission-table-body" class="divide-y divide-slate-100 font-medium">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                                <tr>
+                                    <th class="py-3.5 px-4 text-center w-14">Xem</th>
+                                    <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
+                                    <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
+                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
+                                    <th class="py-3.5 px-4">Người Bán</th>
+                                    <th class="py-3.5 px-4">Khách Hàng</th>
+                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Hóa Đơn</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sh-sold-table-body" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="sh-sold-empty-state" class="hidden p-8 text-center">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <p class="text-slate-600 font-bold text-sm">Chưa có lịch sử máy đã bán nào</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-VIEW B: DANH SÁCH KHÁCH HÀNG ĐÃ MUA -->
+            <div id="subview-customers" class="space-y-4 hidden">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
+                    <div class="relative w-full md:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="sh-search-customer" oninput="renderSalesHistoryView()" placeholder="Tìm tên khách hàng hoặc số điện thoại..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                    </div>
+                    <span id="sh-cust-count-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700">0 khách hàng</span>
                 </div>
 
-                <div id="comm-empty-state" class="hidden p-8 text-center">
-                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center mx-auto mb-2 text-xl">
-                        <i class="fa-solid fa-receipt"></i>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                                <tr>
+                                    <th class="py-3.5 px-4">Tên Khách Hàng</th>
+                                    <th class="py-3.5 px-4">Số Điện Thoại</th>
+                                    <th class="py-3.5 px-4 text-center">Số Máy Đã Mua</th>
+                                    <th class="py-3.5 px-4 text-right">Tổng Chi Tiêu</th>
+                                    <th class="py-3.5 px-4">Mua Gần Nhất</th>
+                                    <th class="py-3.5 px-4 text-center">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sh-customers-table-body" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
                     </div>
-                    <p class="text-slate-600 font-bold text-sm">Chưa có sản phẩm nào đã bán trong kỳ này</p>
+
+                    <div id="sh-cust-empty-state" class="hidden p-8 text-center">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <p class="text-slate-600 font-bold text-sm">Chưa có thông tin khách hàng nào</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1038,94 +1215,107 @@
                 </button>
             </div>
 
-            <div id="printable-invoice" class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-slate-800">
-                <div class="text-center border-b border-slate-200 pb-3">
-                    <div class="flex items-center justify-center gap-2 mb-1">
-                        <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store" class="w-8 h-8 object-contain bg-transparent" onerror="this.style.display='none';">
-                        <h2 class="font-black text-xl text-slate-900 tracking-tight">A.I STORE</h2>
-                    </div>
-                    <p class="text-xs text-slate-500 font-medium">Hệ Thống Bán Lẻ Điện Thoại Chính Hãng</p>
-                </div>
-
-                <div class="text-xs space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <div class="flex justify-between"><span class="text-slate-500">Mã Đơn Hàng:</span> <span id="inv-code" class="font-mono font-black text-slate-800">#INV-1001</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Ngày bán:</span> <span id="inv-date" class="font-medium">--</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Khách hàng:</span> <span id="inv-customer-name" class="font-bold">Khách Lẻ</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Số điện thoại:</span> <span id="inv-customer-phone" class="font-mono">--</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Nhân viên chốt:</span> <span id="inv-seller-name" class="font-bold text-indigo-700">--</span></div>
-                </div>
-
-                <table class="w-full text-xs text-left border-collapse">
-                    <thead class="border-b border-slate-200 font-bold uppercase text-[10px] text-slate-400">
-                        <tr>
-                            <th class="py-2">Sản Phẩm & Tình Trạng</th>
-                            <th class="py-2 text-right">Đơn Giá</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <tr>
-                            <td class="py-2.5">
-                                <p id="inv-prod-name" class="font-extrabold text-slate-900">--</p>
-                                <p id="inv-prod-cond" class="text-[10px] text-slate-400">--</p>
-                            </td>
-                            <td id="inv-prod-price" class="py-2.5 text-right font-black text-slate-900">0 ₫</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="border-t-2 border-slate-900 pt-3 flex justify-between items-center text-sm">
-                    <span class="font-black text-slate-900">TỔNG THANH TOÁN:</span>
-                    <span id="inv-total-price" class="font-black text-indigo-700 text-base">0 ₫</span>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-2 no-print">
-                <button onclick="closeInvoiceModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">Đóng</button>
-                <button onclick="window.print()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-print"></i>
-                    <span>In Hóa Đơn</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Thông Báo Hệ Thống (Mở độc lập ra giữa màn hình) -->
-    <div id="notif-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4" onclick="handleNotifBackdropClick(event)">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[85vh] transform transition-all" onclick="event.stopPropagation()">
-            <div class="bg-slate-900 text-white px-5 py-4 flex justify-between items-center border-b border-slate-800">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-sm shadow-sm">
-                        <i class="fa-solid fa-bell"></i>
+    <!-- Modal Chi Tiết Lịch Sử Khách Hàng -->
+    <div id="customer-history-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-sm shadow-sm">
+                        <i class="fa-solid fa-user-clock"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-white text-sm sm:text-base">Thông Báo Hệ Thống</h4>
-                        <p class="text-[11px] text-slate-400">Lịch sử giao dịch & cập nhật kho máy</p>
+                        <h3 class="font-extrabold text-base sm:text-lg">Lịch Sử Mua Hàng Của Khách</h3>
+                        <p class="text-xs text-slate-400 font-medium" id="cust-modal-subtitle">Chi tiết các đơn máy đã chốt</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                    <button onclick="markAllNotificationsRead()" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 transition">
-                        Đã đọc tất cả
-                    </button>
-                    <button onclick="closeNotificationsModal()" class="text-slate-400 hover:text-white transition w-7 h-7 rounded-full flex items-center justify-center hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
+                <button type="button" onclick="closeCustomerHistoryModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Profile Tóm Tắt Của Khách -->
+            <div class="p-4 sm:p-5 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Khách Hàng</span>
+                    <p id="cust-modal-name" class="font-extrabold text-slate-900 text-sm truncate">--</p>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Số Điện Thoại</span>
+                    <p id="cust-modal-phone" class="font-mono font-bold text-slate-700 text-xs mt-0.5">--</p>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Tổng Máy Đã Mua</span>
+                    <p id="cust-modal-count" class="font-black text-indigo-600 text-sm">0 máy</p>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Tổng Chi Tiêu</span>
+                    <p id="cust-modal-total-spend" class="font-black text-purple-700 text-sm">0 ₫</p>
                 </div>
             </div>
 
-            <div id="notif-list" class="max-h-[60vh] overflow-y-auto custom-scrollbar divide-y divide-slate-100 text-left bg-white p-2">
-                <!-- Notifications dynamically inserted here -->
+            <!-- Bảng danh sách máy khách này đã mua -->
+            <div class="p-4 overflow-y-auto custom-scrollbar flex-1">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-500 uppercase text-[10px] font-bold">
+                        <tr>
+                            <th class="py-2.5 px-3 whitespace-nowrap">Ngày Bán</th>
+                            <th class="py-2.5 px-3">Sản Phẩm & IMEI</th>
+                            <th class="py-2.5 px-3 text-right whitespace-nowrap">Giá Bán</th>
+    <!-- Modal Xem Lịch Sử Mua Hàng Của Khách Hàng -->
+    <div id="customer-history-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-purple-600 flex items-center justify-center text-white text-sm">
+                        <i class="fa-solid fa-user-clock"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base">Lịch Sử Mua Hàng Khách Hàng</h3>
+                        <p class="text-[11px] text-slate-400">Danh sách các thiết bị khách đã mua tại cửa hàng</p>
+                    </div>
+                </div>
+                <button onclick="closeCustomerHistoryModal()" class="text-slate-400 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
-            <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
-                <button onclick="closeNotificationsModal()" class="px-4 py-1.5 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-4">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h4 id="cust-modal-name" class="font-black text-slate-900 text-base">Khách Lẻ</h4>
+                        <p id="cust-modal-phone" class="text-xs font-mono font-medium text-slate-500 mt-0.5">--</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="cust-modal-count" class="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">0 máy</span>
+                        <p id="cust-modal-total-spend" class="text-base font-black text-slate-900 mt-1">0 ₫</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-slate-200/80">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
+                            <tr>
+                                <th class="py-2.5 px-3">Ngày Mua</th>
+                                <th class="py-2.5 px-3">Sản Phẩm & Cấu Hình</th>
+                                <th class="py-2.5 px-3 text-right">Giá Bán</th>
+                                <th class="py-2.5 px-3">Nhân Viên Bán</th>
+                                <th class="py-2.5 px-3 text-center">Hóa Đơn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cust-modal-items-tbody" class="divide-y divide-slate-100 font-medium">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="closeCustomerHistoryModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
                     Đóng
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
     <!-- Application Script Logic -->
     <script type="module">
@@ -1161,6 +1351,7 @@
         let userRole = 'staff';
         let products = [];
         let currentTab = 'inventory';
+        let currentSalesHistorySubTab = 'soldmachines';
         let sortMode = 'DEFAULT';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
@@ -1944,7 +2135,7 @@
             }
 
             currentTab = tabName;
-            ['inventory', 'commission', 'profit', 'management'].forEach(t => {
+            ['inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 const view = document.getElementById(`view-${t}`);
                 if (btn) {
@@ -1967,239 +2158,65 @@
             });
             if (tabName === 'management') {
                 window.loadProfilesList();
+            } else if (tabName === 'sales-history') {
+                window.renderSalesHistoryView();
             }
             window.renderApp();
         };
 
-        window.handleDropdownSortChange = function() {
-            sortMode = document.getElementById('filter-sort').value;
-            updateSortIcons();
-            window.renderApp();
-        };
+        window.currentSalesSubTab = 'items';
+        window.switchSalesSubTab = function(subTab) {
+            window.currentSalesSubTab = subTab;
+            const btnItems = document.getElementById('subtab-btn-sold-items');
+            const btnCust = document.getElementById('subtab-btn-customers');
+            const secItems = document.getElementById('sales-section-items');
+            const secCust = document.getElementById('sales-section-customers');
 
-        window.toggleSortColumn = function(column) {
-            if (column === 'name') {
-                if (sortMode === 'NAME_ASC') sortMode = 'NAME_DESC';
-                else sortMode = 'NAME_ASC';
-            } else if (column === 'price') {
-                if (sortMode === 'PRICE_DESC') sortMode = 'PRICE_ASC';
-                else sortMode = 'PRICE_DESC';
+            if (subTab === 'items') {
+                if (btnItems) btnItems.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
+                if (btnCust) btnCust.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+                if (secItems) secItems.classList.remove('hidden');
+                if (secCust) secCust.classList.add('hidden');
+                window.renderSoldItemsTable();
+            } else {
+                if (btnCust) btnCust.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
+                if (btnItems) btnItems.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+                if (secCust) secCust.classList.remove('hidden');
+                if (secItems) secItems.classList.add('hidden');
+                window.renderCustomersView();
             }
-            const sortDropdown = document.getElementById('filter-sort');
-            if (sortDropdown) sortDropdown.value = sortMode;
-            updateSortIcons();
-            window.renderApp();
         };
 
-        function updateSortIcons() {
-            const iconName = document.getElementById('sort-icon-name');
-            const iconPrice = document.getElementById('sort-icon-price');
-            if (iconName) {
-                if (sortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
-                else if (sortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
-                else iconName.innerHTML = '<i class="fa-solid fa-sort"></i>';
+        window.renderSalesHistoryView = function() {
+            if (window.currentSalesSubTab === 'customers') {
+                window.renderCustomersView();
+            } else {
+                window.renderSoldItemsTable();
             }
-            if (iconPrice) {
-                if (sortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-indigo-600"></i>';
-                else if (sortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-indigo-600"></i>';
-                else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
-            }
-        }
-
-        window.exportToCSV = function() {
-            if (!products || products.length === 0) {
-                showToast('Không có dữ liệu trong kho để xuất!', 'error');
-                return;
-            }
-
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI & Mô Tả', 'Ngày Nhập', 'Nhân Viên Bán', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
-
-            const rows = products.map(p => {
-                const row = [
-                    `"${p.id || ''}"`,
-                    `"${p.brand || ''}"`,
-                    `"${p.name || ''}"`,
-                    `"${p.ram || ''}"`,
-                    `"${p.storage || ''}"`,
-                    isOwner ? p.importPrice || 0 : '',
-                    p.sellingPrice || 0,
-                    p.commission || 0,
-                    `"${p.status === 'SOLD' ? 'Đã bán' : 'Còn hàng'}"`,
-                    `"${(p.condition || '').replace(/"/g, '""')}"`,
-                    `"${p.importedAt || ''}"`,
-                    `"${p.seller || ''}"`,
-                    `"${p.customerName || ''}"`,
-                    `"${p.customerPhone || ''}"`,
-                    `"${p.soldAt || ''}"`
-                ];
-                return row.filter((_, idx) => isOwner || idx !== 5).join(',');
-            });
-
-            const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', `aistore_kho_hang_${new Date().toISOString().slice(0, 10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('Đã xuất file CSV thành công!');
         };
 
-        window.handleCSVUpload = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
-                if (lines.length <= 1) {
-                    showToast('File CSV không có dữ liệu!', 'error');
-                    return;
-                }
-
-                let importedCount = 0;
-                for (let i = 1; i < lines.length; i++) {
-                    const cols = lines[i].split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
-                    if (cols.length >= 3) {
-                        const newProd = {
-                            id: cols[0] || ('csv-' + Date.now() + '-' + i),
-                            brand: cols[1] || 'Khác',
-                            name: cols[2] || 'Sản phẩm mới',
-                            ram: cols[3] || '',
-                            storage: cols[4] || '',
-                            importPrice: parseNumberInput(cols[5]),
-                            sellingPrice: parseNumberInput(cols[6]),
-                            commission: parseNumberInput(cols[7]),
-                            status: (cols[8] && cols[8].toLowerCase().includes('bán')) ? 'SOLD' : 'AVAILABLE',
-                            condition: cols[9] || '',
-                            seller: cols[10] || '',
-                            customerName: cols[11] || '',
-                            customerPhone: cols[12] || '',
-                            soldAt: cols[13] || ''
-                        };
-                        products.unshift(newProd);
-                        importedCount++;
-                    }
-                }
-
-                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-                window.renderApp();
-                showToast(`Đã nhập thành công ${importedCount} máy từ CSV!`);
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        };
-
-        window.handlePeriodTypeChange = function(type) {
-            const periodSelect = document.getElementById(`${type}-period-type`);
-            const monthSelect = document.getElementById(`${type}-filter-month`);
-            const quarterSelect = document.getElementById(`${type}-filter-quarter`);
-            const yearSelect = document.getElementById(`${type}-filter-year`);
-
-            const val = periodSelect.value;
-            monthSelect.classList.toggle('hidden', val !== 'MONTH');
-            quarterSelect.classList.toggle('hidden', val !== 'QUARTER');
-            yearSelect.classList.toggle('hidden', val === 'ALL');
-
-            if (type === 'comm') window.renderCommissionReport();
-            else window.renderProfitReport();
-        };
-
-        window.renderApp = function() {
-            if (currentTab === 'inventory') renderInventoryTable();
-            else if (currentTab === 'commission') window.renderCommissionReport();
-            else if (currentTab === 'profit') window.renderProfitReport();
-        };
-
-        function renderInventoryTable() {
-            const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
-            const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
+        window.renderSoldItemsTable = function() {
+            const searchVal = document.getElementById('sales-search-input')?.value.toLowerCase().trim() || '';
             const perm = getPermissions();
             const currentStaffName = currentUserProfile?.full_name || '';
 
-            let availableList = products.filter(p => {
-                if (p.status === 'SOLD') return false;
-                const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
-                                    (p.condition || '').toLowerCase().includes(searchVal);
-                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
-                return matchSearch && matchBrand;
-            });
-
             let soldList = products.filter(p => {
                 if (p.status !== 'SOLD') return false;
-                // Nếu là nhân viên thuần túy, chỉ xem máy do chính mình chốt
                 if (!perm.canViewProfitTab && p.seller !== currentStaffName) return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.brand || '').toLowerCase().includes(searchVal) || 
                                     (p.condition || '').toLowerCase().includes(searchVal) ||
                                     (p.customerName || '').toLowerCase().includes(searchVal) ||
+                                    (p.customerPhone || '').toLowerCase().includes(searchVal) ||
                                     (p.seller || '').toLowerCase().includes(searchVal);
-                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
-                return matchSearch && matchBrand;
+                return matchSearch;
             });
 
-            const applySort = (list) => {
-                if (sortMode === 'PRICE_DESC') {
-                    list.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
-                } else if (sortMode === 'PRICE_ASC') {
-                    list.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
-                } else if (sortMode === 'NAME_ASC') {
-                    list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                } else if (sortMode === 'NAME_DESC') {
-                    list.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-                }
-            };
-            applySort(availableList);
-            applySort(soldList);
+            // Sắp xếp ngày bán mới nhất lên đầu
+            soldList.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
 
-            const badgeAvailable = document.getElementById('badge-available-count');
-            if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
             const badgeSold = document.getElementById('badge-sold-count');
-            if (badgeSold) badgeSold.innerText = `${soldList.length} máy`;
-
-            const tbodyAvailable = document.getElementById('product-table-body');
-            const emptyState = document.getElementById('empty-state');
-            if (tbodyAvailable) {
-                if (availableList.length === 0) {
-                    tbodyAvailable.innerHTML = '';
-                    if (emptyState) emptyState.classList.remove('hidden');
-                } else {
-                    if (emptyState) emptyState.classList.add('hidden');
-                    tbodyAvailable.innerHTML = availableList.map(p => `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-sm"></i>
-                                </button>
-                            </td>
-                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${p.importedAt || p.soldAt || new Date().toISOString().split('T')[0]}
-                            </td>
-                            <td class="py-3 px-4">
-                                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
-                                <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
-                                <p class="text-xs text-slate-400 mt-0.5">${p.ram || ''} ${p.storage || ''}</p>
-                            </td>
-                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
-                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                            <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
-                            <td class="py-3 px-4 text-center">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                    Còn hàng
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
-                                    <i class="fa-solid fa-cart-shopping"></i> Bán
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-            }
+            if (badgeSold) badgeSold.innerText = `${soldList.length} máy đã bán`;
 
             const tbodySold = document.getElementById('sold-table-body');
             const emptySoldState = document.getElementById('empty-sold-state');
@@ -2240,6 +2257,84 @@
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto" title="In phiếu bán hàng">
                                     <i class="fa-solid fa-receipt text-indigo-600"></i> Hóa đơn
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        };
+
+        window.renderApp = function() {
+            if (currentTab === 'inventory') renderInventoryTable();
+            else if (currentTab === 'sales-history') window.renderSalesHistoryView();
+            else if (currentTab === 'commission') window.renderCommissionReport();
+            else if (currentTab === 'profit') window.renderProfitReport();
+        };
+
+        function renderInventoryTable() {
+            const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
+            const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
+            const perm = getPermissions();
+
+            let availableList = products.filter(p => {
+                if (p.status === 'SOLD') return false;
+                const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.condition || '').toLowerCase().includes(searchVal);
+                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
+                return matchSearch && matchBrand;
+            });
+
+            const applySort = (list) => {
+                if (sortMode === 'PRICE_DESC') {
+                    list.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+                } else if (sortMode === 'PRICE_ASC') {
+                    list.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+                } else if (sortMode === 'NAME_ASC') {
+                    list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                } else if (sortMode === 'NAME_DESC') {
+                    list.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+                }
+            };
+            applySort(availableList);
+
+            const badgeAvailable = document.getElementById('badge-available-count');
+            if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
+
+            const tbodyAvailable = document.getElementById('product-table-body');
+            const emptyState = document.getElementById('empty-state');
+            if (tbodyAvailable) {
+                if (availableList.length === 0) {
+                    tbodyAvailable.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                } else {
+                    if (emptyState) emptyState.classList.add('hidden');
+                    tbodyAvailable.innerHTML = availableList.map(p => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
+                            </td>
+                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${p.importedAt || p.soldAt || new Date().toISOString().split('T')[0]}
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
+                                <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
+                                <p class="text-xs text-slate-400 mt-0.5">${p.ram || ''} ${p.storage || ''}</p>
+                            </td>
+                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
+                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                    Còn hàng
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
+                                    <i class="fa-solid fa-cart-shopping"></i> Bán
                                 </button>
                             </td>
                         </tr>
