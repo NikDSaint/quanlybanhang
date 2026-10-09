@@ -840,7 +840,7 @@
     </div>
 
     <!-- Modal: Xem Chi Tiết Sản Phẩm -->
-    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
                 <div class="flex items-center space-x-3">
@@ -2384,6 +2384,11 @@
             if (tbody) {
                 tbody.innerHTML = matchingItems.map(p => `
                     <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 text-center">
+                            <button onclick="openDetailModal('${p.id}')" class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết thông số & tình trạng máy">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </td>
                         <td class="py-2.5 px-3 font-mono text-[11px] text-slate-600 whitespace-nowrap">
                             ${p.soldAt || '--'}
                         </td>
