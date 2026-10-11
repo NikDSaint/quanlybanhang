@@ -787,6 +787,70 @@
         </div>
     </div>
 
+    <!-- Modal Chỉnh Sửa Nhân Sự (Dành Cho Owner) -->
+    <div id="edit-staff-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
+            <div class="bg-indigo-700 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-base sm:text-lg">Chỉnh Sửa Tài Khoản Nhân Sự</h3>
+                        <p class="text-xs text-indigo-100 font-medium">Cập nhật thông tin & phân bổ bảo trợ</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditStaffModal()" class="text-indigo-200 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="form-edit-staff" onsubmit="handleEditStaffSubmit(event)" class="p-6 space-y-3.5 overflow-y-auto custom-scrollbar">
+                <input type="hidden" id="edit-staff-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Họ Và Tên <span class="text-rose-500">*</span></label>
+                    <input type="text" id="edit-staff-name" required placeholder="Họ và tên..." class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tên Đăng Nhập / Email <span class="text-rose-500">*</span></label>
+                    <input type="text" id="edit-staff-email" required placeholder="Tên đăng nhập hoặc email..." class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Đổi Mật Khẩu (Để trống nếu giữ nguyên)</label>
+                    <input type="password" id="edit-staff-password" minlength="6" placeholder="Nhập mật khẩu mới..." class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Chức Danh Phân Quyền <span class="text-rose-500">*</span></label>
+                    <select id="edit-staff-role" onchange="handleEditStaffRoleChange()" class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
+                        <option value="staff">Nhân Viên Bán Hàng</option>
+                        <option value="manager">Quản Lý Cửa Hàng</option>
+                    </select>
+                </div>
+
+                <div id="edit-staff-manager-wrapper">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Người Bảo Trợ (Quản Lý Trực Thuộc)</label>
+                    <select id="edit-staff-manager-id" class="w-full px-3.5 py-2 text-xs sm:text-sm border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-medium bg-purple-50/40 text-slate-800">
+                        <option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>
+                    </select>
+                </div>
+
+                <div id="edit-staff-msg" class="hidden p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+
+                <div class="pt-3 flex justify-end space-x-2 border-t border-slate-100">
+                    <button type="button" onclick="closeEditStaffModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">Hủy</button>
+                    <button type="submit" id="btn-save-edit-staff" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Lưu Thay Đổi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Đăng Nhập -->
     <div id="auth-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-[28px] shadow-2xl shadow-indigo-950/15 w-full max-w-md overflow-hidden border border-slate-100/90 relative">
@@ -1295,6 +1359,54 @@
                     Đóng
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Chỉnh Sửa Thông Tin Khách Hàng -->
+    <div id="edit-customer-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 flex flex-col">
+            <div class="bg-indigo-600 text-white px-5 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-sm shadow-xs">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm sm:text-base">Sửa Thông Tin Khách Hàng</h4>
+                        <p class="text-[10px] text-indigo-100" id="edit-cust-prod-title">Cập nhật đơn bán</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditCustomerModal()" class="text-indigo-200 hover:text-white transition w-7 h-7 rounded-full flex items-center justify-center hover:bg-indigo-700">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleEditCustomerSubmit(event)" class="p-5 space-y-3.5">
+                <input type="hidden" id="edit-cust-prod-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Tên Khách Hàng <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="edit-cust-name" required placeholder="VD: Ngọc Chiên, Khách Lẻ..." class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Số Điện Thoại
+                    </label>
+                    <input type="text" id="edit-cust-phone" placeholder="VD: 0988..." class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono font-medium">
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-2 border-t border-slate-100">
+                    <button type="button" onclick="closeEditCustomerModal()" class="px-3.5 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 transition">
+                        Hủy
+                    </button>
+                    <button type="submit" id="btn-save-cust" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Lưu Thay Đổi</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -2242,8 +2354,15 @@
                                 ` : ''}
                             </td>
                             <td class="py-3 px-4 text-xs">
-                                <div class="font-bold text-slate-800">${escapeHtml(p.customerName || 'Khách Lẻ')}</div>
-                                <div class="text-[11px] text-slate-500 font-mono">${escapeHtml(p.customerPhone || '')}</div>
+                                <div class="flex items-center justify-between gap-1 group">
+                                    <div>
+                                        <div class="font-bold text-slate-800">${escapeHtml(p.customerName || 'Khách Lẻ')}</div>
+                                        <div class="text-[11px] text-slate-500 font-mono">${escapeHtml(p.customerPhone || '')}</div>
+                                    </div>
+                                    <button onclick="openEditCustomerModal('${p.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition shrink-0" title="Sửa tên / SĐT khách">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </button>
+                                </div>
                             </td>
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto" title="In phiếu bán hàng">
@@ -2418,6 +2537,56 @@
         window.closeCustomerHistoryModal = function() {
             const modal = document.getElementById('customer-history-modal');
             if (modal) modal.classList.add('hidden');
+        };
+
+        window.openEditCustomerModal = function(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+            document.getElementById('edit-cust-prod-id').value = p.id;
+            const titleEl = document.getElementById('edit-cust-prod-title');
+            if (titleEl) titleEl.innerText = `${p.brand} ${p.name}`;
+            document.getElementById('edit-cust-name').value = p.customerName || 'Khách Lẻ';
+            document.getElementById('edit-cust-phone').value = p.customerPhone || '';
+            const modal = document.getElementById('edit-customer-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeEditCustomerModal = function() {
+            const modal = document.getElementById('edit-customer-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.handleEditCustomerSubmit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-cust-prod-id').value;
+            const newName = document.getElementById('edit-cust-name').value.trim() || 'Khách Lẻ';
+            const newPhone = document.getElementById('edit-cust-phone').value.trim();
+
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            p.customerName = newName;
+            p.customerPhone = newPhone;
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+
+            try {
+                await setDoc(doc(db, "products", id), {
+                    customer_name: newName,
+                    customer_phone: newPhone
+                }, { merge: true });
+            } catch (err) {
+                console.warn("Lỗi lưu khách hàng lên Firebase:", err);
+            }
+
+            window.closeEditCustomerModal();
+            window.renderSalesHistoryView();
+            showToast(`Đã đổi tên khách hàng thành "${newName}"!`, 'success');
         };
 
         window.renderCommissionReport = function() {
@@ -3930,7 +4099,7 @@
                     readIds.add(String(n.id));
                 }
             });
-            saveReadReadIds(readIds);
+            saveReadNotifIds(readIds);
             
             const badgeEl = document.getElementById('notif-badge');
             if (badgeEl) {
@@ -3940,12 +4109,6 @@
 
             window.loadAndRenderNotifications();
         };
-
-        function saveReadReadIds(idSet) {
-            try {
-                localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(Array.from(idSet)));
-            } catch (e) {}
-        }
 
         window.renderApp = function() {
             if (currentTab === 'inventory') renderInventoryTable();
