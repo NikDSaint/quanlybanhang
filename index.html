@@ -305,7 +305,7 @@
                                     <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
-                                    <th class="py-3.5 px-4">Người Bán</th>
+                                    <th class="py-3.5 px-4 whitespace-nowrap">Người Bán</th>
                                     <th class="py-3.5 px-4">Khách Hàng</th>
                                     <th class="py-3.5 px-4 text-center">Hóa Đơn</th>
                                 </tr>
@@ -2414,10 +2414,11 @@
                                     <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                     <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
                                 </div>
+                                ${p.imei || p.ram || p.storage ? `
                                 <div class="flex items-center gap-2 mt-0.5">
+                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
-                                    <span class="text-[11px] text-slate-500 font-medium truncate max-w-xs" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || '')}</span>
-                                </div>
+                                </div>` : ''}
                             </td>
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
@@ -2426,14 +2427,14 @@
                                     <div class="text-[10px] font-bold text-amber-600" title="Hoa hồng Quản lý bảo trợ">+${formatVND(p.managerCommission)} (QL)</div>
                                 ` : ''}
                             </td>
-                            <td class="py-3 px-4">
-                                <div class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2 py-1 rounded-lg inline-flex items-center gap-1">
-                                    <i class="fa-solid fa-user-tag text-[10px]"></i>
-                                    <span>${escapeHtml(p.seller || '--')}</span>
-                                    ${isMyDirectOrder ? '<span class="text-[9px] bg-emerald-500 text-white px-1 rounded-sm ml-1">Bạn</span>' : ''}
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <div class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2.5 py-1.5 rounded-xl inline-flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-user-tag text-[10px] shrink-0"></i>
+                                    <span class="whitespace-nowrap">${escapeHtml(p.seller || '--')}</span>
+                                    ${isMyDirectOrder ? '<span class="text-[9px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-md font-bold shrink-0">Bạn</span>' : ''}
                                 </div>
                                 ${p.manager ? `
-                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium">
+                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium whitespace-nowrap">
                                         <i class="fa-solid fa-user-shield text-[9px] text-purple-500"></i>
                                         <span>QL: ${escapeHtml(p.manager)}</span>
                                     </div>
