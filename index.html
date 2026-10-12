@@ -893,6 +893,13 @@
                     </div>
                 </div>
 
+                <div class="flex items-center justify-between text-xs pt-0.5">
+                    <label class="flex items-center space-x-2 text-slate-600 hover:text-slate-900 cursor-pointer select-none">
+                        <input type="checkbox" id="auth-remember" checked class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 accent-purple-600">
+                        <span class="font-semibold text-slate-700">Duy trì đăng nhập trên thiết bị này</span>
+                    </label>
+                </div>
+
                 <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold leading-relaxed"></div>
 
                 <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-purple-500/25 active:scale-[0.99] transition flex items-center justify-center space-x-2">
@@ -1450,7 +1457,7 @@
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         // Cấu hình Firebase chính thức từ Console
@@ -1484,10 +1491,32 @@
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
+        const LOCAL_SESSION_KEY = 'aistore_remembered_session_v1';
         let systemProfilesList = [];
         let unsubscribeProducts = null;
         let unsubscribeNotifs = null;
         let unsubscribeProfiles = null;
+
+        function saveUserSession(sessionData) {
+            try {
+                localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(sessionData));
+            } catch(e) {}
+        }
+
+        function getSavedUserSession() {
+            try {
+                const raw = localStorage.getItem(LOCAL_SESSION_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function clearUserSession() {
+            try {
+                localStorage.removeItem(LOCAL_SESSION_KEY);
+            } catch(e) {}
+        }
 
         function getDeletedStaffIds() {
             try {
@@ -1649,6 +1678,27 @@
                 } catch(e) { console.error("Cache error", e); }
             }
 
+            // Tự động phục hồi phiên làm việc đã lưu trên thiết bị này (không bắt đăng nhập lại)
+            const savedSession = getSavedUserSession();
+            if (savedSession && savedSession.id) {
+                currentUser = { uid: savedSession.id, email: savedSession.email };
+                userRole = savedSession.role || 'staff';
+                currentUserProfile = {
+                    id: savedSession.id,
+                    email: savedSession.email,
+                    full_name: savedSession.full_name || 'Nhân Viên',
+                    role: userRole
+                };
+                showAuthModal(false);
+                updateUserUI();
+            }
+
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+            } catch(e) {
+                console.warn("Lỗi thiết lập tính kiên trì Firebase:", e);
+            }
+
             startRealtimeSync();
 
             onAuthStateChanged(auth, async (user) => {
@@ -1656,11 +1706,25 @@
                     currentUser = user;
                     await handleUserLoggedIn(user);
                 } else {
-                    currentUser = null;
-                    currentUserProfile = null;
-                    userRole = 'staff';
-                    showAuthModal(true);
-                    updateUserUI();
+                    const currentLocalSession = getSavedUserSession();
+                    if (currentLocalSession && currentLocalSession.id) {
+                        currentUser = { uid: currentLocalSession.id, email: currentLocalSession.email };
+                        userRole = currentLocalSession.role || 'staff';
+                        currentUserProfile = {
+                            id: currentLocalSession.id,
+                            email: currentLocalSession.email,
+                            full_name: currentLocalSession.full_name || 'Nhân Viên',
+                            role: userRole
+                        };
+                        showAuthModal(false);
+                        updateUserUI();
+                    } else {
+                        currentUser = null;
+                        currentUserProfile = null;
+                        userRole = 'staff';
+                        showAuthModal(true);
+                        updateUserUI();
+                    }
                 }
             });
         }
@@ -1849,6 +1913,16 @@
             }
             saveStaffAccounts(accounts);
 
+            const rememberMe = document.getElementById('auth-remember')?.checked !== false;
+            if (rememberMe) {
+                saveUserSession({
+                    id: user.uid,
+                    email: user.email,
+                    full_name: currentUserProfile.full_name,
+                    role: userRole
+                });
+            }
+
             updateUserUI();
             if (userRole === 'owner' || userRole === 'manager' || userRole === 'admin') {
                 loadProfilesList();
@@ -1929,6 +2003,7 @@
         };
 
         window.handleAuthActionClick = async function() {
+            clearUserSession();
             try { await signOut(auth); } catch (e) { console.warn(e); }
             currentUser = null;
             currentUserProfile = null;
@@ -1949,6 +2024,7 @@
             const password = document.getElementById('auth-password').value;
             const errBox = document.getElementById('auth-error-msg');
             const submitBtn = document.getElementById('auth-submit-btn');
+            const rememberMe = document.getElementById('auth-remember')?.checked !== false;
 
             if (errBox) errBox.classList.add('hidden');
 
@@ -1977,6 +2053,9 @@
                         full_name: matchedAccount.full_name,
                         role: userRole
                     };
+                    if (rememberMe) {
+                        saveUserSession(currentUserProfile);
+                    }
                     showAuthModal(false);
                     updateUserUI();
                     renderApp();
@@ -2106,6 +2185,13 @@
                         email: userEmail,
                         role: userRole || 'staff'
                     }, { merge: true });
+                }
+
+                // Cập nhật lại tên trong phiên đăng nhập đã lưu
+                const savedSession = getSavedUserSession();
+                if (savedSession) {
+                    savedSession.full_name = newName;
+                    saveUserSession(savedSession);
                 }
 
                 updateUserUI();
