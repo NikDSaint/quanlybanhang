@@ -169,6 +169,8 @@
                     </select>
                     <select id="filter-sort" onchange="handleDropdownSortChange()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
                         <option value="DEFAULT">Sắp xếp: Mới nhất</option>
+                        <option value="DATE_DESC">Ngày nhập: Mới nhất -> Cũ nhất</option>
+                        <option value="DATE_ASC">Ngày nhập: Cũ nhất -> Mới nhất</option>
                         <option value="PRICE_DESC">Giá bán: Cao -> Thấp</option>
                         <option value="PRICE_ASC">Giá bán: Thấp -> Cao</option>
                         <option value="NAME_ASC">Tên máy: A đến Z</option>
@@ -213,7 +215,14 @@
                             <tr>
                                 <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
                                 <th class="py-3.5 px-4 text-center w-16">Xem</th>
-                                <th class="py-3.5 px-4 whitespace-nowrap">Ngày Nhập</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
+                                    <div class="flex items-center space-x-1.5">
+                                        <span>Ngày Nhập</span>
+                                        <span id="sort-icon-date" class="text-xs text-slate-400">
+                                            <i class="fa-solid fa-sort"></i>
+                                        </span>
+                                    </div>
+                                </th>
                                 <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
                                     <div class="flex items-center space-x-1.5">
                                         <span>Sản Phẩm & Cấu Hình / IMEI</span>
@@ -2294,6 +2303,32 @@
             return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
         }
 
+        // Định dạng hiển thị ngày theo chuẩn ngày/tháng/năm (DD/MM/YYYY)
+        function formatDateVN(dateStr) {
+            if (!dateStr) return '--';
+            const cleanStr = String(dateStr).trim();
+            // Nếu đã là định dạng DD/MM/YYYY thì trả về luôn
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(cleanStr)) return cleanStr;
+            
+            // Xử lý định dạng ISO hoặc YYYY-MM-DD
+            const parts = cleanStr.split('T')[0].split('-');
+            if (parts.length === 3 && parts[0].length === 4) {
+                const year = parts[0];
+                const month = parts[1].padStart(2, '0');
+                const day = parts[2].padStart(2, '0');
+                return `${day}/${month}/${year}`;
+            }
+
+            const d = new Date(cleanStr);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+            return cleanStr;
+        }
+
         window.switchTab = function(tabName) {
             const perm = getPermissions();
             if (!perm.canViewProfitTab && tabName === 'profit') {
@@ -3954,7 +3989,9 @@
         };
 
         window.toggleSortColumn = function(column) {
-            if (column === 'name') {
+            if (column === 'date') {
+                sortMode = (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') ? 'DATE_ASC' : 'DATE_DESC';
+            } else if (column === 'name') {
                 sortMode = (sortMode === 'NAME_ASC') ? 'NAME_DESC' : 'NAME_ASC';
             } else if (column === 'price') {
                 sortMode = (sortMode === 'PRICE_DESC') ? 'PRICE_ASC' : 'PRICE_DESC';
@@ -3966,8 +4003,15 @@
         };
 
         function updateSortIcons() {
+            const iconDate = document.getElementById('sort-icon-date');
             const iconName = document.getElementById('sort-icon-name');
             const iconPrice = document.getElementById('sort-icon-price');
+            
+            if (iconDate) {
+                if (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-indigo-600"></i>';
+                else if (sortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-indigo-600"></i>';
+                else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
             if (iconName) {
                 if (sortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
                 else if (sortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
@@ -4226,6 +4270,10 @@
                 availableList.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             } else if (sortMode === 'NAME_DESC') {
                 availableList.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            } else if (sortMode === 'DATE_ASC') {
+                availableList.sort((a, b) => (a.importedAt || '').localeCompare(b.importedAt || ''));
+            } else if (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') {
+                availableList.sort((a, b) => (b.importedAt || '').localeCompare(a.importedAt || ''));
             }
 
             const badgeAvailable = document.getElementById('badge-available-count');
@@ -4250,7 +4298,7 @@
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${p.importedAt || new Date().toISOString().split('T')[0]}
+                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${formatDateVN(p.importedAt)}
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5">
