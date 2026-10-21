@@ -241,7 +241,6 @@
                                     </div>
                                 </th>
                                 <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
-                                <th class="py-3.5 px-4 text-center">Trạng Thái</th>
                                 <th class="py-3.5 px-4 text-center">Thao Tác</th>
                             </tr>
                         </thead>
@@ -961,6 +960,28 @@
                     </div>
                 </div>
 
+                <!-- 3 thông số chi tiết: Màu, Pin, Hình thức -->
+                <div class="grid grid-cols-3 gap-2.5">
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Màu Sắc
+                        </span>
+                        <p id="dt-color" class="text-xs font-black text-slate-800 mt-0.5">--</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-battery-three-quarters text-emerald-500 text-[10px]"></i> Pin Đỉnh
+                        </span>
+                        <p id="dt-battery" class="text-xs font-black text-emerald-600 mt-0.5">--</p>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-shield-halved text-purple-500 text-[10px]"></i> Hình Thức
+                        </span>
+                        <p id="dt-appearance" class="text-xs font-black text-purple-700 mt-0.5">--</p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     <div id="dt-box-import" class="bg-slate-100/80 p-3 rounded-2xl border border-slate-200">
                         <span class="text-[10px] font-bold text-slate-500 uppercase">Giá Vốn Nhập</span>
@@ -1135,6 +1156,38 @@
                     </div>
                 </div>
 
+                <!-- Hàng 1: Màu sắc và Hình thức chung một hàng (Hình thức là ô điền) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-palette text-indigo-500"></i> Màu Sắc
+                        </label>
+                        <input type="text" id="form-color" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-shield-halved text-purple-500"></i> Hình Thức
+                        </label>
+                        <input type="text" id="form-appearance" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
+                    </div>
+                </div>
+
+                <!-- Hàng 2: Pin đỉnh và Số IMEI chung một hàng -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-battery-three-quarters text-emerald-500"></i> Pin Đỉnh
+                        </label>
+                        <input type="text" id="form-battery" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI
+                        </label>
+                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white font-mono">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
@@ -1175,16 +1228,10 @@
 
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Số IMEI
+                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clipboard-check text-slate-500"></i> Tình Trạng Khác
                         </label>
-                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Tình Trạng Máy
-                        </label>
-                        <input type="text" id="form-condition" placeholder="Mô tả..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <input type="text" id="form-condition" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                     </div>
                 </div>
 
@@ -1752,6 +1799,9 @@
                                 name: item.name || '',
                                 ram: item.ram || '',
                                 storage: item.storage || '',
+                                color: item.color || '',
+                                battery: item.battery || '',
+                                appearance: item.appearance || '',
                                 importPrice: Number(item.import_price) || 0,
                                 sellingPrice: Number(item.selling_price) || 0,
                                 commission: Number(item.commission) || 0,
@@ -2442,18 +2492,20 @@
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
+                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${formatDateVN(p.soldAt)}
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                     <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
+                                    ${p.color ? `<span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(p.color)}</span>` : ''}
                                 </div>
-                                ${p.imei || p.ram || p.storage ? `
-                                <div class="flex items-center gap-2 mt-0.5">
+                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                     ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
+                                    ${p.battery ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">Pin: ${escapeHtml(p.battery)}</span>` : ''}
+                                    ${p.appearance ? `<span class="text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-100">${escapeHtml(p.appearance)}</span>` : ''}
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
-                                </div>` : ''}
+                                </div>
                             </td>
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
@@ -2967,6 +3019,14 @@
             document.getElementById('dt-brand').innerText = p.brand || '--';
             document.getElementById('dt-ram').innerText = p.ram || '--';
             document.getElementById('dt-storage').innerText = p.storage || '--';
+            
+            // Cập nhật thông số Màu sắc, Pin, Hình thức vào Modal Chi Tiết
+            const dtColor = document.getElementById('dt-color');
+            const dtBattery = document.getElementById('dt-battery');
+            const dtAppearance = document.getElementById('dt-appearance');
+            if (dtColor) dtColor.innerText = p.color || 'Chưa cập nhật';
+            if (dtBattery) dtBattery.innerText = p.battery || 'Chưa kiểm tra';
+            if (dtAppearance) dtAppearance.innerText = p.appearance || 'Bình thường';
 
             const importBox = document.getElementById('dt-box-import');
             if (importBox) importBox.style.display = perm.canViewCosts ? 'block' : 'none';
@@ -3090,6 +3150,13 @@
                 customStorage.value = '';
                 customStorage.classList.add('hidden');
             }
+            const colorInput = document.getElementById('form-color');
+            if (colorInput) colorInput.value = '';
+            const appearanceInput = document.getElementById('form-appearance');
+            if (appearanceInput) appearanceInput.value = '';
+            const batteryInput = document.getElementById('form-battery');
+            if (batteryInput) batteryInput.value = '';
+
             document.getElementById('product-modal').classList.remove('hidden');
         };
 
@@ -3173,6 +3240,14 @@
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
 
+            // Gán dữ liệu Màu sắc, Hình thức, Pin khi chỉnh sửa
+            const colorInput = document.getElementById('form-color');
+            if (colorInput) colorInput.value = p.color || '';
+            const appearanceInput = document.getElementById('form-appearance');
+            if (appearanceInput) appearanceInput.value = p.appearance || '';
+            const batteryInput = document.getElementById('form-battery');
+            if (batteryInput) batteryInput.value = p.battery || '';
+
             document.getElementById('product-modal').classList.remove('hidden');
         };
 
@@ -3199,6 +3274,9 @@
                 name: document.getElementById('form-name').value.trim(),
                 ram: ramVal,
                 storage: storageVal,
+                color: document.getElementById('form-color')?.value.trim() || '',
+                appearance: document.getElementById('form-appearance')?.value.trim() || '',
+                battery: document.getElementById('form-battery')?.value.trim() || '',
                 importPrice: parseNumberInput(document.getElementById('form-import-price').value),
                 sellingPrice: parseNumberInput(document.getElementById('form-selling-price').value),
                 status: document.getElementById('form-status').value,
@@ -3227,6 +3305,9 @@
                     name: newProd.name,
                     ram: newProd.ram,
                     storage: newProd.storage,
+                    color: newProd.color,
+                    battery: newProd.battery,
+                    appearance: newProd.appearance,
                     import_price: newProd.importPrice,
                     selling_price: newProd.sellingPrice,
                     commission: newProd.commission,
@@ -4031,7 +4112,7 @@
             }
 
             const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Tình Trạng Máy', 'Ngày Nhập', 'Nhân Viên Bán', 'Người Bảo Trợ (QL)', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
+            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', 'Màu Sắc', 'Pin Đỉnh', 'Hình Thức', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Tình Trạng Máy', 'Ngày Nhập', 'Nhân Viên Bán', 'Người Bảo Trợ (QL)', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
 
             const rows = products.map(p => {
                 const row = [
@@ -4040,6 +4121,9 @@
                     `"${p.name || ''}"`,
                     `"${p.ram || ''}"`,
                     `"${p.storage || ''}"`,
+                    `"${p.color || ''}"`,
+                    `"${p.battery || ''}"`,
+                    `"${p.appearance || ''}"`,
                     isOwner ? p.importPrice || 0 : '',
                     p.sellingPrice || 0,
                     p.commission || 0,
@@ -4053,7 +4137,7 @@
                     `"${p.customerPhone || ''}"`,
                     `"${p.soldAt || ''}"`
                 ];
-                return row.filter((_, idx) => isOwner || idx !== 5).join(',');
+                return row.filter((_, idx) => isOwner || idx !== 8).join(',');
             });
 
             const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
@@ -4257,6 +4341,8 @@
                 if (p.status === 'SOLD') return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
                                     (p.imei || '').toLowerCase().includes(searchVal) || 
+                                    (p.color || '').toLowerCase().includes(searchVal) || 
+                                    (p.appearance || '').toLowerCase().includes(searchVal) || 
                                     (p.condition || '').toLowerCase().includes(searchVal);
                 const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
                 return matchSearch && matchBrand;
@@ -4304,20 +4390,18 @@
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
                                     <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
+                                    ${p.color ? `<span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(p.color)}</span>` : ''}
                                 </div>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
+                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
+                                    ${p.battery ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">Pin: ${escapeHtml(p.battery)}</span>` : ''}
+                                    ${p.appearance ? `<span class="text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-100">${escapeHtml(p.appearance)}</span>` : ''}
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
                                 </div>
                             </td>
                             ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
                             <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
-                            <td class="py-3 px-4 text-center">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                    Còn hàng
-                                </span>
-                            </td>
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
                                     <i class="fa-solid fa-cart-shopping"></i> Bán
