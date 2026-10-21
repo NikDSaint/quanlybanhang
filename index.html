@@ -214,7 +214,7 @@
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
                             <tr>
                                 <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
-                                <th class="py-3.5 px-4 text-center w-16">Xem</th>
+                                <th class="py-3.5 px-2 text-center w-20 whitespace-nowrap">Thao Tác</th>
                                 <th class="py-3.5 px-4 whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
                                     <div class="flex items-center space-x-1.5">
                                         <span>Ngày Nhập</span>
@@ -241,7 +241,7 @@
                                     </div>
                                 </th>
                                 <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
-                                <th class="py-3.5 px-4 text-center">Thao Tác</th>
+                                <th class="py-3.5 px-4 text-center">Bán Hàng</th>
                             </tr>
                         </thead>
                         <tbody id="product-table-body" class="divide-y divide-slate-100 font-medium">
@@ -1051,9 +1051,14 @@
 
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
                 <div id="dt-actions-left" class="flex items-center space-x-2"></div>
-                <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
-                    Đóng
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button id="dt-btn-copy-info" type="button" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5 border border-indigo-200/80">
+                        <i class="fa-regular fa-copy"></i> Copy Bài Đăng
+                    </button>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+                        Đóng
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -3062,6 +3067,13 @@
                 soldBox.classList.add('hidden');
             }
 
+            const copyBtn = document.getElementById('dt-btn-copy-info');
+            if (copyBtn) {
+                copyBtn.onclick = function() {
+                    window.copyProductPost(p.id);
+                };
+            }
+
             const actionsLeft = document.getElementById('dt-actions-left');
             if (actionsLeft) {
                 if (perm.canAddEditProduct) {
@@ -4038,6 +4050,68 @@
             document.getElementById('invoice-modal').classList.add('hidden');
         };
 
+        // Hàm sao chép thông tin sản phẩm chuẩn để đăng bài bán hàng
+        window.copyProductPost = function(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            // Xử lý các thành phần tình trạng máy
+            const conditionDetails = [];
+            if (p.battery) conditionDetails.push(`Pin ${p.battery}`);
+            if (p.appearance) conditionDetails.push(`Hình thức ${p.appearance}`);
+            if (p.condition) conditionDetails.push(p.condition);
+
+            const conditionText = conditionDetails.length > 0 
+                ? conditionDetails.join(', ') 
+                : 'Zin nguyên bản';
+
+            const capacityParts = [];
+            if (p.ram) capacityParts.push(p.ram);
+            if (p.storage) capacityParts.push(p.storage);
+            const capacityText = capacityParts.length > 0 ? capacityParts.join(' / ') : '--';
+
+            // Định dạng bài đăng rõ ràng, đẹp mắt để đăng Zalo / Facebook / Tin nhắn
+            const postContent = 
+`📱 ${p.brand ? p.brand + ' ' : ''}${p.name}
+🎨 Màu sắc: ${p.color || 'Tiêu chuẩn'}
+💾 Dung lượng: ${capacityText}
+✨ Tình trạng: ${conditionText}
+💰 Giá bán: ${formatVND(p.sellingPrice)}`;
+
+            // Sử dụng textarea hỗ trợ execCommand('copy') tương thích hoàn hảo trong mọi iFrame/trình duyệt
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = postContent;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.left = '-9999px';
+            tempTextarea.style.top = '0';
+            document.body.appendChild(tempTextarea);
+            tempTextarea.focus();
+            tempTextarea.select();
+
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+            } catch (err) {
+                console.warn('Lỗi khi copy qua execCommand:', err);
+            }
+            document.body.removeChild(tempTextarea);
+
+            if (success) {
+                showToast(`Đã sao chép thông tin máy "${p.name}"!`, 'success');
+            } else {
+                // Fallback nếu trình duyệt cho phép navigator.clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(postContent).then(() => {
+                        showToast(`Đã sao chép thông tin máy "${p.name}"!`, 'success');
+                    }).catch(() => {
+                        showToast('Không thể sao chép tự động, vui lòng thử lại!', 'error');
+                    });
+                } else {
+                    showToast('Trình duyệt chưa cấp quyền sao chép tự động!', 'error');
+                }
+            }
+        };
+
         window.formatPriceInput = function(input) {
             let val = input.value.replace(/\D/g, '');
             input.value = val ? new Intl.NumberFormat('vi-VN').format(Number(val)) : '';
@@ -4378,10 +4452,15 @@
                             <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">
                                 ${index + 1}
                             </td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-sm"></i>
-                                </button>
+                            <td class="py-3 px-2 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <button onclick="openDetailModal('${p.id}')" class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center transition" title="Xem chi tiết máy">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                    <button onclick="copyProductPost('${p.id}')" class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 flex items-center justify-center transition" title="Copy thông tin đăng bán">
+                                        <i class="fa-regular fa-copy text-xs"></i>
+                                    </button>
+                                </div>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
                                 <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${formatDateVN(p.importedAt)}
