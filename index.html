@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.I Store - Quản Lý Kho Điện Thoại & Doanh Thu</title>
+    <title>A.I Store - Quản lý bán hàng</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
@@ -2501,9 +2501,9 @@
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
-                                    <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
-                                    ${p.color ? `<span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(p.color)}</span>` : ''}
+                                    <span class="text-sm font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${escapeHtml(p.brand)}</span>
+                                    <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.name)}</span>
+                                    ${p.color ? `<span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">${escapeHtml(p.color)}</span>` : ''}
                                 </div>
                                 <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                     ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
@@ -4467,9 +4467,9 @@
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
-                                    <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
-                                    ${p.color ? `<span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(p.color)}</span>` : ''}
+                                    <span class="text-sm font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${escapeHtml(p.brand)}</span>
+                                    <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.name)}</span>
+                                    ${p.color ? `<span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">${escapeHtml(p.color)}</span>` : ''}
                                 </div>
                                 <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                     ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
