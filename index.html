@@ -1579,6 +1579,7 @@
             if (!raw) {
                 accounts = [
                     { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
+                    { id: 'acc-tholii', full_name: 'Thơ Lii', email: 'tholii@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: 'h0ilamgiha', role: 'owner' },
                     { id: 'acc-owner', full_name: 'Quản Trị Viên', email: 'admin@gmail.com', role: 'owner' },
                     { id: 'acc-tuan', full_name: 'Nguyễn Văn Tuấn', email: 'tuannv@gmail.com', role: 'staff' },
@@ -1596,8 +1597,23 @@
                 } else if (!deletedIds.includes('saint.niky@gmail.com')) {
                     accounts.unshift({ id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' });
                 }
+                
+                const tholii = accounts.find(a => a.email && (a.email.toLowerCase() === 'tholii@gmail.com' || a.full_name === 'Thơ Lii'));
+                if (tholii) {
+                    tholii.role = 'owner';
+                } else if (!deletedIds.includes('tholii@gmail.com')) {
+                    accounts.unshift({ id: 'acc-tholii', full_name: 'Thơ Lii', email: 'tholii@gmail.com', password: '', role: 'owner' });
+                }
             }
             
+            // Đảm bảo Thơ Lii và các tài khoản owner luôn được set đúng quyền owner
+            accounts.forEach(a => {
+                const em = (a.email || '').toLowerCase();
+                if (em === 'tholii@gmail.com' || em === 'saint.niky@gmail.com' || em === 'admin@gmail.com' || em === 'nik90@gmail.com' || a.full_name === 'Thơ Lii') {
+                    a.role = 'owner';
+                }
+            });
+
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
             return accounts;
         }
@@ -1816,7 +1832,7 @@
         async function handleUserLoggedIn(user) {
             showAuthModal(false);
             const userEmail = (user.email || '').toLowerCase();
-            const isRootOwner = userEmail.includes('admin') || userEmail === 'saint.niky@gmail.com' || userEmail === 'nik90@gmail.com';
+            const isRootOwner = userEmail.includes('admin') || userEmail === 'saint.niky@gmail.com' || userEmail === 'nik90@gmail.com' || userEmail === 'tholii@gmail.com' || (currentUserProfile && currentUserProfile.full_name === 'Thơ Lii');
 
             try {
                 let resolvedRole = isRootOwner ? 'owner' : null;
@@ -1824,6 +1840,10 @@
                 
                 if (docSnap.exists()) {
                     currentUserProfile = docSnap.data();
+                    if (userEmail === 'tholii@gmail.com' || currentUserProfile.full_name === 'Thơ Lii') {
+                        currentUserProfile.role = 'owner';
+                        resolvedRole = 'owner';
+                    }
                     resolvedRole = resolvedRole || currentUserProfile.role;
                 } else {
                     const accounts = getStaffAccounts();
@@ -1853,9 +1873,13 @@
             const existingIdx = accounts.findIndex(a => (a.email && a.email.toLowerCase() === userEmail) || a.full_name === currentName);
             if (existingIdx >= 0) {
                 accounts[existingIdx].full_name = currentName;
-                accounts[existingIdx].role = userRole;
+                if (userEmail === 'tholii@gmail.com' || currentName === 'Thơ Lii') {
+                    accounts[existingIdx].role = 'owner';
+                } else {
+                    accounts[existingIdx].role = userRole;
+                }
             } else {
-                accounts.push({ id: user.uid, full_name: currentName, email: user.email, role: userRole });
+                accounts.push({ id: user.uid, full_name: currentName, email: user.email, role: (userEmail === 'tholii@gmail.com' || currentName === 'Thơ Lii') ? 'owner' : userRole });
             }
             saveStaffAccounts(accounts);
 
@@ -3323,13 +3347,14 @@
             tbody.innerHTML = accounts.map(u => {
                 const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name || (u.email && u.email === currentUser?.email);
                 const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
-                const isProtectedRoot = u.email === 'saint.niky@gmail.com' || u.email === 'admin@gmail.com' || u.email === 'nik90@gmail.com';
+                const isProtectedRoot = u.email === 'saint.niky@gmail.com' || u.email === 'admin@gmail.com' || u.email === 'nik90@gmail.com' || u.email === 'tholii@gmail.com' || u.full_name === 'Thơ Lii';
                 const isStaff = (u.role === 'staff');
                 
                 let roleHtml = '';
                 if (perm.canManageStaff && !isCurrent && !isProtectedRoot) {
                     roleHtml = `
                         <select onchange="changeUserRole('${u.id}', '${escapeHtml(u.email || '')}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-black outline-none cursor-pointer border shadow-sm transition-all ${isOwnerAccount ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200' : (u.role === 'manager' ? 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200' : 'bg-blue-100 text-blue-900 border-blue-300 hover:bg-blue-200')}">
+                            <option value="owner" class="font-bold text-amber-900 bg-white" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
                             <option value="manager" class="font-bold text-purple-900 bg-white" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
                             <option value="staff" class="font-bold text-blue-900 bg-white" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
                         </select>
@@ -3685,7 +3710,7 @@
             }
 
             targetUser.role = newRole;
-            if (newRole === 'manager') {
+            if (newRole === 'manager' || newRole === 'owner') {
                 targetUser.manager_id = '';
                 targetUser.manager_name = '';
             }
