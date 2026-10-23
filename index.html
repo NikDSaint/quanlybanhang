@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.I Store - Quản lý bán hàng</title>
+    <title>A.I Store - Quản Lý Kho Điện Thoại & Doanh Thu</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
@@ -168,9 +168,8 @@
                         <option value="Khác">Khác</option>
                     </select>
                     <select id="filter-sort" onchange="handleDropdownSortChange()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
-                        <option value="DEFAULT">Sắp xếp: Mới nhất</option>
-                        <option value="DATE_DESC">Ngày nhập: Mới nhất -> Cũ nhất</option>
-                        <option value="DATE_ASC">Ngày nhập: Cũ nhất -> Mới nhất</option>
+                        <option value="DATE_DESC">Ngày nhập: Mới nhất</option>
+                        <option value="DATE_ASC">Ngày nhập: Cũ nhất</option>
                         <option value="PRICE_DESC">Giá bán: Cao -> Thấp</option>
                         <option value="PRICE_ASC">Giá bán: Thấp -> Cao</option>
                         <option value="NAME_ASC">Tên máy: A đến Z</option>
@@ -214,8 +213,8 @@
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
                             <tr>
                                 <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
-                                <th class="py-3.5 px-2 text-center w-20 whitespace-nowrap">Thao Tác</th>
-                                <th class="py-3.5 px-4 whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
+                                <th class="py-3.5 px-4 text-center w-16">Xem</th>
+                                <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
                                     <div class="flex items-center space-x-1.5">
                                         <span>Ngày Nhập</span>
                                         <span id="sort-icon-date" class="text-xs text-slate-400">
@@ -232,7 +231,7 @@
                                     </div>
                                 </th>
                                 <th class="py-3.5 px-4 text-right col-import-price whitespace-nowrap">Giá Nhập</th>
-                                <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
+                                <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-orange-600 transition whitespace-nowrap" onclick="toggleSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
                                     <div class="flex items-center justify-end space-x-1.5">
                                         <span class="whitespace-nowrap">Giá Bán</span>
                                         <span id="sort-icon-price" class="text-xs text-slate-400">
@@ -241,7 +240,8 @@
                                     </div>
                                 </th>
                                 <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
-                                <th class="py-3.5 px-4 text-center">Bán Hàng</th>
+                                <th class="py-3.5 px-4 text-center">Trạng Thái</th>
+                                <th class="py-3.5 px-4 text-center">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody id="product-table-body" class="divide-y divide-slate-100 font-medium">
@@ -313,7 +313,7 @@
                                     <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
-                                    <th class="py-3.5 px-4 whitespace-nowrap">Người Bán</th>
+                                    <th class="py-3.5 px-4">Người Bán</th>
                                     <th class="py-3.5 px-4">Khách Hàng</th>
                                     <th class="py-3.5 px-4 text-center">Hóa Đơn</th>
                                 </tr>
@@ -901,13 +901,6 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs pt-0.5">
-                    <label class="flex items-center space-x-2 text-slate-600 hover:text-slate-900 cursor-pointer select-none">
-                        <input type="checkbox" id="auth-remember" checked class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 accent-purple-600">
-                        <span class="font-semibold text-slate-700">Duy trì đăng nhập trên thiết bị này</span>
-                    </label>
-                </div>
-
                 <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold leading-relaxed"></div>
 
                 <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-purple-500/25 active:scale-[0.99] transition flex items-center justify-center space-x-2">
@@ -960,36 +953,14 @@
                     </div>
                 </div>
 
-                <!-- 3 thông số chi tiết: Màu, Pin, Hình thức -->
-                <div class="grid grid-cols-3 gap-2.5">
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Màu Sắc
-                        </span>
-                        <p id="dt-color" class="text-xs font-black text-slate-800 mt-0.5">--</p>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-battery-three-quarters text-emerald-500 text-[10px]"></i> Pin Đỉnh
-                        </span>
-                        <p id="dt-battery" class="text-xs font-black text-emerald-600 mt-0.5">--</p>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-shield-halved text-purple-500 text-[10px]"></i> Hình Thức
-                        </span>
-                        <p id="dt-appearance" class="text-xs font-black text-purple-700 mt-0.5">--</p>
-                    </div>
-                </div>
-
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     <div id="dt-box-import" class="bg-slate-100/80 p-3 rounded-2xl border border-slate-200">
                         <span class="text-[10px] font-bold text-slate-500 uppercase">Giá Vốn Nhập</span>
                         <p id="dt-import-price" class="text-sm font-black text-slate-700 mt-0.5">0 ₫</p>
                     </div>
-                    <div class="bg-indigo-50/70 p-3 rounded-2xl border border-indigo-100">
-                        <span class="text-[10px] font-bold text-indigo-700 uppercase">Giá Bán Niêm Yết</span>
-                        <p id="dt-selling-price" class="text-sm font-black text-indigo-600 mt-0.5">0 ₫</p>
+                    <div class="bg-orange-50/70 p-3 rounded-2xl border border-orange-100">
+                        <span class="text-[10px] font-bold text-orange-700 uppercase">Giá Bán Niêm Yết</span>
+                        <p id="dt-selling-price" class="text-sm font-black text-orange-600 mt-0.5">0 ₫</p>
                     </div>
                     <div class="bg-purple-50/70 p-3 rounded-2xl border border-purple-100 col-span-2 sm:col-span-1">
                         <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng (VNĐ)</span>
@@ -1051,14 +1022,9 @@
 
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
                 <div id="dt-actions-left" class="flex items-center space-x-2"></div>
-                <div class="flex items-center space-x-2">
-                    <button id="dt-btn-copy-info" type="button" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5 border border-indigo-200/80">
-                        <i class="fa-regular fa-copy"></i> Copy Bài Đăng
-                    </button>
-                    <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
-                        Đóng
-                    </button>
-                </div>
+                <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+                    Đóng
+                </button>
             </div>
         </div>
     </div>
@@ -1109,7 +1075,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Hãng Sản Xuất <span class="text-rose-500">*</span></label>
-                        <select id="form-brand" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <select id="form-brand" onchange="handleBrandChange()" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                             <option value="iPhone">iPhone</option>
                             <option value="Samsung">Samsung</option>
                             <option value="Xiaomi">Xiaomi</option>
@@ -1121,8 +1087,9 @@
                             <option value="iQOO">iQOO</option>
                             <option value="OPPO">OPPO</option>
                             <option value="Realme">Realme</option>
-                            <option value="Khác">Khác</option>
+                            <option value="CUSTOM">Khác (Tự điền)</option>
                         </select>
+                        <input type="text" id="form-brand-custom" placeholder="Nhập tên hãng (VD: Sony, Asus, Google...)" class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Tên Model Sản Phẩm <span class="text-rose-500">*</span></label>
@@ -1158,38 +1125,6 @@
                             <option value="CUSTOM">Khác (Tự điền)</option>
                         </select>
                         <input type="text" id="form-storage-custom" placeholder="Nhập dung lượng (VD: 16GB, 2TB...)" class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
-                    </div>
-                </div>
-
-                <!-- Hàng 1: Màu sắc và Hình thức chung một hàng (Hình thức là ô điền) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                            <i class="fa-solid fa-palette text-indigo-500"></i> Màu Sắc
-                        </label>
-                        <input type="text" id="form-color" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                            <i class="fa-solid fa-shield-halved text-purple-500"></i> Hình Thức
-                        </label>
-                        <input type="text" id="form-appearance" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
-                    </div>
-                </div>
-
-                <!-- Hàng 2: Pin đỉnh và Số IMEI chung một hàng -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                            <i class="fa-solid fa-battery-three-quarters text-emerald-500"></i> Pin Đỉnh
-                        </label>
-                        <input type="text" id="form-battery" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                            <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI
-                        </label>
-                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-white font-mono">
                     </div>
                 </div>
 
@@ -1233,10 +1168,16 @@
 
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-clipboard-check text-slate-500"></i> Tình Trạng Khác
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Số IMEI
                         </label>
-                        <input type="text" id="form-condition" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tình Trạng Máy
+                        </label>
+                        <input type="text" id="form-condition" placeholder="Mô tả..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                     </div>
                 </div>
 
@@ -1409,6 +1350,7 @@
                 <table class="w-full text-left text-xs border-collapse">
                     <thead class="bg-slate-100 text-slate-500 uppercase text-[10px] font-bold">
                         <tr>
+                            <th class="py-2.5 px-3 text-center">Xem</th>
                             <th class="py-2.5 px-3 whitespace-nowrap">Ngày Bán</th>
                             <th class="py-2.5 px-3">Sản Phẩm & IMEI</th>
                             <th class="py-2.5 px-3 text-right whitespace-nowrap">Giá Bán</th>
@@ -1518,7 +1460,7 @@
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         // Cấu hình Firebase chính thức từ Console
@@ -1548,36 +1490,14 @@
         let products = [];
         let currentTab = 'inventory';
         let currentSalesSubTab = 'items';
-        let sortMode = 'DEFAULT';
+        let sortMode = 'DATE_DESC';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
-        const LOCAL_SESSION_KEY = 'aistore_remembered_session_v1';
         let systemProfilesList = [];
         let unsubscribeProducts = null;
         let unsubscribeNotifs = null;
         let unsubscribeProfiles = null;
-
-        function saveUserSession(sessionData) {
-            try {
-                localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(sessionData));
-            } catch(e) {}
-        }
-
-        function getSavedUserSession() {
-            try {
-                const raw = localStorage.getItem(LOCAL_SESSION_KEY);
-                return raw ? JSON.parse(raw) : null;
-            } catch(e) {
-                return null;
-            }
-        }
-
-        function clearUserSession() {
-            try {
-                localStorage.removeItem(LOCAL_SESSION_KEY);
-            } catch(e) {}
-        }
 
         function getDeletedStaffIds() {
             try {
@@ -1739,27 +1659,6 @@
                 } catch(e) { console.error("Cache error", e); }
             }
 
-            // Tự động phục hồi phiên làm việc đã lưu trên thiết bị này (không bắt đăng nhập lại)
-            const savedSession = getSavedUserSession();
-            if (savedSession && savedSession.id) {
-                currentUser = { uid: savedSession.id, email: savedSession.email };
-                userRole = savedSession.role || 'staff';
-                currentUserProfile = {
-                    id: savedSession.id,
-                    email: savedSession.email,
-                    full_name: savedSession.full_name || 'Nhân Viên',
-                    role: userRole
-                };
-                showAuthModal(false);
-                updateUserUI();
-            }
-
-            try {
-                await setPersistence(auth, browserLocalPersistence);
-            } catch(e) {
-                console.warn("Lỗi thiết lập tính kiên trì Firebase:", e);
-            }
-
             startRealtimeSync();
 
             onAuthStateChanged(auth, async (user) => {
@@ -1767,25 +1666,11 @@
                     currentUser = user;
                     await handleUserLoggedIn(user);
                 } else {
-                    const currentLocalSession = getSavedUserSession();
-                    if (currentLocalSession && currentLocalSession.id) {
-                        currentUser = { uid: currentLocalSession.id, email: currentLocalSession.email };
-                        userRole = currentLocalSession.role || 'staff';
-                        currentUserProfile = {
-                            id: currentLocalSession.id,
-                            email: currentLocalSession.email,
-                            full_name: currentLocalSession.full_name || 'Nhân Viên',
-                            role: userRole
-                        };
-                        showAuthModal(false);
-                        updateUserUI();
-                    } else {
-                        currentUser = null;
-                        currentUserProfile = null;
-                        userRole = 'staff';
-                        showAuthModal(true);
-                        updateUserUI();
-                    }
+                    currentUser = null;
+                    currentUserProfile = null;
+                    userRole = 'staff';
+                    showAuthModal(true);
+                    updateUserUI();
                 }
             });
         }
@@ -1804,9 +1689,6 @@
                                 name: item.name || '',
                                 ram: item.ram || '',
                                 storage: item.storage || '',
-                                color: item.color || '',
-                                battery: item.battery || '',
-                                appearance: item.appearance || '',
                                 importPrice: Number(item.import_price) || 0,
                                 sellingPrice: Number(item.selling_price) || 0,
                                 commission: Number(item.commission) || 0,
@@ -1977,16 +1859,6 @@
             }
             saveStaffAccounts(accounts);
 
-            const rememberMe = document.getElementById('auth-remember')?.checked !== false;
-            if (rememberMe) {
-                saveUserSession({
-                    id: user.uid,
-                    email: user.email,
-                    full_name: currentUserProfile.full_name,
-                    role: userRole
-                });
-            }
-
             updateUserUI();
             if (userRole === 'owner' || userRole === 'manager' || userRole === 'admin') {
                 loadProfilesList();
@@ -2067,7 +1939,6 @@
         };
 
         window.handleAuthActionClick = async function() {
-            clearUserSession();
             try { await signOut(auth); } catch (e) { console.warn(e); }
             currentUser = null;
             currentUserProfile = null;
@@ -2088,7 +1959,6 @@
             const password = document.getElementById('auth-password').value;
             const errBox = document.getElementById('auth-error-msg');
             const submitBtn = document.getElementById('auth-submit-btn');
-            const rememberMe = document.getElementById('auth-remember')?.checked !== false;
 
             if (errBox) errBox.classList.add('hidden');
 
@@ -2117,9 +1987,6 @@
                         full_name: matchedAccount.full_name,
                         role: userRole
                     };
-                    if (rememberMe) {
-                        saveUserSession(currentUserProfile);
-                    }
                     showAuthModal(false);
                     updateUserUI();
                     renderApp();
@@ -2251,13 +2118,6 @@
                     }, { merge: true });
                 }
 
-                // Cập nhật lại tên trong phiên đăng nhập đã lưu
-                const savedSession = getSavedUserSession();
-                if (savedSession) {
-                    savedSession.full_name = newName;
-                    saveUserSession(savedSession);
-                }
-
                 updateUserUI();
                 if (currentTab === 'management') {
                     renderProfilesTable(accounts);
@@ -2358,30 +2218,13 @@
             return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
         }
 
-        // Định dạng hiển thị ngày theo chuẩn ngày/tháng/năm (DD/MM/YYYY)
         function formatDateVN(dateStr) {
             if (!dateStr) return '--';
-            const cleanStr = String(dateStr).trim();
-            // Nếu đã là định dạng DD/MM/YYYY thì trả về luôn
-            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(cleanStr)) return cleanStr;
-            
-            // Xử lý định dạng ISO hoặc YYYY-MM-DD
-            const parts = cleanStr.split('T')[0].split('-');
-            if (parts.length === 3 && parts[0].length === 4) {
-                const year = parts[0];
-                const month = parts[1].padStart(2, '0');
-                const day = parts[2].padStart(2, '0');
-                return `${day}/${month}/${year}`;
+            const parts = String(dateStr).split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
-
-            const d = new Date(cleanStr);
-            if (!isNaN(d.getTime())) {
-                const day = String(d.getDate()).padStart(2, '0');
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const year = d.getFullYear();
-                return `${day}/${month}/${year}`;
-            }
-            return cleanStr;
+            return dateStr;
         }
 
         window.switchTab = function(tabName) {
@@ -2497,36 +2340,33 @@
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${formatDateVN(p.soldAt)}
+                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-sm font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${escapeHtml(p.brand)}</span>
-                                    <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.name)}</span>
-                                    ${p.color ? `<span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">${escapeHtml(p.color)}</span>` : ''}
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
-                                    ${p.battery ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">Pin: ${escapeHtml(p.battery)}</span>` : ''}
-                                    ${p.appearance ? `<span class="text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-100">${escapeHtml(p.appearance)}</span>` : ''}
+                                <div class="flex items-center gap-2 mt-0.5">
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
+                                    <span class="text-[11px] text-slate-500 font-medium truncate max-w-xs" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || '')}</span>
                                 </div>
                             </td>
-                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
                                 <div>${formatVND(p.commission)}</div>
                                 ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
                                     <div class="text-[10px] font-bold text-amber-600" title="Hoa hồng Quản lý bảo trợ">+${formatVND(p.managerCommission)} (QL)</div>
                                 ` : ''}
                             </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2.5 py-1.5 rounded-xl inline-flex items-center gap-1.5 whitespace-nowrap">
-                                    <i class="fa-solid fa-user-tag text-[10px] shrink-0"></i>
-                                    <span class="whitespace-nowrap">${escapeHtml(p.seller || '--')}</span>
-                                    ${isMyDirectOrder ? '<span class="text-[9px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-md font-bold shrink-0">Bạn</span>' : ''}
+                            <td class="py-3 px-4">
+                                <div class="font-bold text-xs text-indigo-700 bg-indigo-50/80 px-2 py-1 rounded-lg inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-user-tag text-[10px]"></i>
+                                    <span>${escapeHtml(p.seller || '--')}</span>
+                                    ${isMyDirectOrder ? '<span class="text-[9px] bg-emerald-500 text-white px-1 rounded-sm ml-1">Bạn</span>' : ''}
                                 </div>
                                 ${p.manager ? `
-                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium whitespace-nowrap">
+                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium">
                                         <i class="fa-solid fa-user-shield text-[9px] text-purple-500"></i>
                                         <span>QL: ${escapeHtml(p.manager)}</span>
                                     </div>
@@ -2694,7 +2534,7 @@
                             <div class="font-bold text-slate-900">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</div>
                             <div class="text-[10px] text-slate-400 font-mono truncate max-w-xs">${escapeHtml(p.condition || '')}</div>
                         </td>
-                        <td class="py-2.5 px-3 text-right font-black text-indigo-700 whitespace-nowrap">
+                        <td class="py-2.5 px-3 text-right font-black text-orange-600 whitespace-nowrap">
                             ${formatVND(p.sellingPrice)}
                         </td>
                         <td class="py-2.5 px-3 font-semibold text-slate-700 whitespace-nowrap">
@@ -2910,11 +2750,13 @@
                                 <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
                             </td>
                             <td class="py-3 px-4">
-                                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${escapeHtml(p.brand)}</span>
-                                <span class="font-bold text-slate-900 ml-1">${escapeHtml(p.name)}</span>
+                                <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+                                    <span class="text-slate-900">${escapeHtml(p.brand)}</span>
+                                    <span>${escapeHtml(p.name)}</span>
+                                </div>
                                 <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-xs">${escapeHtml(p.condition || '')}</p>
                             </td>
-                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
                                 <div>${formatVND(p.commission)}</div>
                                 ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
@@ -2997,13 +2839,13 @@
             tbody.innerHTML = soldItems.map(p => `
                 <tr class="hover:bg-slate-50">
                     <td class="py-3 px-4 text-xs font-mono">${p.soldAt || '--'}</td>
-                    <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(p.name)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</td>
                     <td class="py-3 px-4 text-xs font-bold text-indigo-600">
                         <div>${escapeHtml(p.seller || '--')}</div>
                         ${p.manager ? `<div class="text-[10px] text-purple-600 font-medium">QL: ${escapeHtml(p.manager)}</div>` : ''}
                     </td>
                     <td class="py-3 px-4 text-right font-medium text-slate-600">${formatVND(p.importPrice)}</td>
-                    <td class="py-3 px-4 text-right font-bold text-indigo-600">${formatVND(p.sellingPrice)}</td>
+                    <td class="py-3 px-4 text-right font-bold text-orange-600">${formatVND(p.sellingPrice)}</td>
                     <td class="py-3 px-4 text-right font-bold text-purple-600">
                         <div>${formatVND(p.commission)}</div>
                         ${p.managerCommission > 0 ? `<div class="text-[10px] text-amber-600">+${formatVND(p.managerCommission)} (QL)</div>` : ''}
@@ -3024,14 +2866,6 @@
             document.getElementById('dt-brand').innerText = p.brand || '--';
             document.getElementById('dt-ram').innerText = p.ram || '--';
             document.getElementById('dt-storage').innerText = p.storage || '--';
-            
-            // Cập nhật thông số Màu sắc, Pin, Hình thức vào Modal Chi Tiết
-            const dtColor = document.getElementById('dt-color');
-            const dtBattery = document.getElementById('dt-battery');
-            const dtAppearance = document.getElementById('dt-appearance');
-            if (dtColor) dtColor.innerText = p.color || 'Chưa cập nhật';
-            if (dtBattery) dtBattery.innerText = p.battery || 'Chưa kiểm tra';
-            if (dtAppearance) dtAppearance.innerText = p.appearance || 'Bình thường';
 
             const importBox = document.getElementById('dt-box-import');
             if (importBox) importBox.style.display = perm.canViewCosts ? 'block' : 'none';
@@ -3065,13 +2899,6 @@
                 document.getElementById('dt-customer-phone').innerText = p.customerPhone || 'Không có';
             } else {
                 soldBox.classList.add('hidden');
-            }
-
-            const copyBtn = document.getElementById('dt-btn-copy-info');
-            if (copyBtn) {
-                copyBtn.onclick = function() {
-                    window.copyProductPost(p.id);
-                };
             }
 
             const actionsLeft = document.getElementById('dt-actions-left');
@@ -3152,6 +2979,11 @@
             if (imeiInput) imeiInput.value = '';
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            const customBrand = document.getElementById('form-brand-custom');
+            if (customBrand) {
+                customBrand.value = '';
+                customBrand.classList.add('hidden');
+            }
             const customRam = document.getElementById('form-ram-custom');
             if (customRam) {
                 customRam.value = '';
@@ -3162,14 +2994,20 @@
                 customStorage.value = '';
                 customStorage.classList.add('hidden');
             }
-            const colorInput = document.getElementById('form-color');
-            if (colorInput) colorInput.value = '';
-            const appearanceInput = document.getElementById('form-appearance');
-            if (appearanceInput) appearanceInput.value = '';
-            const batteryInput = document.getElementById('form-battery');
-            if (batteryInput) batteryInput.value = '';
-
             document.getElementById('product-modal').classList.remove('hidden');
+        };
+
+        window.handleBrandChange = function() {
+            const sel = document.getElementById('form-brand');
+            const customInput = document.getElementById('form-brand-custom');
+            if (!sel || !customInput) return;
+            if (sel.value === 'CUSTOM') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
         };
 
         window.handleRamChange = function() {
@@ -3205,7 +3043,24 @@
 
             document.getElementById('modal-title').innerText = 'Chỉnh Sửa Thông Tin Máy';
             document.getElementById('form-product-id').value = p.id;
-            document.getElementById('form-brand').value = p.brand || 'iPhone';
+            
+            const standardBrands = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme'];
+            const brandSel = document.getElementById('form-brand');
+            const customBrand = document.getElementById('form-brand-custom');
+            if (standardBrands.includes(p.brand || '')) {
+                brandSel.value = p.brand;
+                if (customBrand) {
+                    customBrand.value = '';
+                    customBrand.classList.add('hidden');
+                }
+            } else {
+                brandSel.value = 'CUSTOM';
+                if (customBrand) {
+                    customBrand.value = (p.brand && p.brand !== 'Khác') ? p.brand : '';
+                    customBrand.classList.remove('hidden');
+                }
+            }
+
             document.getElementById('form-name').value = p.name || '';
             
             const standardRams = ['', '3GB', '4GB', '6GB', '8GB', '12GB', '16GB'];
@@ -3252,14 +3107,6 @@
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
 
-            // Gán dữ liệu Màu sắc, Hình thức, Pin khi chỉnh sửa
-            const colorInput = document.getElementById('form-color');
-            if (colorInput) colorInput.value = p.color || '';
-            const appearanceInput = document.getElementById('form-appearance');
-            if (appearanceInput) appearanceInput.value = p.appearance || '';
-            const batteryInput = document.getElementById('form-battery');
-            if (batteryInput) batteryInput.value = p.battery || '';
-
             document.getElementById('product-modal').classList.remove('hidden');
         };
 
@@ -3270,6 +3117,10 @@
         window.handleProductSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('form-product-id').value || ('prod-' + Date.now());
+            const brandSelVal = document.getElementById('form-brand').value;
+            const brandVal = brandSelVal === 'CUSTOM'
+                ? (document.getElementById('form-brand-custom')?.value.trim() || 'Khác')
+                : brandSelVal;
             const ramSelVal = document.getElementById('form-ram').value;
             const ramVal = ramSelVal === 'CUSTOM'
                 ? (document.getElementById('form-ram-custom')?.value.trim() || 'Khác')
@@ -3282,13 +3133,10 @@
 
             const newProd = {
                 id,
-                brand: document.getElementById('form-brand').value,
+                brand: brandVal,
                 name: document.getElementById('form-name').value.trim(),
                 ram: ramVal,
                 storage: storageVal,
-                color: document.getElementById('form-color')?.value.trim() || '',
-                appearance: document.getElementById('form-appearance')?.value.trim() || '',
-                battery: document.getElementById('form-battery')?.value.trim() || '',
                 importPrice: parseNumberInput(document.getElementById('form-import-price').value),
                 sellingPrice: parseNumberInput(document.getElementById('form-selling-price').value),
                 status: document.getElementById('form-status').value,
@@ -3317,9 +3165,6 @@
                     name: newProd.name,
                     ram: newProd.ram,
                     storage: newProd.storage,
-                    color: newProd.color,
-                    battery: newProd.battery,
-                    appearance: newProd.appearance,
                     import_price: newProd.importPrice,
                     selling_price: newProd.sellingPrice,
                     commission: newProd.commission,
@@ -4035,7 +3880,7 @@
             const p = products.find(prod => prod.id === id);
             if (!p) return;
             document.getElementById('inv-code').innerText = `#INV-${p.id.slice(-6)}`;
-            document.getElementById('inv-date').innerText = p.soldAt || new Date().toISOString().split('T')[0];
+            document.getElementById('inv-date').innerText = formatDateVN(p.soldAt) || new Date().toLocaleDateString('vi-VN');
             document.getElementById('inv-customer-name').innerText = p.customerName || 'Khách Lẻ';
             document.getElementById('inv-customer-phone').innerText = p.customerPhone || '--';
             document.getElementById('inv-seller-name').innerText = p.seller || '--';
@@ -4048,68 +3893,6 @@
 
         window.closeInvoiceModal = function() {
             document.getElementById('invoice-modal').classList.add('hidden');
-        };
-
-        // Hàm sao chép thông tin sản phẩm chuẩn để đăng bài bán hàng
-        window.copyProductPost = function(id) {
-            const p = products.find(prod => prod.id === id);
-            if (!p) return;
-
-            // Xử lý các thành phần tình trạng máy
-            const conditionDetails = [];
-            if (p.battery) conditionDetails.push(`Pin ${p.battery}`);
-            if (p.appearance) conditionDetails.push(`Hình thức ${p.appearance}`);
-            if (p.condition) conditionDetails.push(p.condition);
-
-            const conditionText = conditionDetails.length > 0 
-                ? conditionDetails.join(', ') 
-                : 'Zin nguyên bản';
-
-            const capacityParts = [];
-            if (p.ram) capacityParts.push(p.ram);
-            if (p.storage) capacityParts.push(p.storage);
-            const capacityText = capacityParts.length > 0 ? capacityParts.join(' / ') : '--';
-
-            // Định dạng bài đăng rõ ràng, đẹp mắt để đăng Zalo / Facebook / Tin nhắn
-            const postContent = 
-`📱 ${p.brand ? p.brand + ' ' : ''}${p.name}
-🎨 Màu sắc: ${p.color || 'Tiêu chuẩn'}
-💾 Dung lượng: ${capacityText}
-✨ Tình trạng: ${conditionText}
-💰 Giá bán: ${formatVND(p.sellingPrice)}`;
-
-            // Sử dụng textarea hỗ trợ execCommand('copy') tương thích hoàn hảo trong mọi iFrame/trình duyệt
-            const tempTextarea = document.createElement('textarea');
-            tempTextarea.value = postContent;
-            tempTextarea.style.position = 'fixed';
-            tempTextarea.style.left = '-9999px';
-            tempTextarea.style.top = '0';
-            document.body.appendChild(tempTextarea);
-            tempTextarea.focus();
-            tempTextarea.select();
-
-            let success = false;
-            try {
-                success = document.execCommand('copy');
-            } catch (err) {
-                console.warn('Lỗi khi copy qua execCommand:', err);
-            }
-            document.body.removeChild(tempTextarea);
-
-            if (success) {
-                showToast(`Đã sao chép thông tin máy "${p.name}"!`, 'success');
-            } else {
-                // Fallback nếu trình duyệt cho phép navigator.clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(postContent).then(() => {
-                        showToast(`Đã sao chép thông tin máy "${p.name}"!`, 'success');
-                    }).catch(() => {
-                        showToast('Không thể sao chép tự động, vui lòng thử lại!', 'error');
-                    });
-                } else {
-                    showToast('Trình duyệt chưa cấp quyền sao chép tự động!', 'error');
-                }
-            }
         };
 
         window.formatPriceInput = function(input) {
@@ -4145,7 +3928,7 @@
 
         window.toggleSortColumn = function(column) {
             if (column === 'date') {
-                sortMode = (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') ? 'DATE_ASC' : 'DATE_DESC';
+                sortMode = (sortMode === 'DATE_DESC') ? 'DATE_ASC' : 'DATE_DESC';
             } else if (column === 'name') {
                 sortMode = (sortMode === 'NAME_ASC') ? 'NAME_DESC' : 'NAME_ASC';
             } else if (column === 'price') {
@@ -4161,9 +3944,8 @@
             const iconDate = document.getElementById('sort-icon-date');
             const iconName = document.getElementById('sort-icon-name');
             const iconPrice = document.getElementById('sort-icon-price');
-            
             if (iconDate) {
-                if (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-indigo-600"></i>';
+                if (sortMode === 'DATE_DESC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-indigo-600"></i>';
                 else if (sortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-indigo-600"></i>';
                 else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
@@ -4173,8 +3955,8 @@
                 else iconName.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
             if (iconPrice) {
-                if (sortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-indigo-600"></i>';
-                else if (sortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-indigo-600"></i>';
+                if (sortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-orange-600"></i>';
+                else if (sortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-orange-600"></i>';
                 else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
         }
@@ -4186,7 +3968,7 @@
             }
 
             const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', 'Màu Sắc', 'Pin Đỉnh', 'Hình Thức', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Tình Trạng Máy', 'Ngày Nhập', 'Nhân Viên Bán', 'Người Bảo Trợ (QL)', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
+            const headers = ['Mã Sản Phẩm', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Tình Trạng Máy', 'Ngày Nhập', 'Nhân Viên Bán', 'Người Bảo Trợ (QL)', 'Khách Hàng', 'SĐT Khách', 'Ngày Bán'].filter(Boolean);
 
             const rows = products.map(p => {
                 const row = [
@@ -4195,9 +3977,6 @@
                     `"${p.name || ''}"`,
                     `"${p.ram || ''}"`,
                     `"${p.storage || ''}"`,
-                    `"${p.color || ''}"`,
-                    `"${p.battery || ''}"`,
-                    `"${p.appearance || ''}"`,
                     isOwner ? p.importPrice || 0 : '',
                     p.sellingPrice || 0,
                     p.commission || 0,
@@ -4211,7 +3990,7 @@
                     `"${p.customerPhone || ''}"`,
                     `"${p.soldAt || ''}"`
                 ];
-                return row.filter((_, idx) => isOwner || idx !== 8).join(',');
+                return row.filter((_, idx) => isOwner || idx !== 5).join(',');
             });
 
             const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
@@ -4410,19 +4189,24 @@
             const searchVal = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
             const brandVal = document.getElementById('filter-brand')?.value || 'ALL';
             const perm = getPermissions();
+            const standardBrands = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme'];
 
             let availableList = products.filter(p => {
                 if (p.status === 'SOLD') return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.brand || '').toLowerCase().includes(searchVal) ||
                                     (p.imei || '').toLowerCase().includes(searchVal) || 
-                                    (p.color || '').toLowerCase().includes(searchVal) || 
-                                    (p.appearance || '').toLowerCase().includes(searchVal) || 
                                     (p.condition || '').toLowerCase().includes(searchVal);
-                const matchBrand = (brandVal === 'ALL') || (p.brand === brandVal);
+                const matchBrand = (brandVal === 'ALL') || 
+                                   (brandVal === 'Khác' ? !standardBrands.includes(p.brand) : p.brand === brandVal);
                 return matchSearch && matchBrand;
             });
 
-            if (sortMode === 'PRICE_DESC') {
+            if (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') {
+                availableList.sort((a, b) => (b.importedAt || '').localeCompare(a.importedAt || ''));
+            } else if (sortMode === 'DATE_ASC') {
+                availableList.sort((a, b) => (a.importedAt || '').localeCompare(b.importedAt || ''));
+            } else if (sortMode === 'PRICE_DESC') {
                 availableList.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
             } else if (sortMode === 'PRICE_ASC') {
                 availableList.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
@@ -4430,10 +4214,6 @@
                 availableList.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             } else if (sortMode === 'NAME_DESC') {
                 availableList.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-            } else if (sortMode === 'DATE_ASC') {
-                availableList.sort((a, b) => (a.importedAt || '').localeCompare(b.importedAt || ''));
-            } else if (sortMode === 'DATE_DESC' || sortMode === 'DEFAULT') {
-                availableList.sort((a, b) => (b.importedAt || '').localeCompare(a.importedAt || ''));
             }
 
             const badgeAvailable = document.getElementById('badge-available-count');
@@ -4452,35 +4232,32 @@
                             <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">
                                 ${index + 1}
                             </td>
-                            <td class="py-3 px-2 text-center whitespace-nowrap">
-                                <div class="flex items-center justify-center space-x-1">
-                                    <button onclick="openDetailModal('${p.id}')" class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center transition" title="Xem chi tiết máy">
-                                        <i class="fa-solid fa-eye text-xs"></i>
-                                    </button>
-                                    <button onclick="copyProductPost('${p.id}')" class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 flex items-center justify-center transition" title="Copy thông tin đăng bán">
-                                        <i class="fa-regular fa-copy text-xs"></i>
-                                    </button>
-                                </div>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-plus mr-1 text-indigo-500"></i>${formatDateVN(p.importedAt)}
+                                ${formatDateVN(p.importedAt || new Date().toISOString().split('T')[0])}
                             </td>
                             <td class="py-3 px-4">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-sm font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${escapeHtml(p.brand)}</span>
-                                    <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.name)}</span>
-                                    ${p.color ? `<span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">${escapeHtml(p.color)}</span>` : ''}
+                                <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
+                                    <span>${escapeHtml(p.name)}</span>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400 font-medium">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
-                                    ${p.battery ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">Pin: ${escapeHtml(p.battery)}</span>` : ''}
-                                    ${p.appearance ? `<span class="text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-100">${escapeHtml(p.appearance)}</span>` : ''}
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
                                 </div>
                             </td>
                             ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
-                            <td class="py-3 px-4 text-right font-black text-indigo-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                    Còn hàng
+                                </span>
+                            </td>
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
                                     <i class="fa-solid fa-cart-shopping"></i> Bán
