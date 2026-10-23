@@ -1130,23 +1130,6 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
-                        <div class="relative flex items-center">
-                            <input type="text" id="form-import-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
-                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
-                        <div class="relative flex items-center">
-                            <input type="text" id="form-selling-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
-                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Ngày Nhập Máy <span class="text-rose-500">*</span></label>
                         <input type="date" id="form-import-date" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
                     </div>
@@ -1157,6 +1140,23 @@
                             <option value="SOLD">Đã bán</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-import-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
+                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-selling-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-rose-600">
+                            <span class="absolute right-3 text-rose-500 font-bold text-xs pointer-events-none">₫</span>
+                        </div>
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng (VNĐ)</label>
                         <div class="relative flex items-center">
@@ -1166,18 +1166,27 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Màu Sắc</label>
+                        <input type="text" id="form-color" placeholder="VD: Đen, Titan..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng Pin</label>
+                        <input type="text" id="form-battery" placeholder="VD: 100%, 88%..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tình Trạng</label>
+                        <input type="text" id="form-condition" placeholder="VD: Zin keng, 99%..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                </div>
+
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Số IMEI
                         </label>
-                        <input type="text" id="form-imei" placeholder="Nhập..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Tình Trạng Máy
-                        </label>
-                        <input type="text" id="form-condition" placeholder="Mô tả..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <input type="text" id="form-imei" placeholder="Nhập số IMEI..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                     </div>
                 </div>
 
@@ -2900,7 +2909,12 @@
             
             const dtImei = document.getElementById('dt-imei');
             if (dtImei) dtImei.innerText = p.imei || '--';
-            document.getElementById('dt-condition').innerText = p.condition || 'Zin nguyên bản 100%';
+            
+            const condParts = [];
+            if (p.color) condParts.push(`Màu: ${p.color}`);
+            if (p.battery) condParts.push(`Pin: ${p.battery}`);
+            if (p.condition) condParts.push(p.condition);
+            document.getElementById('dt-condition').innerText = condParts.join(' | ') || 'Zin nguyên bản 100%';
 
             const isSold = p.status === 'SOLD';
             const statusBadge = document.getElementById('dt-status-badge');
@@ -3120,6 +3134,11 @@
                     customStorage.classList.remove('hidden');
                 }
             }
+
+            document.getElementById('form-color').value = p.color || '';
+            document.getElementById('form-battery').value = p.battery || '';
+            document.getElementById('form-condition').value = p.condition || '';
+
             document.getElementById('form-import-price').value = new Intl.NumberFormat('vi-VN').format(p.importPrice || 0);
             document.getElementById('form-selling-price').value = new Intl.NumberFormat('vi-VN').format(p.sellingPrice || 0);
             document.getElementById('form-status').value = p.status || 'AVAILABLE';
@@ -3127,7 +3146,6 @@
             
             const imeiInput = document.getElementById('form-imei');
             if (imeiInput) imeiInput.value = p.imei || '';
-            document.getElementById('form-condition').value = p.condition || '';
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
 
@@ -3161,6 +3179,8 @@
                 name: document.getElementById('form-name').value.trim(),
                 ram: ramVal,
                 storage: storageVal,
+                color: document.getElementById('form-color').value.trim(),
+                battery: document.getElementById('form-battery').value.trim(),
                 importPrice: parseNumberInput(document.getElementById('form-import-price').value),
                 sellingPrice: parseNumberInput(document.getElementById('form-selling-price').value),
                 status: document.getElementById('form-status').value,
@@ -3189,6 +3209,8 @@
                     name: newProd.name,
                     ram: newProd.ram,
                     storage: newProd.storage,
+                    color: newProd.color,
+                    battery: newProd.battery,
                     import_price: newProd.importPrice,
                     selling_price: newProd.sellingPrice,
                     commission: newProd.commission,
@@ -3602,10 +3624,13 @@
             const sel = document.getElementById('staff-manager-id');
             if (!sel) return;
             const accounts = getStaffAccounts();
-            const managers = accounts.filter(a => a.role === 'manager');
+            const eligibleManagers = accounts.filter(a => a.role === 'manager' || a.role === 'owner' || a.role === 'admin');
             
             sel.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
-                managers.map(m => `<option value="${escapeHtml(m.id || m.email)}">${escapeHtml(m.full_name)} (${escapeHtml(m.email || 'Quản lý')})</option>`).join('');
+                eligibleManagers.map(m => {
+                    const roleLabel = (m.role === 'owner' || m.role === 'admin') ? 'Chủ Cửa Hàng' : 'Quản Lý';
+                    return `<option value="${escapeHtml(m.id || m.email)}">${escapeHtml(m.full_name)} (${roleLabel})</option>`;
+                }).join('');
         }
 
         window.loadProfilesList = async function() {
