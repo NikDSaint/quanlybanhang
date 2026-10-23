@@ -2340,19 +2340,19 @@
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
+                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${formatDateVN(p.soldAt) || '--'}
                             </td>
                             <td class="py-3 px-4">
-                                <div class="flex items-center gap-1.5">
+                                <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
                                     <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
-                                    <span class="font-bold text-slate-900">${escapeHtml(p.name)}</span>
+                                    <span>${escapeHtml(p.name)}</span>
                                 </div>
                                 <div class="flex items-center gap-2 mt-0.5">
                                     ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
                                     <span class="text-[11px] text-slate-500 font-medium truncate max-w-xs" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || '')}</span>
                                 </div>
                             </td>
-                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
                                 <div>${formatVND(p.commission)}</div>
                                 ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
@@ -2747,16 +2747,16 @@
                                 </button>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${p.soldAt || '--'}
+                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${formatDateVN(p.soldAt) || '--'}
                             </td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
-                                    <span class="text-slate-900">${escapeHtml(p.brand)}</span>
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
                                     <span>${escapeHtml(p.name)}</span>
                                 </div>
                                 <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-xs">${escapeHtml(p.condition || '')}</p>
                             </td>
-                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
                                 <div>${formatVND(p.commission)}</div>
                                 ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
@@ -2838,14 +2838,14 @@
 
             tbody.innerHTML = soldItems.map(p => `
                 <tr class="hover:bg-slate-50">
-                    <td class="py-3 px-4 text-xs font-mono">${p.soldAt || '--'}</td>
+                    <td class="py-3 px-4 text-xs font-mono">${formatDateVN(p.soldAt) || '--'}</td>
                     <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</td>
                     <td class="py-3 px-4 text-xs font-bold text-indigo-600">
                         <div>${escapeHtml(p.seller || '--')}</div>
                         ${p.manager ? `<div class="text-[10px] text-purple-600 font-medium">QL: ${escapeHtml(p.manager)}</div>` : ''}
                     </td>
                     <td class="py-3 px-4 text-right font-medium text-slate-600">${formatVND(p.importPrice)}</td>
-                    <td class="py-3 px-4 text-right font-bold text-orange-600">${formatVND(p.sellingPrice)}</td>
+                    <td class="py-3 px-4 text-right font-bold text-rose-600">${formatVND(p.sellingPrice)}</td>
                     <td class="py-3 px-4 text-right font-bold text-purple-600">
                         <div>${formatVND(p.commission)}</div>
                         ${p.managerCommission > 0 ? `<div class="text-[10px] text-amber-600">+${formatVND(p.managerCommission)} (QL)</div>` : ''}
@@ -4251,7 +4251,7 @@
                                 </div>
                             </td>
                             ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
-                            <td class="py-3 px-4 text-right font-black text-orange-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-black text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
                             <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
                             <td class="py-3 px-4 text-center">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
