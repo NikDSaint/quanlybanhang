@@ -466,11 +466,39 @@
                             <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
                                 <tr>
                                     <th class="py-3.5 px-4 text-center w-14">Xem</th>
-                                    <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
-                                    <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
-                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('date')" title="Bấm để sắp xếp theo ngày bán">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span>Ngày Bán</span>
+                                            <span id="comm-sort-icon-date" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleCommSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span>Sản Phẩm & Cấu Hình / IMEI</span>
+                                            <span id="comm-sort-icon-name" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-orange-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
+                                        <div class="flex items-center justify-end space-x-1.5">
+                                            <span>Giá Bán</span>
+                                            <span id="comm-sort-icon-price" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng</th>
-                                    <th class="py-3.5 px-4">Nhân Viên Bán</th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('seller')" title="Bấm để sắp xếp theo nhân viên bán">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span>Nhân Viên Bán</span>
+                                            <span id="comm-sort-icon-seller" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
                                     <th class="py-3.5 px-4">Khách Hàng</th>
                                     <th class="py-3.5 px-4 text-center whitespace-nowrap">Hóa Đơn</th>
                                 </tr>
@@ -1514,6 +1542,7 @@
         let currentTab = 'inventory';
         let currentSalesSubTab = 'items';
         let sortMode = 'DATE_DESC';
+        let commSortMode = 'DATE_DESC';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
@@ -2415,7 +2444,28 @@
             const currentStaffName = (currentUserProfile?.full_name || '').trim();
 
             let soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
-            const filteredSold = filterItemsByDate(soldItems, 'comm');
+            let filteredSold = filterItemsByDate(soldItems, 'comm');
+
+            // Logic sắp xếp theo cột được chọn
+            if (commSortMode === 'DATE_DESC') {
+                filteredSold.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
+            } else if (commSortMode === 'DATE_ASC') {
+                filteredSold.sort((a, b) => (a.soldAt || '').localeCompare(b.soldAt || ''));
+            } else if (commSortMode === 'NAME_ASC') {
+                filteredSold.sort((a, b) => `${a.brand || ''} ${a.name || ''}`.localeCompare(`${b.brand || ''} ${b.name || ''}`, 'vi'));
+            } else if (commSortMode === 'NAME_DESC') {
+                filteredSold.sort((a, b) => `${b.brand || ''} ${b.name || ''}`.localeCompare(`${a.brand || ''} ${a.name || ''}`, 'vi'));
+            } else if (commSortMode === 'PRICE_DESC') {
+                filteredSold.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+            } else if (commSortMode === 'PRICE_ASC') {
+                filteredSold.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+            } else if (commSortMode === 'SELLER_ASC') {
+                filteredSold.sort((a, b) => (a.seller || '').localeCompare(b.seller || '', 'vi'));
+            } else if (commSortMode === 'SELLER_DESC') {
+                filteredSold.sort((a, b) => (b.seller || '').localeCompare(a.seller || '', 'vi'));
+            }
+
+            updateCommSortIcons();
 
             if (countBadge) countBadge.innerText = `${filteredSold.length} máy đã bán`;
 
@@ -3405,6 +3455,47 @@
                 if (sortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-orange-600"></i>';
                 else if (sortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-orange-600"></i>';
                 else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+        }
+
+        window.toggleCommSortColumn = function(column) {
+            if (column === 'date') {
+                commSortMode = (commSortMode === 'DATE_DESC') ? 'DATE_ASC' : 'DATE_DESC';
+            } else if (column === 'name') {
+                commSortMode = (commSortMode === 'NAME_ASC') ? 'NAME_DESC' : 'NAME_ASC';
+            } else if (column === 'price') {
+                commSortMode = (commSortMode === 'PRICE_DESC') ? 'PRICE_ASC' : 'PRICE_DESC';
+            } else if (column === 'seller') {
+                commSortMode = (commSortMode === 'SELLER_ASC') ? 'SELLER_DESC' : 'SELLER_ASC';
+            }
+            window.renderCommissionReport();
+        };
+
+        function updateCommSortIcons() {
+            const iconDate = document.getElementById('comm-sort-icon-date');
+            const iconName = document.getElementById('comm-sort-icon-name');
+            const iconPrice = document.getElementById('comm-sort-icon-price');
+            const iconSeller = document.getElementById('comm-sort-icon-seller');
+
+            if (iconDate) {
+                if (commSortMode === 'DATE_DESC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-indigo-600"></i>';
+                else if (commSortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-indigo-600"></i>';
+                else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconName) {
+                if (commSortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
+                else if (commSortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
+                else iconName.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconPrice) {
+                if (commSortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-orange-600"></i>';
+                else if (commSortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-orange-600"></i>';
+                else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconSeller) {
+                if (commSortMode === 'SELLER_ASC') iconSeller.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
+                else if (commSortMode === 'SELLER_DESC') iconSeller.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
+                else iconSeller.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
         }
 
