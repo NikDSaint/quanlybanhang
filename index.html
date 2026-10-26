@@ -201,29 +201,30 @@
                 </div>
 
                 <!-- Bảng sản phẩm còn trong kho -->
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Sản Phẩm Còn Trong Kho</h3>
-                        </div>
-                        <span id="badge-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0 máy</span>
+            <!-- Bảng sản phẩm còn trong kho có cột STT ngoài cùng bên trái -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Sản Phẩm Còn Trong Kho</h3>
                     </div>
+                    <span id="badge-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0 máy</span>
+                </div>
 
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left text-sm border-collapse">
-                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
-                                <tr>
-                                    <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
-                                    <th class="py-3.5 px-4 text-center w-16">Xem</th>
-                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
-                                        <div class="flex items-center space-x-1.5">
-                                            <span>Ngày Nhập</span>
-                                            <span id="sort-icon-date" class="text-xs text-slate-400">
-                                                <i class="fa-solid fa-sort"></i>
-                                            </span>
-                                        </div>
-                                    </th>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                            <tr>
+                                <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
+                                <th class="py-3.5 px-3 text-center w-24 whitespace-nowrap">Xem & Copy</th>
+                                <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
+                                    <div class="flex items-center space-x-1.5">
+                                        <span>Ngày Nhập</span>
+                                        <span id="sort-icon-date" class="text-xs text-slate-400">
+                                            <i class="fa-solid fa-sort"></i>
+                                        </span>
+                                    </div>
+                                </th>
                                     <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
                                         <div class="flex items-center space-x-1.5">
                                             <span>Sản Phẩm & Cấu Hình / IMEI</span>
@@ -3290,6 +3291,72 @@
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
+        // Hàm copy bài đăng thông tin máy theo định dạng chuẩn
+        window.copyProductPost = function(id, btnElement) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            // Xử lý Ram/Bộ nhớ
+            const specs = [];
+            if (p.ram) specs.push(p.ram);
+            if (p.storage) specs.push(p.storage);
+            const ramRomText = specs.length > 0 ? specs.join(' / ') : 'Chuẩn zin';
+
+            // Xử lý Hình thức
+            const condParts = [];
+            if (p.condition) condParts.push(p.condition);
+            if (p.battery) condParts.push(`Pin ${p.battery}`);
+            if (p.color) condParts.push(`Màu ${p.color}`);
+            const condText = condParts.length > 0 ? condParts.join(' - ') : 'Đẹp 99%';
+
+            // Tên máy đầy đủ (Hãng + Tên model)
+            const fullName = `${p.brand ? p.brand + ' ' : ''}${p.name}`.trim();
+            const priceText = formatVND(p.sellingPrice);
+
+            // Nội dung theo đúng mẫu
+            const textToCopy = `#${fullName}
+📦${ramRomText}
+✨ ${condText}
+✅ Test mọi chức năng hoàn hảo
+🧑‍🔧 Bảo hành 06 tháng
+🔖 Giá chỉ ${priceText}
+==================`;
+
+            // Sao chép an toàn vào Clipboard hỗ trợ mọi trình duyệt và iframe
+            let copied = false;
+            try {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                tempTextArea.style.position = 'fixed';
+                tempTextArea.style.top = '-9999px';
+                tempTextArea.style.left = '-9999px';
+                document.body.appendChild(tempTextArea);
+                tempTextArea.focus();
+                tempTextArea.select();
+                copied = document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+            } catch (err) {
+                console.warn("Lỗi execCommand:", err);
+            }
+
+            if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).catch(() => {});
+            }
+
+            // Hiệu ứng nút khi bấm
+            if (btnElement) {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check text-xs text-emerald-600"></i>';
+                btnElement.classList.add('bg-emerald-50', 'text-emerald-600');
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('bg-emerald-50', 'text-emerald-600');
+                }, 1800);
+            }
+
+            showToast(`Đã sao chép bài đăng: ${fullName}!`, 'success');
+        };
+
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -3538,11 +3605,18 @@
                     if (emptyState) emptyState.classList.add('hidden');
                     tbodyAvailable.innerHTML = availableList.map((p, index) => `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">${index + 1}</td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-sm"></i>
-                                </button>
+                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">
+                                ${index + 1}
+                            </td>
+                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1.5 justify-center">
+                                    <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center justify-center transition shadow-xs" title="Xem chi tiết máy">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                    <button onclick="copyProductPost('${p.id}', this)" class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 hover:bg-purple-100 flex items-center justify-center transition shadow-xs" title="Sao chép bài đăng / thông tin máy để đăng bài">
+                                        <i class="fa-regular fa-copy text-xs"></i>
+                                    </button>
+                                </div>
                             </td>
                             <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
                                 ${formatDateVN(p.importedAt || new Date().toISOString().split('T')[0])}
