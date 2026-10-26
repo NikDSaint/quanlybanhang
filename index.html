@@ -883,6 +883,13 @@
                     </div>
                 </div>
 
+                <div class="flex items-center justify-between text-xs pt-0.5">
+                    <label class="flex items-center space-x-2 text-slate-600 cursor-pointer select-none font-medium">
+                        <input type="checkbox" id="auth-remember-me" checked class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer accent-indigo-600">
+                        <span>Ghi nhớ đăng nhập trên máy này</span>
+                    </label>
+                </div>
+
                 <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold leading-relaxed"></div>
 
                 <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center space-x-2">
@@ -1509,6 +1516,7 @@
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
+        const LOCAL_AUTH_SESSION_KEY = 'aistore_remembered_session_v1';
         let unsubscribeProducts = null;
         let unsubscribeNotifs = null;
         let unsubscribeProfiles = null;
@@ -1656,6 +1664,44 @@
             }
         };
 
+        function restoreRememberedSession() {
+            try {
+                const saved = localStorage.getItem(LOCAL_AUTH_SESSION_KEY);
+                if (saved) {
+                    const session = JSON.parse(saved);
+                    if (session && session.user && session.profile) {
+                        currentUser = session.user;
+                        currentUserProfile = session.profile;
+                        userRole = session.role || session.profile.role || 'staff';
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn("Lỗi đọc phiên đã lưu:", e);
+            }
+            return false;
+        }
+
+        function saveRememberedSession(user, profile, role) {
+            try {
+                const sessionData = {
+                    user: { uid: user.uid || profile.id, email: user.email || profile.email },
+                    profile: profile,
+                    role: role,
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(LOCAL_AUTH_SESSION_KEY, JSON.stringify(sessionData));
+            } catch (e) {
+                console.warn("Lỗi lưu phiên đăng nhập:", e);
+            }
+        }
+
+        function clearRememberedSession() {
+            try {
+                localStorage.removeItem(LOCAL_AUTH_SESSION_KEY);
+            } catch (e) {}
+        }
+
         async function initApp() {
             window.loadAndRenderNotifications();
 
@@ -1671,9 +1717,22 @@
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
             }
 
+            // Khôi phục phiên làm việc trước đó nếu có
+            const hasRestoredSession = restoreRememberedSession();
+
             updateUserUI();
             renderApp();
             startRealtimeSync();
+
+            // Nếu không có phiên nhớ trước đó và cũng chưa có Firebase user, hiển thị form đăng nhập
+            if (!hasRestoredSession && !auth.currentUser) {
+                // Kiểm tra nếu chưa từng lưu phiên, điền sẵn email nếu có
+                const savedEmail = localStorage.getItem('aistore_last_login_account');
+                if (savedEmail) {
+                    const emailInput = document.getElementById('auth-email');
+                    if (emailInput) emailInput.value = savedEmail;
+                }
+            }
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -1799,11 +1858,98 @@
 
         window.handleAuthActionClick = async function() {
             try { await signOut(auth); } catch (e) {}
-            showToast('Đã đăng xuất! Chuyển sang tài khoản khách.', 'success');
+            clearRememberedSession();
+            showToast('Đã đăng xuất! Vui lòng đăng nhập lại.', 'success');
             userRole = 'staff';
-            currentUserProfile = { id: 'guest', full_name: 'Khách Xem', role: 'staff' };
+            currentUser = null;
+            currentUserProfile = null;
             updateUserUI();
             renderApp();
+            window.showAuthModal(true);
+        };
+
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            let accountInput = document.getElementById('auth-email').value.trim();
+            const rememberMe = document.getElementById('auth-remember-me')?.checked ?? true;
+
+            if (accountInput && !accountInput.includes('@')) {
+                accountInput += '@gmail.com';
+                document.getElementById('auth-email').value = accountInput;
+            }
+
+            const password = document.getElementById('auth-password').value;
+            const errBox = document.getElementById('auth-error-msg');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (errBox) errBox.classList.add('hidden');
+
+            const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+            let authOk = false;
+            const accountLower = accountInput.toLowerCase();
+
+            const accounts = getStaffAccounts();
+            const matchedAccount = accounts.find(a => {
+                const accLogin = (a.email || '').toLowerCase();
+                const accPrefix = accLogin.split('@')[0];
+                return accLogin === accountLower || accPrefix === accountLower || a.full_name.toLowerCase() === accountLower;
+            });
+
+            if (matchedAccount) {
+                if (!matchedAccount.password || matchedAccount.password === password) {
+                    if (!matchedAccount.password) {
+                        matchedAccount.password = password;
+                        saveStaffAccounts(accounts);
+                    }
+                    currentUser = { uid: matchedAccount.id, email: matchedAccount.email };
+                    userRole = matchedAccount.role || 'staff';
+                    currentUserProfile = {
+                        id: matchedAccount.id,
+                        email: matchedAccount.email,
+                        full_name: matchedAccount.full_name,
+                        role: userRole
+                    };
+
+                    if (rememberMe) {
+                        saveRememberedSession(currentUser, currentUserProfile, userRole);
+                        localStorage.setItem('aistore_last_login_account', accountInput);
+                    } else {
+                        clearRememberedSession();
+                    }
+
+                    showAuthModal(false);
+                    updateUserUI();
+                    renderApp();
+                    showToast(`Đăng nhập thành công! Xin chào ${matchedAccount.full_name}`, 'success');
+                    authOk = true;
+                }
+            }
+
+            if (!authOk) {
+                try {
+                    const emailForAuth = accountInput.includes('@') ? accountInput : `${accountLower.replace(/[^a-z0-9._-]/g, '')}@aistore.local`;
+                    const cred = await signInWithEmailAndPassword(auth, emailForAuth, password);
+                    if (cred && cred.user) {
+                        if (rememberMe) {
+                            localStorage.setItem('aistore_last_login_account', accountInput);
+                        }
+                        authOk = true;
+                    }
+                } catch (err) {
+                    console.warn("Firebase auth lỗi:", err);
+                }
+            }
+
+            if (!authOk) {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origBtnHtml;
+                }
+                if (errBox) {
+                    errBox.innerText = 'Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!';
+                    errBox.classList.remove('hidden');
+                }
+            }
         };
 
         window.togglePasswordVisibility = function(inputId, btn) {
