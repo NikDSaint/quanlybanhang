@@ -53,87 +53,87 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
 
-    <!-- SIDEBAR -->
-    <aside class="w-full md:w-64 lg:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200/80 shrink-0 flex flex-col md:h-screen md:sticky md:top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
-        <div class="p-4 md:p-5 flex-1 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
+    <!-- SIDEBAR THU GỌN GỌN GÀNG ĐỂ MỞ RỘNG BẢNG BÊN PHẢI -->
+    <aside class="w-full md:w-56 lg:w-60 bg-white border-b md:border-b-0 md:border-r border-slate-200/80 shrink-0 flex flex-col md:h-screen md:sticky md:top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
+        <div class="p-3 md:p-3.5 flex-1 flex flex-col space-y-3 overflow-y-auto custom-scrollbar">
 
             <!-- 1. Logo & Thương hiệu -->
-            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100 shrink-0">
-                <div class="w-10 h-10 flex items-center justify-center overflow-hidden shrink-0 bg-transparent">
+            <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-100 shrink-0">
+                <div class="w-9 h-9 flex items-center justify-center overflow-hidden shrink-0 bg-transparent">
                     <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/88x88/transparent/9333ea?text=AI';">
                 </div>
                 <div class="min-w-0 flex-1">
-                    <div class="flex items-center space-x-1.5">
-                        <h1 class="font-black text-xl tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
+                    <div class="flex items-center space-x-1">
+                        <h1 class="font-black text-lg tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium truncate">Hệ thống quản lý bán hàng</p>
+                    <p class="text-[10px] text-slate-400 font-medium truncate">Quản lý bán hàng</p>
                 </div>
             </div>
 
             <!-- 2. Thông báo -->
             <div class="shrink-0">
-                <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
-                    <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shadow-xs group-hover:scale-105 transition-transform">
+                <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs shadow-xs group-hover:scale-105 transition-transform">
                             <i class="fa-regular fa-bell"></i>
                         </div>
                         <span class="text-xs font-bold text-slate-800">Thông Báo</span>
                     </div>
-                    <span id="notif-badge" class="min-w-[20px] h-5 px-1.5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center hidden animate-pulse shadow-sm">
+                    <span id="notif-badge" class="min-w-[18px] h-4 px-1 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center hidden animate-pulse shadow-sm">
                         0
                     </span>
                 </button>
             </div>
 
             <!-- 3. Tài khoản người dùng & Đăng xuất -->
-            <div class="pb-3 border-b border-slate-100 space-y-2 shrink-0">
-                <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 p-2.5 rounded-2xl cursor-pointer text-left transition group">
-                    <div id="user-avatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white font-black flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
+            <div class="pb-2.5 border-b border-slate-100 space-y-1.5 shrink-0">
+                <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="w-full flex items-center space-x-2.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 p-2 rounded-xl cursor-pointer text-left transition group">
+                    <div id="user-avatar" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 text-white font-black flex items-center justify-center text-xs shadow-sm group-hover:scale-105 transition-transform shrink-0">
                         A
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
                             <p id="user-name-display" class="text-xs font-bold leading-tight text-slate-800 truncate">Saint Niky</p>
-                            <i class="fa-solid fa-gear text-[11px] text-slate-400 group-hover:text-purple-600 transition-colors"></i>
+                            <i class="fa-solid fa-gear text-[10px] text-slate-400 group-hover:text-purple-600 transition-colors"></i>
                         </div>
-                        <span id="user-role-badge" class="mt-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 inline-block uppercase tracking-wider">
+                        <span id="user-role-badge" class="mt-0.5 text-[8.5px] font-black px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider">
                             CHỦ
                         </span>
                     </div>
                 </button>
 
-                <button id="btn-auth-action" onclick="handleAuthActionClick()" class="w-full px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200/70 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                <button id="btn-auth-action" onclick="handleAuthActionClick()" class="w-full px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200/70 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-right-from-bracket text-[11px]"></i>
                     <span>Đăng Xuất</span>
                 </button>
             </div>
 
             <!-- 4. Điều hướng Tab chức năng chính -->
-            <div class="space-y-1.5 flex-1">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1">Chức Năng</p>
+            <div class="space-y-1 flex-1">
+                <p class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-0.5">Chức Năng</p>
                 
-                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
+                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-boxes-stacked w-4 text-center text-xs"></i>
                     <span>Tổng Quan Kho</span>
                 </button>
 
-                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-emerald-500"></i>
+                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-emerald-500 text-xs"></i>
                     <span>Lịch Sử Bán Hàng</span>
                 </button>
 
-                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-hand-holding-dollar w-4 text-center"></i>
+                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-hand-holding-dollar w-4 text-center text-xs"></i>
                     <span>Hoa Hồng</span>
                 </button>
 
-                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-chart-pie w-4 text-center text-xs"></i>
                     <span>Báo Cáo</span>
                 </button>
 
-                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-users-gear text-amber-500 w-4 text-center"></i>
+                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-users-gear text-amber-500 w-4 text-center text-xs"></i>
                     <span>Quản Lý</span>
                 </button>
             </div>
@@ -143,7 +143,7 @@
 
     <!-- MAIN WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 lg:px-6 py-5">
 
             <!-- VIEW 1: TỔNG QUAN KHO -->
             <div id="view-inventory" class="space-y-6">
@@ -312,11 +312,39 @@
                                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
                                     <tr>
                                         <th class="py-3.5 px-4 text-center w-16">Xem</th>
-                                        <th class="py-3.5 px-4 whitespace-nowrap">Ngày Bán</th>
-                                        <th class="py-3.5 px-4">Sản Phẩm & Cấu Hình / IMEI</th>
-                                        <th class="py-3.5 px-4 text-right whitespace-nowrap">Giá Bán</th>
+                                        <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-emerald-700 transition whitespace-nowrap" onclick="toggleSoldSortColumn('date')" title="Bấm để sắp xếp theo ngày bán">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span>Ngày Bán</span>
+                                                <span id="sold-sort-icon-date" class="text-xs text-slate-400">
+                                                    <i class="fa-solid fa-arrow-down-wide-short text-emerald-600"></i>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleSoldSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span>Sản Phẩm & Cấu Hình / IMEI</span>
+                                                <span id="sold-sort-icon-name" class="text-xs text-slate-400">
+                                                    <i class="fa-solid fa-sort"></i>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-rose-600 transition whitespace-nowrap" onclick="toggleSoldSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
+                                            <div class="flex items-center justify-end space-x-1.5">
+                                                <span>Giá Bán</span>
+                                                <span id="sold-sort-icon-price" class="text-xs text-slate-400">
+                                                    <i class="fa-solid fa-sort"></i>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng NV</th>
-                                        <th class="py-3.5 px-4">Người Bán</th>
+                                        <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleSoldSortColumn('seller')" title="Bấm để sắp xếp theo người bán">
+                                            <div class="flex items-center space-x-1.5">
+                                                <span>Người Bán</span>
+                                                <span id="sold-sort-icon-seller" class="text-xs text-slate-400">
+                                                    <i class="fa-solid fa-sort"></i>
+                                                </span>
+                                            </div>
+                                        </th>
                                         <th class="py-3.5 px-4">Khách Hàng</th>
                                         <th class="py-3.5 px-4 text-center whitespace-nowrap">Thao Tác</th>
                                     </tr>
@@ -408,12 +436,20 @@
 
             <!-- VIEW 2: HOA HỒNG NHÂN VIÊN & QUẢN LÝ -->
             <div id="view-commission" class="space-y-4 hidden">
-                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
                     <div>
                         <h2 class="text-base font-bold text-slate-800">Bảng Tổng Hợp Hoa Hồng Nhân Viên & Quản Lý</h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5">
+                            Quản lý & Chủ: <span class="font-bold text-indigo-700">Tự bán = (Giá bán - Vốn)</span> | <span class="font-bold text-purple-700">Bảo trợ = (Giá bán - Vốn - HH NV) - Lương - Thưởng</span>
+                        </p>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                        <button id="btn-open-salary-modal" onclick="openStaffSalaryModal()" class="px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>Cài Đặt Lương & Thưởng</span>
+                        </button>
+
                         <select id="comm-period-type" onchange="handlePeriodTypeChange('comm')" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-700">
                             <option value="ALL">Toàn Bộ Lịch Sử</option>
                             <option value="MONTH" selected>Theo Tháng</option>
@@ -447,75 +483,6 @@
                     <!-- Populated dynamically -->
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
-                                <i class="fa-solid fa-clipboard-check"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-sm">Danh Sách Máy Đã Bán & Lịch Sử Chốt Đơn</h3>
-                                <p class="text-[11px] text-slate-400">Các máy đã bán được lưu lại tại đây kèm thông tin hoa hồng và hóa đơn</p>
-                            </div>
-                        </div>
-                        <span id="comm-sold-count" class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">0 máy đã bán</span>
-                    </div>
-
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left text-sm border-collapse">
-                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
-                                <tr>
-                                    <th class="py-3.5 px-4 text-center w-14">Xem</th>
-                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('date')" title="Bấm để sắp xếp theo ngày bán">
-                                        <div class="flex items-center space-x-1.5">
-                                            <span>Ngày Bán</span>
-                                            <span id="comm-sort-icon-date" class="text-xs text-slate-400">
-                                                <i class="fa-solid fa-sort"></i>
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition" onclick="toggleCommSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
-                                        <div class="flex items-center space-x-1.5">
-                                            <span>Sản Phẩm & Cấu Hình / IMEI</span>
-                                            <span id="comm-sort-icon-name" class="text-xs text-slate-400">
-                                                <i class="fa-solid fa-sort"></i>
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-orange-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
-                                        <div class="flex items-center justify-end space-x-1.5">
-                                            <span>Giá Bán</span>
-                                            <span id="comm-sort-icon-price" class="text-xs text-slate-400">
-                                                <i class="fa-solid fa-sort"></i>
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng</th>
-                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-indigo-600 transition whitespace-nowrap" onclick="toggleCommSortColumn('seller')" title="Bấm để sắp xếp theo nhân viên bán">
-                                        <div class="flex items-center space-x-1.5">
-                                            <span>Nhân Viên Bán</span>
-                                            <span id="comm-sort-icon-seller" class="text-xs text-slate-400">
-                                                <i class="fa-solid fa-sort"></i>
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th class="py-3.5 px-4">Khách Hàng</th>
-                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Hóa Đơn</th>
-                                </tr>
-                            </thead>
-                            <tbody id="commission-table-body" class="divide-y divide-slate-100 font-medium">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="comm-empty-state" class="hidden p-8 text-center">
-                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center mx-auto mb-2 text-xl">
-                            <i class="fa-solid fa-receipt"></i>
-                        </div>
-                        <p class="text-slate-600 font-bold text-sm">Chưa có sản phẩm nào đã bán trong kỳ này</p>
-                    </div>
-                </div>
             </div>
 
             <!-- VIEW 3: LỢI NHUẬN (PROFIT REPORT) -->
@@ -1002,42 +969,42 @@
                 </div>
 
                 <div id="dt-sold-info-box" class="hidden bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-2xl space-y-2">
-                    <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Thông Tin Xuất Bán
-                    </span>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Ngày bán:</span>
-                            <p id="dt-sold-date" class="font-bold text-slate-800">--</p>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Nhân viên chốt:</span>
-                            <p id="dt-seller" class="font-bold text-indigo-700">--</p>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Người bảo trợ (QL):</span>
-                            <p id="dt-manager" class="font-bold text-purple-700">--</p>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Hoa hồng bảo trợ:</span>
-                            <p id="dt-manager-commission" class="font-bold text-amber-700">--</p>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Khách hàng:</span>
-                            <p id="dt-customer-name" class="font-bold text-slate-800">--</p>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] font-semibold">Số điện thoại:</span>
-                            <p id="dt-customer-phone" class="font-mono font-medium text-slate-700">--</p>
-                        </div>
+    <!-- MODAL: CÀI ĐẶT LƯƠNG CỨNG VÀ THƯỞNG THÊM NHÂN VIÊN -->
+    <div id="salary-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
+            <div class="bg-gradient-to-r from-purple-700 to-indigo-700 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-sm shadow-xs">
+                        <i class="fa-solid fa-coins"></i>
                     </div>
+                    <div>
+                        <h3 class="font-extrabold text-base sm:text-lg">Cài Đặt Lương Cứng & Thưởng Thêm</h3>
+                        <p class="text-xs text-purple-100 font-medium">Áp dụng trừ vào hoa hồng bảo trợ của Quản lý / Chủ cửa hàng</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeStaffSalaryModal()" class="text-purple-200 hover:text-white transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-4">
+                <div class="p-3 bg-purple-50 rounded-2xl border border-purple-100 text-xs text-purple-900 leading-relaxed">
+                    <i class="fa-solid fa-circle-info mr-1 text-purple-600"></i>
+                    <span><strong>Quy tắc tính:</strong> Khi nhân viên tuyến dưới bán được máy, người bảo trợ nhận <strong>(Giá bán - Vốn - Hoa hồng NV)</strong>, sau đó trừ đi <strong>Lương cứng + Thưởng thêm</strong> của nhân viên đó.</span>
+                </div>
+
+                <div id="salary-staff-list" class="space-y-3">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
-                <div id="dt-actions-left" class="flex items-center space-x-2"></div>
-                <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-2">
+                <button type="button" onclick="closeStaffSalaryModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
                     Đóng
+                </button>
+                <button type="button" onclick="saveStaffSalarySettings()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Lưu Cài Đặt</span>
                 </button>
             </div>
         </div>
@@ -1543,24 +1510,110 @@
         let currentSalesSubTab = 'items';
         let sortMode = 'DATE_DESC';
         let commSortMode = 'DATE_DESC';
+        let soldSortMode = 'DATE_DESC';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
         const LOCAL_AUTH_SESSION_KEY = 'aistore_remembered_session_v1';
-        let unsubscribeProducts = null;
-        let unsubscribeNotifs = null;
-        let unsubscribeProfiles = null;
+        const LOCAL_STAFF_SALARY_KEY = 'phonestore_pro_staff_salary_v1';
+        const NOTIF_STORAGE_KEY = 'aistore_global_notifs';
+        const NOTIF_READ_KEY = 'aistore_read_notif_ids_v2';
 
-        // Dữ liệu mẫu phong phú ban đầu
         const DEFAULT_SEED_PRODUCTS = [
-            { id: 'prod-001', brand: 'iPhone', name: '16 Pro Max (Titan Tự Nhiên)', ram: '8GB', storage: '256GB', color: 'Titan', battery: '100%', condition: 'Zin keng 99.9%', importPrice: 28500000, sellingPrice: 32500000, commission: 500000, status: 'AVAILABLE', imei: '358912345678901', importedAt: '2026-10-25', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-002', brand: 'iPhone', name: '15 Pro Max (Titan Xanh)', ram: '8GB', storage: '256GB', color: 'Titan Xanh', battery: '96%', condition: 'Zin keng 99%', importPrice: 22000000, sellingPrice: 25200000, commission: 400000, status: 'AVAILABLE', imei: '359812487612345', importedAt: '2026-10-24', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-003', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G', ram: '12GB', storage: '256GB', color: 'Xám Titan', battery: '99%', condition: 'Máy đẹp keng sạc ít', importPrice: 20000000, sellingPrice: 23500000, commission: 450000, status: 'AVAILABLE', imei: '352981726354128', importedAt: '2026-10-23', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-004', brand: 'Xiaomi', name: '14 Ultra Leica', ram: '16GB', storage: '512GB', color: 'Trắng', battery: '100%', condition: 'Fullbox như mới', importPrice: 16500000, sellingPrice: 19800000, commission: 350000, status: 'AVAILABLE', imei: '862918273645129', importedAt: '2026-10-22', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-005', brand: 'iPhone', name: 'XS Max', ram: '4GB', storage: '64GB', color: 'Vàng', battery: '89%', condition: 'Pin thay mới 100% _ Ngoại hình cũ 95% vỏ xước _ Màn zin', importPrice: 5200000, sellingPrice: 6500000, commission: 200000, status: 'SOLD', imei: '52516', importedAt: '2026-10-20', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '0988112233', soldAt: '2026-10-26', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 1100000 },
-            { id: 'prod-006', brand: 'iPhone', name: 'XS Max (Đen)', ram: '4GB', storage: '64GB', color: 'Đen', battery: '100%', condition: 'Màn thay oled _ pin thay 100% - Ngoại hình đẹp 98%', importPrice: 4000000, sellingPrice: 5000000, commission: 200000, status: 'SOLD', imei: '27822', importedAt: '2026-10-20', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '0977445566', soldAt: '2026-10-26', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 800000 },
-            { id: 'prod-007', brand: 'iPhone', name: '8 Plus', ram: '3GB', storage: '64GB', color: 'Đỏ', battery: '85%', condition: 'Zin phẩy 97% _ imei 81851', importPrice: 2200000, sellingPrice: 2900000, commission: 200000, status: 'SOLD', imei: '81851', importedAt: '2026-10-18', seller: 'Trung Hiếu', customerName: 'Đinh Công Hoàng', customerPhone: '0912345678', soldAt: '2026-10-25', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 500000 },
-            { id: 'prod-008', brand: 'iPhone', name: '12 (Trắng)', ram: '4GB', storage: '128GB', color: 'Trắng', battery: '88%', condition: 'Pin thay mới 100% _ Ngoại hình cũ 95% vỏ xước', importPrice: 4300000, sellingPrice: 5500000, commission: 300000, status: 'SOLD', imei: '4915716', importedAt: '2026-10-17', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '', soldAt: '2026-10-24', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 900000 }
+            {
+                id: 'prod-101',
+                brand: 'iPhone',
+                name: 'iPhone 16 Pro Max',
+                ram: '8GB',
+                storage: '256GB',
+                color: 'Titan Tự Nhiên',
+                battery: '100%',
+                importPrice: 28500000,
+                sellingPrice: 32500000,
+                commission: 500000,
+                status: 'AVAILABLE',
+                imei: '359871108234123',
+                condition: 'Máy new seal chưa active, bảo hành chính hãng 12 tháng',
+                importedAt: '2026-10-26'
+            },
+            {
+                id: 'prod-102',
+                brand: 'Samsung',
+                name: 'Galaxy S24 Ultra',
+                ram: '12GB',
+                storage: '512GB',
+                color: 'Xám Titan',
+                battery: '99%',
+                importPrice: 22000000,
+                sellingPrice: 25500000,
+                commission: 400000,
+                status: 'AVAILABLE',
+                imei: '864210059281734',
+                condition: 'Đẹp keng như mới 99.9%, zin nguyên bản áp suất chuẩn',
+                importedAt: '2026-10-25'
+            },
+            {
+                id: 'prod-103',
+                brand: 'Xiaomi',
+                name: 'Xiaomi 14 Pro',
+                ram: '16GB',
+                storage: '512GB',
+                color: 'Đen Bóng',
+                battery: '100%',
+                importPrice: 13500000,
+                sellingPrice: 15800000,
+                commission: 300000,
+                status: 'AVAILABLE',
+                imei: '869012345678901',
+                condition: 'Fullbox đẹp keng, rom quốc tế sẵn tiếng Việt',
+                importedAt: '2026-10-24'
+            },
+            {
+                id: 'prod-104',
+                brand: 'iPhone',
+                name: 'iPhone 15 Pro',
+                ram: '8GB',
+                storage: '128GB',
+                color: 'Titan Xanh',
+                battery: '97%',
+                importPrice: 18500000,
+                sellingPrice: 21500000,
+                commission: 300000,
+                status: 'SOLD',
+                imei: '354890123456789',
+                condition: 'Zin nguyên bản đẹp 99%',
+                importedAt: '2026-10-20',
+                soldAt: '2026-10-26',
+                seller: 'Hoàng Trường',
+                customerName: 'Anh Tuấn',
+                customerPhone: '0988123456',
+                manager: 'Saint Niky',
+                managerId: 'acc-niky',
+                managerCommission: 2700000
+            },
+            {
+                id: 'prod-105',
+                brand: 'iPhone',
+                name: 'iPhone 13',
+                ram: '4GB',
+                storage: '128GB',
+                color: 'Hồng',
+                battery: '91%',
+                importPrice: 9500000,
+                sellingPrice: 11500000,
+                commission: 200000,
+                status: 'SOLD',
+                imei: '357890123456782',
+                condition: 'Đẹp 98% viền phẩy nhẹ, pin zin',
+                importedAt: '2026-10-18',
+                soldAt: '2026-10-25',
+                seller: 'Trung Hiếu',
+                customerName: 'Chị Mai',
+                customerPhone: '0977234567',
+                manager: 'Saint Niky',
+                managerId: 'acc-niky',
+                managerCommission: 1800000
+            }
         ];
 
         function getDeletedStaffIds() {
@@ -1580,15 +1633,16 @@
         }
 
         function getPermissions() {
-            const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const isManager = (userRole === 'manager');
+            const role = userRole || currentUserProfile?.role || 'staff';
+            const isOwner = (role === 'owner' || role === 'admin');
+            const isManager = (role === 'manager');
             return {
                 isOwner,
                 isManager,
                 canViewCosts: isOwner || isManager,
                 canViewProfitTab: isOwner || isManager,
                 canManageStaff: isOwner,
-                canViewManagementTab: isOwner || isManager,
+                canViewManagementTab: isOwner, // CHỈ DÀNH CHO CHỦ CỬA HÀNG (Ẩn hoàn toàn với Quản lý & Nhân viên)
                 canAddEditProduct: isOwner || isManager,
                 canSelectSeller: isOwner || isManager
             };
@@ -1611,6 +1665,7 @@
                 }
                 return false;
             }
+            
             return order.seller === myName;
         }
 
@@ -1631,30 +1686,21 @@
                 } catch(e) {}
             }
             
-            if (!raw || accounts.length === 0) {
+            if (accounts.length === 0) {
                 accounts = [
                     { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-tholii', full_name: 'Thơ Lii', email: 'tholii@gmail.com', password: '', role: 'owner' },
-                    { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-truong', full_name: 'Hoàng Trường', email: 'truongh@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' },
-                    { id: 'acc-hieu', full_name: 'Trung Hiếu', email: 'hieutt@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' }
-                ].filter(a => {
-                    const isDelId = a.id && deletedIds.includes(a.id);
-                    const isDelEmail = a.email && deletedIds.includes(a.email.toLowerCase());
-                    return !isDelId && !isDelEmail;
-                });
+                    { id: 'acc-hieu', full_name: 'Trung Hiếu', email: 'hieut@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' }
+                ];
+                localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
             }
-
-            localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
             return accounts;
         }
 
         function saveStaffAccounts(accounts) {
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
         }
-
-        const NOTIF_STORAGE_KEY = 'aistore_global_notifs';
-        const NOTIF_READ_KEY = 'aistore_read_notif_ids_v2';
 
         function getReadNotifIds() {
             try {
@@ -1671,13 +1717,380 @@
             } catch (e) {}
         }
 
-        window.openNotificationsModal = function() {
-            const modal = document.getElementById('notif-modal');
+        let unsubscribeProducts = null;
+        let unsubscribeNotifs = null;
+        let unsubscribeProfiles = null;
+        function getStaffSalaryMap() {
+            try {
+                const raw = localStorage.getItem(LOCAL_STAFF_SALARY_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveStaffSalaryMap(map) {
+            localStorage.setItem(LOCAL_STAFF_SALARY_KEY, JSON.stringify(map));
+        }
+
+        window.openStaffSalaryModal = function() {
+            const perm = getPermissions();
+            if (!perm.isOwner && !perm.isManager) {
+                showToast('Chỉ Quản lý hoặc Chủ cửa hàng mới có quyền cài đặt lương & thưởng!', 'error');
+                return;
+            }
+
+            const accounts = getStaffAccounts();
+            const salaryMap = getStaffSalaryMap();
+            const myName = (currentUserProfile?.full_name || '').trim();
+            const myId = currentUser?.uid || currentUserProfile?.id;
+
+            // Lọc danh sách nhân viên: Nếu là Owner thì thấy tất cả staff, nếu Manager chỉ thấy staff trực thuộc mình
+            const targetStaffs = accounts.filter(a => {
+                if (a.role === 'owner' || a.role === 'admin') return false;
+                if (perm.isOwner) return true;
+                return (a.manager_id === myId || a.manager_id === a.email || a.manager_name === myName);
+            });
+
+            const container = document.getElementById('salary-staff-list');
+            if (!container) return;
+
+            if (targetStaffs.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400 font-semibold">Chưa có nhân viên nào trực thuộc bạn quản lý để cài đặt.</div>`;
+            } else {
+                container.innerHTML = targetStaffs.map(st => {
+                    const stId = st.id || st.email;
+                    const setting = salaryMap[stId] || { baseSalary: 0, bonus: 0 };
+                    return `
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                                        ${escapeHtml(st.full_name.charAt(0).toUpperCase())}
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-800">${escapeHtml(st.full_name)}</p>
+                                        <p class="text-[10px] text-slate-400 font-mono">${escapeHtml(st.email || '')} ${st.manager_name ? `• Bảo trợ: ${escapeHtml(st.manager_name)}` : ''}</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${st.role === 'manager' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'} uppercase">
+                                    ${st.role === 'manager' ? 'Quản Lý' : 'Nhân Viên'}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Lương Cứng (VNĐ)</label>
+                                    <div class="relative flex items-center">
+                                        <input type="text" data-staff-id="${escapeHtml(stId)}" data-type="base" oninput="formatPriceInput(this)" value="${setting.baseSalary ? new Intl.NumberFormat('vi-VN').format(setting.baseSalary) : '0'}" placeholder="0" class="w-full pl-2.5 pr-6 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold text-slate-700 bg-white">
+                                        <span class="absolute right-2 text-slate-400 text-xs pointer-events-none">₫</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Thưởng Thêm (VNĐ)</label>
+                                    <div class="relative flex items-center">
+                                        <input type="text" data-staff-id="${escapeHtml(stId)}" data-type="bonus" oninput="formatPriceInput(this)" value="${setting.bonus ? new Intl.NumberFormat('vi-VN').format(setting.bonus) : '0'}" placeholder="0" class="w-full pl-2.5 pr-6 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold text-emerald-600 bg-white">
+                                        <span class="absolute right-2 text-emerald-500 text-xs pointer-events-none">₫</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const modal = document.getElementById('salary-modal');
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-                window.markAllNotificationsRead();
             }
+        };
+
+        window.closeStaffSalaryModal = function() {
+            const modal = document.getElementById('salary-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.saveStaffSalarySettings = function() {
+            const salaryMap = getStaffSalaryMap();
+            const inputs = document.querySelectorAll('#salary-staff-list input[data-staff-id]');
+
+            inputs.forEach(inp => {
+                const staffId = inp.getAttribute('data-staff-id');
+                const type = inp.getAttribute('data-type');
+                const val = parseNumberInput(inp.value);
+
+                if (!salaryMap[staffId]) {
+                    salaryMap[staffId] = { baseSalary: 0, bonus: 0 };
+                }
+
+                if (type === 'base') salaryMap[staffId].baseSalary = val;
+                if (type === 'bonus') salaryMap[staffId].bonus = val;
+            });
+
+            saveStaffSalaryMap(salaryMap);
+            window.closeStaffSalaryModal();
+            window.renderCommissionReport();
+            showToast('Đã lưu thiết lập Lương cứng & Thưởng thêm thành công!', 'success');
+        };
+
+        window.renderCommissionReport = function() {
+            const grid = document.getElementById('commission-grid');
+            if (!grid) return;
+
+            const perm = getPermissions();
+            const currentStaffName = (currentUserProfile?.full_name || '').trim();
+            const currentStaffId = currentUser?.uid || currentUserProfile?.id;
+
+            let soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
+            let filteredSold = filterItemsByDate(soldItems, 'comm');
+
+            const accounts = getStaffAccounts();
+            const salaryMap = getStaffSalaryMap();
+
+            // Khởi tạo danh sách thống kê cho tất cả tài khoản
+            const staffStats = {};
+            accounts.forEach(acc => {
+                // Xác định chính xác vai trò
+                let accRole = acc.role || 'staff';
+                const lowerEmail = (acc.email || '').toLowerCase();
+                if (lowerEmail === 'tholii@gmail.com' || acc.full_name === 'Thơ Lii' || lowerEmail === 'saint.niky@gmail.com' || lowerEmail.includes('admin')) {
+                    accRole = 'owner';
+                }
+
+                staffStats[acc.full_name] = {
+                    account: acc,
+                    id: acc.id || acc.email,
+                    name: acc.full_name,
+                    role: accRole,
+                    countSelfSold: 0,
+                    selfRevenue: 0,
+                    selfCommission: 0,      // Đối với Leader: Giá bán - Giá nhập. Đối với NV: Hoa hồng niêm yết
+                    teamCount: 0,
+                    teamRevenue: 0,
+                    teamSponsorGross: 0,    // sum(Giá bán - Giá nhập - Hoa hồng NV)
+                    totalDeduction: 0,      // sum(Lương cứng + Thưởng thêm tuyến dưới)
+                    subordinates: []
+                };
+            });
+
+            // Duyệt từng đơn máy đã bán trong kỳ
+            filteredSold.forEach(p => {
+                const sellerName = p.seller || 'Chưa gán';
+                if (!staffStats[sellerName]) {
+                    staffStats[sellerName] = {
+                        account: { full_name: sellerName, role: 'staff' },
+                        id: sellerName,
+                        name: sellerName,
+                        role: 'staff',
+                        countSelfSold: 0,
+                        selfRevenue: 0,
+                        selfCommission: 0,
+                        teamCount: 0,
+                        teamRevenue: 0,
+                        teamSponsorGross: 0,
+                        totalDeduction: 0,
+                        subordinates: []
+                    };
+                }
+
+                const sellerStat = staffStats[sellerName];
+                const isSellerLeader = (sellerStat.role === 'owner' || sellerStat.role === 'admin' || sellerStat.role === 'manager');
+
+                sellerStat.countSelfSold++;
+                sellerStat.selfRevenue += (p.sellingPrice || 0);
+
+                if (isSellerLeader) {
+                    // CÔNG THỨC 1: Quản lý / Chủ tự bán = Giá bán - Giá nhập (không tính hoa hồng NV)
+                    const profitDirect = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0);
+                    sellerStat.selfCommission += (profitDirect > 0 ? profitDirect : 0);
+                } else {
+                    // Nhân viên thường: Nhận hoa hồng niêm yết của máy
+                    sellerStat.selfCommission += (Number(p.commission) || 0);
+                }
+
+                // CÔNG THỨC 2: Tính hoa hồng bảo trợ cho Quản lý / Chủ
+                // Tìm người bảo trợ từ thông tin đơn hàng hoặc cấu hình tài khoản
+                let sponsorName = p.manager || sellerStat.account.manager_name;
+                
+                // Nếu nhân viên trực thuộc cửa hàng và chưa gán quản lý cụ thể thì gán doanh số bảo trợ cho Chủ cửa hàng
+                if (!sponsorName && !isSellerLeader) {
+                    const ownerAcc = accounts.find(a => a.role === 'owner' || a.role === 'admin' || a.full_name === 'Saint Niky' || a.full_name === 'Thơ Lii');
+                    if (ownerAcc) sponsorName = ownerAcc.full_name;
+                }
+
+                if (sponsorName && staffStats[sponsorName] && sponsorName !== sellerName) {
+                    const sponsorStat = staffStats[sponsorName];
+                    sponsorStat.teamCount++;
+                    sponsorStat.teamRevenue += (p.sellingPrice || 0);
+
+                    // Lợi nhuận từ tuyến dưới = Giá bán - Giá nhập - Hoa hồng nhân viên
+                    const grossSponsor = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0) - (Number(p.commission) || 0);
+                    sponsorStat.teamSponsorGross += (grossSponsor > 0 ? grossSponsor : 0);
+
+                    if (!sponsorStat.subordinates.includes(sellerName)) {
+                        sponsorStat.subordinates.push(sellerName);
+                    }
+                }
+            });
+
+            // Tính trừ Lương cứng và Thưởng thêm cho người bảo trợ
+            Object.values(staffStats).forEach(st => {
+                if (st.role === 'owner' || st.role === 'admin' || st.role === 'manager') {
+                    // Lấy tất cả nhân viên tuyến dưới trực thuộc người này
+                    const mySubs = accounts.filter(a => {
+                        if (a.full_name === st.name) return false;
+                        if (a.manager_name === st.name || a.manager_id === st.id) return true;
+                        // Nếu là Chủ cửa hàng: tính các nhân viên không có người bảo trợ riêng
+                        if ((st.role === 'owner' || st.role === 'admin') && (!a.manager_name && !a.manager_id && a.role === 'staff')) {
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    let totalDeduct = 0;
+                    mySubs.forEach(sub => {
+                        const subKey = sub.id || sub.email;
+                        const conf = salaryMap[subKey] || { baseSalary: 0, bonus: 0 };
+                        totalDeduct += ((Number(conf.baseSalary) || 0) + (Number(conf.bonus) || 0));
+                    });
+
+                    st.totalDeduction = totalDeduct;
+                }
+            });
+
+            // Lọc danh sách nhân sự cần hiển thị theo quyền truy cập
+            const displayList = Object.values(staffStats).filter(st => {
+                if (perm.isOwner) return true;
+                if (perm.isManager) {
+                    return st.name === currentStaffName || st.account.manager_name === currentStaffName || st.account.manager_id === currentStaffId;
+                }
+                return st.name === currentStaffName;
+            });
+
+            if (displayList.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 bg-white rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs font-semibold">Chưa có dữ liệu hoa hồng nào trong kỳ đã chọn.</div>`;
+                return;
+            }
+
+            grid.innerHTML = displayList.map(s => {
+                const isMe = (s.name === currentStaffName);
+                const isLeader = (s.role === 'owner' || s.role === 'admin' || s.role === 'manager');
+                const roleBadgeText = (s.role === 'owner' || s.role === 'admin') ? 'Chủ Cửa Hàng' : (s.role === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+
+                if (isLeader) {
+                    // Công thức tổng hoa hồng của Quản lý / Chủ:
+                    // = Hoa hồng tự bán (Giá bán - Vốn) + Lợi nhuận bảo trợ (Giá bán - Vốn - HH NV - Lương - Thưởng)
+                    const netSponsorIncome = Math.max(0, s.teamSponsorGross - s.totalDeduction);
+                    const totalIncome = s.selfCommission + netSponsorIncome;
+
+                    return `
+                    <div class="bg-white rounded-2xl border ${isMe ? 'border-purple-300 ring-2 ring-purple-100 shadow-md' : 'border-slate-200/80 shadow-sm'} p-4 transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                                <div class="flex items-center space-x-2.5 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl ${s.role === 'manager' ? 'bg-purple-600' : 'bg-amber-500'} text-white font-black flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                        ${escapeHtml(s.name.charAt(0).toUpperCase())}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5 truncate">
+                                            <span>${escapeHtml(s.name)}</span>
+                                            ${isMe ? '<span class="text-[8.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold shrink-0">Bạn</span>' : ''}
+                                        </h4>
+                                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded ${s.role === 'manager' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-amber-50 text-amber-800 border border-amber-200'} uppercase">
+                                            ${roleBadgeText}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">
+                                    ${s.countSelfSold + s.teamCount} đơn
+                                </span>
+                            </div>
+
+                            <div class="mt-3 space-y-2 text-xs">
+                                <!-- 1. Tự bán trực tiếp -->
+                                <div class="p-2.5 bg-indigo-50/60 rounded-xl border border-indigo-100/70">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-slate-700 font-bold text-[11px]">1. Tự bán (${s.countSelfSold} máy):</span>
+                                        <span class="font-black text-indigo-700 text-sm">${formatVND(s.selfCommission)}</span>
+                                    </div>
+                                    <p class="text-[9.5px] text-slate-500 mt-0.5 font-medium">= Giá bán - Giá nhập (Doanh số: ${formatVND(s.selfRevenue)})</p>
+                                </div>
+
+                                <!-- 2. Hoa hồng bảo trợ tuyến dưới -->
+                                <div class="p-2.5 bg-purple-50/60 rounded-xl border border-purple-100/70 space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-slate-700 font-bold text-[11px]">2. Bảo trợ (${s.teamCount} máy tuyến dưới):</span>
+                                        <span class="font-black text-purple-700 text-sm">${formatVND(netSponsorIncome)}</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 flex justify-between pt-0.5">
+                                        <span>• Lãi từ đơn tuyến dưới (Giá - Vốn - HH NV):</span>
+                                        <span class="font-bold text-slate-700">+${formatVND(s.teamSponsorGross)}</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 flex justify-between">
+                                        <span>• Trừ lương cứng & thưởng NV:</span>
+                                        <span class="font-bold text-rose-600">-${formatVND(s.totalDeduction)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tổng thu nhập cuối cùng -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-tight">TỔNG HOA HỒNG:</span>
+                            <span class="font-black text-lg text-purple-700">${formatVND(totalIncome)}</span>
+                        </div>
+                    </div>
+                    `;
+                } else {
+                    // Thẻ của Nhân viên bán hàng thông thường
+                    return `
+                    <div class="bg-white rounded-2xl border ${isMe ? 'border-purple-300 ring-2 ring-purple-100 shadow-md' : 'border-slate-200/80 shadow-sm'} p-4 transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                                <div class="flex items-center space-x-2.5 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl ${isMe ? 'bg-purple-600 text-white' : 'bg-blue-50 text-blue-600'} font-black flex items-center justify-center text-xs shrink-0 shadow-xs">
+                                        ${escapeHtml(s.name.charAt(0).toUpperCase())}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5 truncate">
+                                            <span>${escapeHtml(s.name)}</span>
+                                            ${isMe ? '<span class="text-[8.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold shrink-0">Bạn</span>' : ''}
+                                        </h4>
+                                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase">
+                                            Nhân Viên
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100 shrink-0">
+                                    ${s.countSelfSold} đơn
+                                </span>
+                            </div>
+
+                            <div class="mt-3 space-y-2 text-xs">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 font-medium">Doanh số bán ra:</span>
+                                    <span class="font-bold text-slate-800">${formatVND(s.selfRevenue)}</span>
+                                </div>
+                                ${s.account.manager_name ? `
+                                    <div class="flex justify-between items-center text-[11px] text-slate-400">
+                                        <span>Người bảo trợ:</span>
+                                        <span class="font-semibold text-purple-600">${escapeHtml(s.account.manager_name)}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-700">Hoa hồng nhận:</span>
+                            <span class="font-black text-lg text-purple-600">${formatVND(s.selfCommission)}</span>
+                        </div>
+                    </div>
+                    `;
+                }
+            }).join('');
         };
 
         window.closeNotificationsModal = function() {
@@ -1874,8 +2287,18 @@
             }
 
             if (tabProfitBtn) tabProfitBtn.classList.toggle('hidden', !perm.canViewProfitTab);
-            if (tabMgmtBtn) tabMgmtBtn.classList.toggle('hidden', !perm.canViewManagementTab);
+            if (tabMgmtBtn) {
+                tabMgmtBtn.classList.toggle('hidden', !perm.canViewManagementTab);
+                tabMgmtBtn.style.display = perm.canViewManagementTab ? '' : 'none';
+            }
             if (btnAddProduct) btnAddProduct.style.display = perm.canAddEditProduct ? 'flex' : 'none';
+
+            // Nếu người dùng không có quyền xem tab hiện tại (ví dụ Quản lý đang ở tab Quản lý) thì chuyển về Kho
+            if (currentTab === 'management' && !perm.canViewManagementTab) {
+                switchTab('inventory');
+            } else if (currentTab === 'profit' && !perm.canViewProfitTab) {
+                switchTab('inventory');
+            }
 
             const importHeaders = document.querySelectorAll('.col-import-price');
             importHeaders.forEach(el => { el.style.display = perm.canViewCosts ? '' : 'none'; });
@@ -2075,6 +2498,15 @@
         }
 
         window.switchTab = function(tabName) {
+            const perm = getPermissions();
+            // Chặn chuyển tab nếu không đủ quyền
+            if (tabName === 'management' && !perm.canViewManagementTab) {
+                tabName = 'inventory';
+            }
+            if (tabName === 'profit' && !perm.canViewProfitTab) {
+                tabName = 'inventory';
+            }
+
             currentTab = tabName;
             ['inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
@@ -2082,8 +2514,16 @@
                 if (btn) {
                     const isSelected = (t === tabName);
                     btn.className = isSelected 
-                        ? "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left"
-                        : "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left";
+                        ? "w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left"
+                        : "w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left";
+
+                    if (t === 'management') {
+                        btn.style.display = perm.canViewManagementTab ? '' : 'none';
+                        btn.classList.toggle('hidden', !perm.canViewManagementTab);
+                    } else if (t === 'profit') {
+                        btn.style.display = perm.canViewProfitTab ? '' : 'none';
+                        btn.classList.toggle('hidden', !perm.canViewProfitTab);
+                    }
                 }
                 if (view) view.classList.toggle('hidden', t !== tabName);
             });
@@ -2146,7 +2586,23 @@
                 return matchSearch;
             });
 
-            soldList.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
+            if (soldSortMode === 'DATE_DESC') {
+                soldList.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
+            } else if (soldSortMode === 'DATE_ASC') {
+                soldList.sort((a, b) => (a.soldAt || '').localeCompare(b.soldAt || ''));
+            } else if (soldSortMode === 'PRICE_DESC') {
+                soldList.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+            } else if (soldSortMode === 'PRICE_ASC') {
+                soldList.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+            } else if (soldSortMode === 'NAME_ASC') {
+                soldList.sort((a, b) => `${a.brand || ''} ${a.name || ''}`.localeCompare(`${b.brand || ''} ${b.name || ''}`, 'vi', { sensitivity: 'base' }));
+            } else if (soldSortMode === 'NAME_DESC') {
+                soldList.sort((a, b) => `${b.brand || ''} ${b.name || ''}`.localeCompare(`${a.brand || ''} ${a.name || ''}`, 'vi', { sensitivity: 'base' }));
+            } else if (soldSortMode === 'SELLER_ASC') {
+                soldList.sort((a, b) => (a.seller || '').localeCompare(b.seller || '', 'vi', { sensitivity: 'base' }));
+            } else if (soldSortMode === 'SELLER_DESC') {
+                soldList.sort((a, b) => (b.seller || '').localeCompare(a.seller || '', 'vi', { sensitivity: 'base' }));
+            }
 
             const badgeSold = document.getElementById('badge-sold-count');
             if (badgeSold) badgeSold.innerText = `${soldList.length} máy đã bán`;
@@ -2386,6 +2842,11 @@
             if (modal) modal.classList.remove('hidden');
         };
 
+        window.closeCustomerHistoryModal = function() {
+            const modal = document.getElementById('customer-history-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
         window.openEditCustomerModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
@@ -2436,38 +2897,12 @@
 
         window.renderCommissionReport = function() {
             const grid = document.getElementById('commission-grid');
-            const tbody = document.getElementById('commission-table-body');
-            const emptyState = document.getElementById('comm-empty-state');
-            const countBadge = document.getElementById('comm-sold-count');
 
             const perm = getPermissions();
             const currentStaffName = (currentUserProfile?.full_name || '').trim();
 
             let soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
             let filteredSold = filterItemsByDate(soldItems, 'comm');
-
-            // Logic sắp xếp theo cột được chọn
-            if (commSortMode === 'DATE_DESC') {
-                filteredSold.sort((a, b) => (b.soldAt || '').localeCompare(a.soldAt || ''));
-            } else if (commSortMode === 'DATE_ASC') {
-                filteredSold.sort((a, b) => (a.soldAt || '').localeCompare(b.soldAt || ''));
-            } else if (commSortMode === 'NAME_ASC') {
-                filteredSold.sort((a, b) => `${a.brand || ''} ${a.name || ''}`.localeCompare(`${b.brand || ''} ${b.name || ''}`, 'vi'));
-            } else if (commSortMode === 'NAME_DESC') {
-                filteredSold.sort((a, b) => `${b.brand || ''} ${b.name || ''}`.localeCompare(`${a.brand || ''} ${a.name || ''}`, 'vi'));
-            } else if (commSortMode === 'PRICE_DESC') {
-                filteredSold.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
-            } else if (commSortMode === 'PRICE_ASC') {
-                filteredSold.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
-            } else if (commSortMode === 'SELLER_ASC') {
-                filteredSold.sort((a, b) => (a.seller || '').localeCompare(b.seller || '', 'vi'));
-            } else if (commSortMode === 'SELLER_DESC') {
-                filteredSold.sort((a, b) => (b.seller || '').localeCompare(a.seller || '', 'vi'));
-            }
-
-            updateCommSortIcons();
-
-            if (countBadge) countBadge.innerText = `${filteredSold.length} máy đã bán`;
 
             const staffMap = {};
             let myDirectSales = 0;
@@ -2577,51 +3012,6 @@
                             </div>
                         </div>
                     `;}).join('');
-                }
-            }
-
-            if (tbody) {
-                if (filteredSold.length === 0) {
-                    tbody.innerHTML = '';
-                    if (emptyState) emptyState.classList.remove('hidden');
-                } else {
-                    if (emptyState) emptyState.classList.add('hidden');
-                    tbody.innerHTML = filteredSold.map(p => `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openDetailModal('${p.id}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center mx-auto transition" title="Xem chi tiết máy">
-                                    <i class="fa-solid fa-eye text-xs"></i>
-                                </button>
-                            </td>
-                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                                <i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i>${formatDateVN(p.soldAt) || '--'}
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
-                                    <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
-                                    <span>${escapeHtml(p.name)}</span>
-                                </div>
-                                <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-[170px]" title="${escapeHtml(p.condition || '')}">${escapeHtml(p.condition || '')}</p>
-                            </td>
-                            <td class="py-3 px-4 text-right font-black text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                            <td class="py-3 px-4 text-right font-black text-purple-600 whitespace-nowrap">
-                                <div>${formatVND(p.commission)}</div>
-                                ${p.managerCommission > 0 && (perm.isOwner || (perm.isManager && p.manager === currentStaffName)) ? `
-                                    <div class="text-[10px] font-bold text-amber-600">+${formatVND(p.managerCommission)} (QL)</div>
-                                ` : ''}
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="font-bold text-xs text-indigo-700">${escapeHtml(p.seller || '--')}</div>
-                                ${p.manager ? `<div class="text-[10px] text-slate-400 font-medium">Bảo trợ: ${escapeHtml(p.manager)}</div>` : ''}
-                            </td>
-                            <td class="py-3 px-4 text-xs font-medium text-slate-700">${escapeHtml(p.customerName || 'Khách Lẻ')}</td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openInvoiceModal('${p.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto">
-                                    <i class="fa-solid fa-receipt text-indigo-600"></i> Hóa đơn
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('');
                 }
             }
         };
@@ -3187,7 +3577,7 @@
             if (!tbody) return;
 
             const perm = getPermissions();
-            const managersList = accounts.filter(a => a.role === 'manager');
+            const managersList = accounts.filter(a => a.role === 'manager' || a.role === 'owner' || a.role === 'admin');
 
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
 
@@ -3197,19 +3587,47 @@
             }
 
             tbody.innerHTML = accounts.map(u => {
-                const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name;
+                const isCurrent = u.id === currentUser?.uid || u.full_name === currentUserProfile?.full_name || (u.email && u.email.toLowerCase() === currentUser?.email?.toLowerCase());
                 const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
+                const isProtectedRoot = (u.email === 'saint.niky@gmail.com' && isCurrent);
                 const isStaff = (u.role === 'staff');
                 
-                let roleHtml = `
-                    <span class="px-2.5 py-1 inline-block rounded-xl text-xs font-black border shadow-xs ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200')}">
-                        ${isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')}
-                    </span>
-                `;
+                let roleHtml = '';
+                if (perm.canManageStaff && !isProtectedRoot) {
+                    roleHtml = `
+                        <select onchange="changeUserRole('${u.id}', '${escapeHtml(u.email || '')}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-black outline-none cursor-pointer border shadow-sm transition-all ${isOwnerAccount ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200' : (u.role === 'manager' ? 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200' : 'bg-blue-100 text-blue-900 border-blue-300 hover:bg-blue-200')}">
+                            <option value="owner" class="font-bold text-amber-900 bg-white" ${u.role === 'owner' ? 'selected' : ''}>Chủ Cửa Hàng</option>
+                            <option value="manager" class="font-bold text-purple-900 bg-white" ${u.role === 'manager' ? 'selected' : ''}>Quản Lý</option>
+                            <option value="staff" class="font-bold text-blue-900 bg-white" ${u.role === 'staff' ? 'selected' : ''}>Nhân Viên</option>
+                        </select>
+                    `;
+                } else {
+                    roleHtml = `
+                        <span class="px-2.5 py-1 inline-block rounded-xl text-xs font-black border shadow-xs ${isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200')}">
+                            ${isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')}
+                        </span>
+                    `;
+                }
 
-                let sponsorHtml = isStaff 
-                    ? `<span class="text-xs font-semibold text-purple-700">${escapeHtml(u.manager_name || 'Cửa hàng')}</span>` 
-                    : `<span class="text-slate-400 text-[11px] italic">Không áp dụng</span>`;
+                let sponsorHtml = '';
+                if (isStaff) {
+                    if (perm.canManageStaff) {
+                        sponsorHtml = `
+                            <select onchange="changeUserSponsor('${u.id}', this.value)" class="px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-purple-500">
+                                <option value="">-- Trực thuộc Cửa hàng --</option>
+                                ${managersList.filter(m => m.id !== u.id).map(m => `
+                                    <option value="${escapeHtml(m.id || m.email)}" ${(u.manager_id === m.id || u.manager_id === m.email || u.manager_name === m.full_name) ? 'selected' : ''}>
+                                        ${escapeHtml(m.full_name)} (${m.role === 'owner' ? 'Chủ' : 'Quản Lý'})
+                                    </option>
+                                `).join('')}
+                            </select>
+                        `;
+                    } else {
+                        sponsorHtml = `<span class="text-xs font-semibold text-purple-700">${escapeHtml(u.manager_name || 'Cửa hàng')}</span>`;
+                    }
+                } else {
+                    sponsorHtml = `<span class="text-slate-400 text-[11px] italic">Không áp dụng</span>`;
+                }
 
                 return `
                     <tr class="hover:bg-slate-50 transition">
@@ -3218,19 +3636,265 @@
                             ${isCurrent ? '<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Bạn</span>' : ''}
                         </td>
                         <td class="py-3 px-4 font-mono text-slate-600">${escapeHtml(u.email || '--')}</td>
-                        <td class="py-3 px-4 text-center">${roleHtml}</td>
-                        <td class="py-3 px-4">${sponsorHtml}</td>
+                        <td class="py-3 px-4 text-center">
+                            ${roleHtml}
+                        </td>
+                        <td class="py-3 px-4">
+                            ${sponsorHtml}
+                        </td>
                         <td class="py-3 px-4 text-right">
-                            ${perm.canManageStaff && !isOwnerAccount ? `
-                                <button onclick="deleteStaffAccount('${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs px-2 py-1 rounded-lg hover:bg-rose-50 transition flex items-center gap-1 ml-auto">
-                                    <i class="fa-solid fa-trash-can"></i> <span>Xóa</span>
-                                </button>
+                            ${perm.canManageStaff && !isProtectedRoot ? `
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button onclick="openEditStaffModal('${u.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs px-2 py-1 rounded-lg hover:bg-indigo-50 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> <span>Sửa</span>
+                                    </button>
+                                    ${!isCurrent ? `
+                                        <button onclick="deleteStaffAccount('${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs px-2 py-1 rounded-lg hover:bg-rose-50 transition flex items-center gap-1">
+                                            <i class="fa-solid fa-trash-can"></i> <span>Xóa</span>
+                                        </button>
+                                    ` : ''}
+                                </div>
                             ` : '<span class="text-slate-300 text-[10px]">Cố định</span>'}
                         </td>
                     </tr>
                 `;
             }).join('');
         }
+
+        window.changeUserRole = async function(userId, userEmail, newRole) {
+            let accounts = getStaffAccounts();
+            const targetIndex = accounts.findIndex(a => a.id === userId || (userEmail && a.email && a.email.toLowerCase() === userEmail.toLowerCase()));
+            
+            if (targetIndex === -1) return;
+
+            const targetUser = accounts[targetIndex];
+            targetUser.role = newRole;
+            if (newRole === 'manager' || newRole === 'owner') {
+                targetUser.manager_id = '';
+                targetUser.manager_name = '';
+            }
+            saveStaffAccounts(accounts);
+
+            if (currentUser && (targetUser.id === currentUser.uid || (targetUser.email && targetUser.email.toLowerCase() === currentUser.email?.toLowerCase()))) {
+                userRole = newRole;
+                if (currentUserProfile) currentUserProfile.role = newRole;
+                updateUserUI();
+                renderApp();
+            }
+
+            try {
+                await setDoc(doc(db, "profiles", userId), { 
+                    id: userId,
+                    role: newRole,
+                    email: targetUser.email || userEmail,
+                    full_name: targetUser.full_name,
+                    manager_id: targetUser.manager_id || '',
+                    manager_name: targetUser.manager_name || ''
+                }, { merge: true });
+
+                const querySnap = await getDocs(collection(db, "profiles"));
+                querySnap.forEach(d => {
+                    const data = d.data();
+                    if (data.email && targetUser.email && data.email.toLowerCase() === targetUser.email.toLowerCase()) {
+                        setDoc(doc(db, "profiles", d.id), { role: newRole }, { merge: true });
+                    }
+                });
+            } catch (e) {
+                console.warn("Lỗi đồng bộ role:", e);
+            }
+
+            const roleName = newRole === 'owner' ? 'Chủ Cửa Hàng' : (newRole === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+            showToast(`Đã cập nhật quyền của "${targetUser.full_name}" thành ${roleName}!`, 'success');
+            window.loadProfilesList();
+            window.renderCommissionReport();
+        };
+
+        window.changeUserSponsor = async function(userId, sponsorId) {
+            let accounts = getStaffAccounts();
+            const targetIdx = accounts.findIndex(a => a.id === userId);
+            if (targetIdx === -1) return;
+
+            const targetUser = accounts[targetIdx];
+            let sponsorName = '';
+            if (sponsorId) {
+                const managerAcc = accounts.find(a => a.id === sponsorId || a.email === sponsorId);
+                if (managerAcc) sponsorName = managerAcc.full_name;
+            }
+
+            targetUser.manager_id = sponsorId;
+            targetUser.manager_name = sponsorName;
+            saveStaffAccounts(accounts);
+
+            try {
+                await setDoc(doc(db, "profiles", userId), {
+                    manager_id: sponsorId,
+                    manager_name: sponsorName
+                }, { merge: true });
+            } catch(e) {
+                console.warn("Lỗi cập nhật sponsor lên Firebase:", e);
+            }
+
+            showToast(`Đã gán Người bảo trợ "${sponsorName || 'Trực thuộc Cửa hàng'}" cho ${targetUser.full_name}!`, 'success');
+            renderProfilesTable(accounts);
+            window.renderCommissionReport();
+        };
+
+        window.openEditStaffModal = function(id) {
+            const modal = document.getElementById('edit-staff-modal');
+            if (!modal) return;
+
+            const accounts = getStaffAccounts();
+            const target = accounts.find(a => a.id === id);
+            if (!target) return;
+
+            const idEl = document.getElementById('edit-staff-id');
+            const nameEl = document.getElementById('edit-staff-name');
+            const emailEl = document.getElementById('edit-staff-email');
+            const pwdEl = document.getElementById('edit-staff-password');
+            const roleEl = document.getElementById('edit-staff-role');
+            const mgrSelect = document.getElementById('edit-staff-manager-id');
+
+            if (idEl) idEl.value = target.id;
+            if (nameEl) nameEl.value = target.full_name || '';
+            if (emailEl) emailEl.value = target.email || '';
+            if (pwdEl) pwdEl.value = '';
+            if (roleEl) roleEl.value = target.role || 'staff';
+
+            if (mgrSelect) {
+                const managers = accounts.filter(a => (a.role === 'manager' || a.role === 'owner') && a.id !== target.id);
+                mgrSelect.innerHTML = `<option value="">-- Không có người bảo trợ (Trực thuộc Cửa hàng) --</option>` +
+                    managers.map(m => `<option value="${escapeHtml(m.id || m.email)}" ${(target.manager_id === m.id || target.manager_id === m.email || target.manager_name === m.full_name) ? 'selected' : ''}>${escapeHtml(m.full_name)} (${m.role === 'owner' ? 'Chủ' : 'Quản Lý'})</option>`).join('');
+            }
+
+            window.handleEditStaffRoleChange();
+
+            const msgBox = document.getElementById('edit-staff-msg');
+            if (msgBox) msgBox.classList.add('hidden');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeEditStaffModal = function() {
+            const modal = document.getElementById('edit-staff-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.handleEditStaffRoleChange = function() {
+            const role = document.getElementById('edit-staff-role')?.value;
+            const wrapper = document.getElementById('edit-staff-manager-wrapper');
+            if (wrapper) {
+                wrapper.style.display = (role === 'staff') ? 'block' : 'none';
+            }
+        };
+
+        window.handleEditStaffSubmit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-staff-id').value;
+            const name = document.getElementById('edit-staff-name').value.trim();
+            let email = document.getElementById('edit-staff-email').value.trim();
+            const newPassword = document.getElementById('edit-staff-password').value;
+            const role = document.getElementById('edit-staff-role').value;
+            const managerId = (role === 'staff') ? document.getElementById('edit-staff-manager-id').value : '';
+            const msgBox = document.getElementById('edit-staff-msg');
+            const submitBtn = document.getElementById('btn-save-edit-staff');
+
+            if (email && !email.includes('@')) {
+                email += '@gmail.com';
+                document.getElementById('edit-staff-email').value = email;
+            }
+
+            if (!name || !email) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Vui lòng điền họ tên và tên đăng nhập / email!';
+                return;
+            }
+
+            if (newPassword && newPassword.length < 6) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+                return;
+            }
+
+            let accounts = getStaffAccounts();
+            const targetIdx = accounts.findIndex(a => a.id === id);
+            if (targetIdx === -1) return;
+
+            const lowerEmail = email.toLowerCase();
+            const isDuplicate = accounts.some((a, idx) => idx !== targetIdx && a.email && a.email.toLowerCase() === lowerEmail);
+            if (isDuplicate) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block';
+                msgBox.innerText = 'Tên đăng nhập / Email này đã được sử dụng bởi nhân sự khác!';
+                return;
+            }
+
+            let managerName = '';
+            if (managerId) {
+                const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
+                if (mgrAcc) managerName = mgrAcc.full_name;
+            }
+
+            const origBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang lưu...';
+
+            const oldName = accounts[targetIdx].full_name;
+
+            accounts[targetIdx].full_name = name;
+            accounts[targetIdx].email = email;
+            accounts[targetIdx].role = role;
+            accounts[targetIdx].manager_id = managerId;
+            accounts[targetIdx].manager_name = managerName;
+            if (newPassword) {
+                accounts[targetIdx].password = newPassword;
+            }
+
+            if (oldName !== name) {
+                accounts.forEach(a => {
+                    if (a.manager_id === id || a.manager_name === oldName) {
+                        a.manager_name = name;
+                    }
+                });
+            }
+
+            saveStaffAccounts(accounts);
+
+            if (currentUser && (id === currentUser.uid || accounts[targetIdx].email?.toLowerCase() === currentUser.email?.toLowerCase())) {
+                if (currentUserProfile) {
+                    currentUserProfile.full_name = name;
+                    currentUserProfile.email = email;
+                    currentUserProfile.role = role;
+                }
+                userRole = role;
+                updateUserUI();
+            }
+
+            try {
+                const updatePayload = {
+                    id: id,
+                    full_name: name,
+                    email: email,
+                    role: role,
+                    manager_id: managerId,
+                    manager_name: managerName
+                };
+                await setDoc(doc(db, "profiles", id), updatePayload, { merge: true });
+            } catch (err) {
+                console.warn("Lỗi lưu thông tin nhân sự lên Firebase:", err);
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+
+            window.closeEditStaffModal();
+            populateManagerOptions();
+            renderProfilesTable(accounts);
+            window.renderCommissionReport();
+            showToast(`Đã cập nhật thông tin nhân viên "${name}" thành công!`, 'success');
+        };
 
         window.loadProfilesList = function() {
             let accounts = getStaffAccounts();
@@ -3422,6 +4086,48 @@
             updateSortIcons();
             window.renderApp();
         };
+
+        window.toggleSoldSortColumn = function(column) {
+            if (column === 'date') {
+                soldSortMode = (soldSortMode === 'DATE_DESC') ? 'DATE_ASC' : 'DATE_DESC';
+            } else if (column === 'name') {
+                soldSortMode = (soldSortMode === 'NAME_ASC') ? 'NAME_DESC' : 'NAME_ASC';
+            } else if (column === 'price') {
+                soldSortMode = (soldSortMode === 'PRICE_DESC') ? 'PRICE_ASC' : 'PRICE_DESC';
+            } else if (column === 'seller') {
+                soldSortMode = (soldSortMode === 'SELLER_ASC') ? 'SELLER_DESC' : 'SELLER_ASC';
+            }
+            updateSoldSortIcons();
+            window.renderSoldItemsTable();
+        };
+
+        function updateSoldSortIcons() {
+            const iconDate = document.getElementById('sold-sort-icon-date');
+            const iconName = document.getElementById('sold-sort-icon-name');
+            const iconPrice = document.getElementById('sold-sort-icon-price');
+            const iconSeller = document.getElementById('sold-sort-icon-seller');
+
+            if (iconDate) {
+                if (soldSortMode === 'DATE_DESC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-emerald-600"></i>';
+                else if (soldSortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-emerald-600"></i>';
+                else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconName) {
+                if (soldSortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
+                else if (soldSortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
+                else iconName.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconPrice) {
+                if (soldSortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-rose-600"></i>';
+                else if (soldSortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-rose-600"></i>';
+                else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+            if (iconSeller) {
+                if (soldSortMode === 'SELLER_ASC') iconSeller.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
+                else if (soldSortMode === 'SELLER_DESC') iconSeller.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
+                else iconSeller.innerHTML = '<i class="fa-solid fa-sort"></i>';
+            }
+        }
 
         window.toggleSortColumn = function(column) {
             if (column === 'date') {
