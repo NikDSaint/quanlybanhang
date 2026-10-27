@@ -3923,38 +3923,136 @@
             }
         };
 
-        window.handleCreateStaffSubmit = function(e) {
+        window.handleCreateStaffSubmit = async function(e) {
             e.preventDefault();
-            const name = document.getElementById('staff-name').value.trim();
-            let email = document.getElementById('staff-email').value.trim();
-            const password = document.getElementById('staff-password').value;
-            const role = document.getElementById('staff-role').value;
-            const managerId = document.getElementById('staff-manager-id')?.value || '';
+            const nameInput = document.getElementById('staff-name');
+            const accountInput = document.getElementById('staff-email');
+            const pwdInput = document.getElementById('staff-password');
+            const roleInput = document.getElementById('staff-role');
+            const managerSelect = document.getElementById('staff-manager-id');
+            const msgBox = document.getElementById('create-staff-msg');
+            const submitBtn = document.getElementById('btn-create-staff');
 
-            if (email && !email.includes('@')) email += '@gmail.com';
+            if (!nameInput || !accountInput || !pwdInput || !roleInput) return;
 
-            const accounts = getStaffAccounts();
+            const name = nameInput.value.trim();
+            let accountValue = accountInput.value.trim();
+            const password = pwdInput.value;
+            const role = roleInput.value;
+            const managerId = (role === 'staff' && managerSelect) ? managerSelect.value : '';
+
+            if (msgBox) {
+                msgBox.classList.add('hidden');
+                msgBox.innerText = '';
+            }
+
+            if (!name || !accountValue || !password) {
+                if (msgBox) {
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block border border-rose-200';
+                    msgBox.innerText = 'Vui lòng điền đầy đủ họ tên, tên đăng nhập và mật khẩu!';
+                }
+                return;
+            }
+
+            if (password.length < 6) {
+                if (msgBox) {
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block border border-rose-200';
+                    msgBox.innerText = 'Mật khẩu phải có độ dài ít nhất 6 ký tự!';
+                }
+                return;
+            }
+
+            if (!accountValue.includes('@')) {
+                accountValue += '@gmail.com';
+                accountInput.value = accountValue;
+            }
+
+            const lowerAccount = accountValue.toLowerCase();
+            let accounts = getStaffAccounts();
+
+            if (accounts.some(a => (a.email && a.email.toLowerCase() === lowerAccount) || a.full_name.toLowerCase() === name.toLowerCase())) {
+                if (msgBox) {
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 block border border-rose-200';
+                    msgBox.innerText = 'Tên đăng nhập hoặc Họ tên này đã tồn tại trong hệ thống!';
+                }
+                return;
+            }
+
             let managerName = '';
             if (managerId) {
                 const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
                 if (mgrAcc) managerName = mgrAcc.full_name;
             }
 
+            const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tạo tài khoản...';
+            }
+
+            let cloudId = null;
+
+            // Thử tạo tài khoản trên Firebase Authentication qua secondaryAuth
+            try {
+                const emailForCloud = accountValue.includes('@') ? accountValue : `${lowerAccount.replace(/[^a-z0-9._-]/g, '')}@aistore.local`;
+                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, emailForCloud, password);
+                if (userCredential && userCredential.user) {
+                    cloudId = userCredential.user.uid;
+                    await signOut(secondaryAuth);
+                }
+            } catch (authErr) {
+                console.warn("Lưu ý Firebase Auth:", authErr.code || authErr.message);
+            }
+
+            const newId = cloudId || ('staff-' + Date.now());
+
             const newAcc = { 
-                id: 'staff-' + Date.now(), 
+                id: newId, 
                 full_name: name, 
-                email: email, 
+                email: accountValue, 
                 password: password, 
                 role: role,
                 manager_id: managerId,
                 manager_name: managerName
             };
+
+            // 1. Thêm vào danh sách bộ nhớ cục bộ
             accounts.push(newAcc);
             saveStaffAccounts(accounts);
 
+            // 2. Đồng bộ lên Firestore profiles
+            try {
+                await setDoc(doc(db, "profiles", newId), {
+                    id: newId,
+                    email: accountValue,
+                    full_name: name,
+                    role: role,
+                    manager_id: managerId,
+                    manager_name: managerName
+                }, { merge: true });
+            } catch (dbErr) {
+                console.warn("Lưu profiles Firestore:", dbErr);
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origBtnHtml;
+            }
+
+            // Đặt lại form và cập nhật bảng danh sách
             document.getElementById('create-staff-form').reset();
-            window.loadProfilesList();
-            showToast(`Đã thêm nhân viên: ${name}!`, 'success');
+            window.handleStaffRoleChange();
+            populateManagerOptions();
+            renderProfilesTable(accounts);
+            window.renderCommissionReport();
+
+            if (msgBox) {
+                msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 block border border-emerald-200';
+                msgBox.innerText = `Đã cấp tài khoản thành công cho "${name}" (${role === 'manager' ? 'Quản Lý' : 'Nhân Viên'})${managerName ? ` • Bảo trợ: ${managerName}` : ''}!`;
+            }
+
+            window.pushNotification('Cấp tài khoản mới', `Đã cấp tài khoản cho ${name} với vai trò ${role === 'manager' ? 'Quản lý' : 'Nhân viên bán hàng'}.`, 'system');
+            showToast(`Cấp tài khoản thành công cho "${name}"!`, 'success');
         };
 
         window.deleteStaffAccount = function(id) {
