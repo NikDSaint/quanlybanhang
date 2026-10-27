@@ -969,6 +969,47 @@
                 </div>
 
                 <div id="dt-sold-info-box" class="hidden bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-2xl space-y-2">
+                    <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Thông Tin Xuất Bán
+                    </span>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Ngày bán:</span>
+                            <p id="dt-sold-date" class="font-bold text-slate-800">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Nhân viên chốt:</span>
+                            <p id="dt-seller" class="font-bold text-indigo-700">--</p>
+                        </div>
+                        <div id="dt-manager-row">
+                            <span class="text-slate-400 text-[10px] font-semibold">Người bảo trợ (QL):</span>
+                            <p id="dt-manager" class="font-bold text-purple-700">--</p>
+                        </div>
+                        <div id="dt-manager-comm-row">
+                            <span class="text-slate-400 text-[10px] font-semibold">Hoa hồng bảo trợ:</span>
+                            <p id="dt-manager-commission" class="font-bold text-amber-700">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Khách hàng:</span>
+                            <p id="dt-customer-name" class="font-bold text-slate-800">--</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-semibold">Số điện thoại:</span>
+                            <p id="dt-customer-phone" class="font-mono font-medium text-slate-700">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
+                <div id="dt-actions-left" class="flex items-center space-x-2"></div>
+                <button onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: CÀI ĐẶT LƯƠNG CỨNG VÀ THƯỞNG THÊM NHÂN VIÊN -->
     <div id="salary-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
@@ -3285,29 +3326,49 @@
         };
 
         window.openAddModal = function() {
-            document.getElementById('modal-title').innerText = 'Thêm Máy Mới Vào Kho';
-            document.getElementById('form-product-id').value = '';
-            document.getElementById('product-form').reset();
+            const modal = document.getElementById('product-modal');
+            if (!modal) return;
+
+            const title = document.getElementById('modal-title');
+            if (title) title.innerText = 'Thêm Máy Mới Vào Kho';
+
+            const idInput = document.getElementById('form-product-id');
+            if (idInput) idInput.value = '';
+
+            const form = document.getElementById('product-form');
+            if (form) form.reset();
+
             const imeiInput = document.getElementById('form-imei');
             if (imeiInput) imeiInput.value = '';
+
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-            const customBrand = document.getElementById('form-brand-custom');
-            if (customBrand) {
-                customBrand.value = '';
-                customBrand.classList.add('hidden');
+
+            // Reset và ẩn các trường nhập tay nếu trước đó chọn "Khác"
+            const brandCustom = document.getElementById('form-brand-custom');
+            if (brandCustom) {
+                brandCustom.value = '';
+                brandCustom.classList.add('hidden');
             }
-            const customRam = document.getElementById('form-ram-custom');
-            if (customRam) {
-                customRam.value = '';
-                customRam.classList.add('hidden');
+
+            const ramCustom = document.getElementById('form-ram-custom');
+            if (ramCustom) {
+                ramCustom.value = '';
+                ramCustom.classList.add('hidden');
             }
-            const customStorage = document.getElementById('form-storage-custom');
-            if (customStorage) {
-                customStorage.value = '';
-                customStorage.classList.add('hidden');
+
+            const storageCustom = document.getElementById('form-storage-custom');
+            if (storageCustom) {
+                storageCustom.value = '';
+                storageCustom.classList.add('hidden');
             }
-            document.getElementById('product-modal').classList.remove('hidden');
+
+            const statusSelect = document.getElementById('form-status');
+            if (statusSelect) statusSelect.value = 'AVAILABLE';
+
+            // Mở modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         window.handleBrandChange = function() {
@@ -3349,10 +3410,21 @@
             }
         };
 
+        window.closeProductModal = function() {
+            const modal = document.getElementById('product-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
         window.editProduct = function(id) {
             window.closeDetailModal();
             const p = products.find(prod => prod.id === id);
             if (!p) return;
+
+            const modal = document.getElementById('product-modal');
+            if (!modal) return;
 
             document.getElementById('modal-title').innerText = 'Chỉnh Sửa Thông Tin Máy';
             document.getElementById('form-product-id').value = p.id;
@@ -3389,81 +3461,8 @@
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
 
-            document.getElementById('product-modal').classList.remove('hidden');
-        };
-
-        window.closeProductModal = function() {
-            document.getElementById('product-modal').classList.add('hidden');
-        };
-
-        window.handleProductSubmit = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('form-product-id').value || ('prod-' + Date.now());
-            const brandSelVal = document.getElementById('form-brand').value;
-            const brandVal = brandSelVal === 'CUSTOM'
-                ? (document.getElementById('form-brand-custom')?.value.trim() || 'Khác')
-                : brandSelVal;
-            const ramSelVal = document.getElementById('form-ram').value;
-            const ramVal = ramSelVal === 'CUSTOM'
-                ? (document.getElementById('form-ram-custom')?.value.trim() || '')
-                : ramSelVal;
-            const storageSelVal = document.getElementById('form-storage').value;
-            const storageVal = storageSelVal === 'CUSTOM'
-                ? (document.getElementById('form-storage-custom')?.value.trim() || '')
-                : storageSelVal;
-            const importDateVal = document.getElementById('form-import-date')?.value || new Date().toISOString().split('T')[0];
-
-            const newProd = {
-                id,
-                brand: brandVal,
-                name: document.getElementById('form-name').value.trim(),
-                ram: ramVal,
-                storage: storageVal,
-                color: document.getElementById('form-color').value.trim(),
-                battery: document.getElementById('form-battery').value.trim(),
-                importPrice: parseNumberInput(document.getElementById('form-import-price').value),
-                sellingPrice: parseNumberInput(document.getElementById('form-selling-price').value),
-                status: document.getElementById('form-status').value,
-                commission: parseNumberInput(document.getElementById('form-commission').value),
-                imei: document.getElementById('form-imei')?.value.trim() || '',
-                condition: document.getElementById('form-condition').value.trim(),
-                importedAt: importDateVal,
-                seller: '', customerName: '', customerPhone: '', soldAt: ''
-            };
-
-            const idx = products.findIndex(p => p.id === id);
-            if (idx >= 0) {
-                products[idx] = { ...products[idx], ...newProd };
-            } else {
-                products.unshift(newProd);
-                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
-            }
-
-            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-
-            try {
-                const ref = doc(db, "products", id);
-                await setDoc(ref, {
-                    id: newProd.id,
-                    brand: newProd.brand,
-                    name: newProd.name,
-                    ram: newProd.ram,
-                    storage: newProd.storage,
-                    color: newProd.color,
-                    battery: newProd.battery,
-                    import_price: newProd.importPrice,
-                    selling_price: newProd.sellingPrice,
-                    commission: newProd.commission,
-                    status: newProd.status,
-                    imei: newProd.imei,
-                    condition: newProd.condition,
-                    imported_at: newProd.importedAt
-                }, { merge: true });
-            } catch (e) {}
-
-            window.closeProductModal();
-            window.renderApp();
-            showToast('Đã lưu máy vào kho thành công!');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         window.openSellModal = function(id) {
