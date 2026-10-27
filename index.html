@@ -3418,6 +3418,105 @@
             }
         };
 
+        window.handleProductSubmit = async function(e) {
+            e.preventDefault();
+            
+            try {
+                const idInput = document.getElementById('form-product-id');
+                const isEdit = idInput && idInput.value;
+                const id = isEdit ? idInput.value : ('prod-' + Date.now());
+
+                const brandSel = document.getElementById('form-brand');
+                const brandVal = (brandSel && brandSel.value === 'CUSTOM')
+                    ? (document.getElementById('form-brand-custom')?.value.trim() || 'Khác')
+                    : (brandSel ? brandSel.value : 'iPhone');
+
+                const nameVal = document.getElementById('form-name')?.value.trim() || 'Điện thoại';
+
+                const ramSel = document.getElementById('form-ram');
+                const ramVal = (ramSel && ramSel.value === 'CUSTOM')
+                    ? (document.getElementById('form-ram-custom')?.value.trim() || '')
+                    : (ramSel ? ramSel.value : '');
+
+                const storageSel = document.getElementById('form-storage');
+                const storageVal = (storageSel && storageSel.value === 'CUSTOM')
+                    ? (document.getElementById('form-storage-custom')?.value.trim() || '')
+                    : (storageSel ? storageSel.value : '');
+
+                const importDateVal = document.getElementById('form-import-date')?.value || new Date().toISOString().split('T')[0];
+                const statusVal = document.getElementById('form-status')?.value || 'AVAILABLE';
+
+                const importPriceVal = parseNumberInput(document.getElementById('form-import-price')?.value);
+                const sellingPriceVal = parseNumberInput(document.getElementById('form-selling-price')?.value);
+                const commissionVal = parseNumberInput(document.getElementById('form-commission')?.value);
+
+                const colorVal = document.getElementById('form-color')?.value.trim() || '';
+                const batteryVal = document.getElementById('form-battery')?.value.trim() || '';
+                const conditionVal = document.getElementById('form-condition')?.value.trim() || 'Đẹp 99%';
+                const imeiVal = document.getElementById('form-imei')?.value.trim() || '';
+
+                const productData = {
+                    id: id,
+                    brand: brandVal,
+                    name: nameVal,
+                    ram: ramVal,
+                    storage: storageVal,
+                    color: colorVal,
+                    battery: batteryVal,
+                    importPrice: importPriceVal,
+                    sellingPrice: sellingPriceVal,
+                    commission: commissionVal,
+                    status: statusVal,
+                    imei: imeiVal,
+                    condition: conditionVal,
+                    importedAt: importDateVal
+                };
+
+                const existingIndex = products.findIndex(p => p.id === id);
+                if (existingIndex >= 0) {
+                    products[existingIndex] = { ...products[existingIndex], ...productData };
+                } else {
+                    products.unshift(productData);
+                    window.pushNotification('Thêm máy mới', `Máy ${brandVal} ${nameVal} vừa được thêm vào kho.`, 'add');
+                }
+
+                // 1. Lưu ngay vào bộ nhớ cục bộ
+                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+
+                // 2. Đóng modal và render lại bảng ngay lập tức
+                window.closeProductModal();
+                window.renderApp();
+                showToast(isEdit ? `Đã cập nhật máy "${nameVal}"!` : `Đã thêm máy "${nameVal}" vào kho!`, 'success');
+
+                // 3. Đồng bộ lên Firebase Firestore trong nền
+                try {
+                    const docRef = doc(db, "products", id);
+                    await setDoc(docRef, {
+                        id: productData.id,
+                        brand: productData.brand,
+                        name: productData.name,
+                        ram: productData.ram,
+                        storage: productData.storage,
+                        color: productData.color,
+                        battery: productData.battery,
+                        import_price: productData.importPrice,
+                        selling_price: productData.sellingPrice,
+                        commission: productData.commission,
+                        status: productData.status,
+                        imei: productData.imei,
+                        condition: productData.condition,
+                        imported_at: productData.importedAt
+                    }, { merge: true });
+                } catch (dbErr) {
+                    console.warn("Lưu Firestore nền:", dbErr);
+                }
+
+            } catch (err) {
+                console.error("Lỗi khi lưu sản phẩm:", err);
+                showToast('Lỗi khi lưu: ' + err.message, 'error');
+            }
+        };
+
         window.editProduct = function(id) {
             window.closeDetailModal();
             const p = products.find(prod => prod.id === id);
