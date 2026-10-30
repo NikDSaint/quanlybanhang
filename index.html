@@ -1442,9 +1442,9 @@
         const db = getFirestore(app);
 
         // Biến trạng thái ứng dụng
-        let currentUser = { uid: 'acc-niky', email: 'saint.niky@gmail.com' };
-        let currentUserProfile = { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', role: 'owner' };
-        let userRole = 'owner';
+        let currentUser = null;
+        let currentUserProfile = null;
+        let userRole = 'staff';
         let products = [];
         let currentTab = 'inventory';
         let currentSalesSubTab = 'items';
@@ -1453,6 +1453,7 @@
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
+        const LOCAL_AUTH_SESSION_KEY = 'aistore_device_session_v1';
         let unsubscribeProducts = null;
 
         // Dữ liệu mẫu ban đầu
@@ -1613,6 +1614,41 @@
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
             }
 
+            // Kiểm tra phiên đăng nhập đã lưu riêng trên thiết bị này
+            const savedSessionRaw = localStorage.getItem(LOCAL_AUTH_SESSION_KEY);
+            let hasValidSession = false;
+
+            if (savedSessionRaw) {
+                try {
+                    const savedSession = JSON.parse(savedSessionRaw);
+                    if (savedSession && savedSession.id) {
+                        const accounts = getStaffAccounts();
+                        const found = accounts.find(a => 
+                            (a.id === savedSession.id) || 
+                            (a.email && savedSession.email && a.email.toLowerCase() === savedSession.email.toLowerCase())
+                        );
+
+                        if (found) {
+                            currentUserProfile = { ...found };
+                            userRole = found.role || 'staff';
+                            currentUser = { uid: found.id, email: found.email };
+                            hasValidSession = true;
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem(LOCAL_AUTH_SESSION_KEY);
+                }
+            }
+
+            if (!hasValidSession) {
+                currentUser = null;
+                currentUserProfile = null;
+                userRole = 'staff';
+                window.showAuthModal(true);
+            } else {
+                window.showAuthModal(false);
+            }
+
             updateUserUI();
             renderApp();
             startRealtimeSync();
@@ -1711,13 +1747,16 @@
             const btnAddProduct = document.getElementById('btn-add-product');
             const perm = getPermissions();
 
-            const displayName = currentUserProfile?.full_name || 'Saint Niky';
+            const displayName = currentUserProfile?.full_name || (currentUser ? 'Người dùng' : 'Chưa đăng nhập');
 
             if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
             if (nameEl) nameEl.innerText = displayName;
 
             if (roleBadgeEl) {
-                if (perm.isOwner) {
+                if (!currentUserProfile) {
+                    roleBadgeEl.innerText = 'CHƯA ĐĂNG NHẬP';
+                    roleBadgeEl.className = 'text-[9px] font-black px-1.5 py-0.2 rounded bg-slate-300 text-slate-800 inline-block uppercase shadow-sm tracking-wider';
+                } else if (perm.isOwner) {
                     roleBadgeEl.innerText = 'CHỦ';
                     roleBadgeEl.className = 'text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase shadow-sm tracking-wider';
                 } else if (perm.isManager) {
@@ -1739,16 +1778,99 @@
 
         window.showAuthModal = function(show) {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.classList.toggle('hidden', !show);
+            if (modal) {
+                if (show) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                } else {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }
+        };
+
+        window.handleAuthSubmit = function(e) {
+            e.preventDefault();
+            const inputLogin = document.getElementById('auth-email')?.value.trim();
+            const inputPwd = document.getElementById('auth-password')?.value;
+            const errorMsg = document.getElementById('auth-error-msg');
+
+            if (!inputLogin || !inputPwd) {
+                if (errorMsg) {
+                    errorMsg.innerText = 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.';
+                    errorMsg.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const normalizedLogin = inputLogin.toLowerCase();
+            const accounts = getStaffAccounts();
+
+            const found = accounts.find(a => {
+                const matchEmail = (a.email && a.email.toLowerCase() === normalizedLogin);
+                const username = a.email ? a.email.split('@')[0].toLowerCase() : '';
+                const matchUser = (username === normalizedLogin);
+                const matchName = (a.full_name && a.full_name.toLowerCase() === normalizedLogin);
+                return matchEmail || matchUser || matchName;
+            });
+
+            if (!found) {
+                if (errorMsg) {
+                    errorMsg.innerText = 'Tài khoản không tồn tại trên hệ thống.';
+                    errorMsg.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // Nếu tài khoản có mật khẩu cấu hình, kiểm tra chính xác
+            if (found.password && found.password !== inputPwd) {
+                if (errorMsg) {
+                    errorMsg.innerText = 'Mật khẩu không chính xác. Vui lòng thử lại!';
+                    errorMsg.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (errorMsg) errorMsg.classList.add('hidden');
+
+            // Thiết lập tài khoản hiện tại
+            currentUserProfile = { ...found };
+            userRole = found.role || 'staff';
+            currentUser = { uid: found.id, email: found.email };
+
+            // Ghi nhớ phiên duy nhất của tài khoản này trên thiết bị hiện tại
+            localStorage.setItem(LOCAL_AUTH_SESSION_KEY, JSON.stringify({
+                id: found.id,
+                email: found.email,
+                full_name: found.full_name,
+                role: found.role
+            }));
+
+            window.showAuthModal(false);
+            updateUserUI();
+            renderApp();
+            showToast(`Chào mừng ${found.full_name} (${found.role === 'owner' ? 'Chủ Cửa Hàng' : (found.role === 'manager' ? 'Quản Lý' : 'Nhân Viên')})!`, 'success');
         };
 
         window.handleAuthActionClick = async function() {
             try { await signOut(auth); } catch (e) {}
-            showToast('Đã đăng xuất! Chuyển sang tài khoản khách.', 'success');
+            // Xóa phiên ghi nhớ trên thiết bị này
+            localStorage.removeItem(LOCAL_AUTH_SESSION_KEY);
+            currentUser = null;
+            currentUserProfile = null;
             userRole = 'staff';
-            currentUserProfile = { id: 'guest', full_name: 'Khách Xem', role: 'staff' };
+
+            // Cập nhật giao diện và đưa về màn hình đăng nhập
             updateUserUI();
             renderApp();
+            window.showAuthModal(true);
+
+            const err = document.getElementById('auth-error-msg');
+            if (err) err.classList.add('hidden');
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) loginForm.reset();
+
+            showToast('Đã đăng xuất! Vui lòng đăng nhập lại.', 'success');
         };
 
         window.togglePasswordVisibility = function(inputId, btn) {
