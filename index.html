@@ -1595,7 +1595,7 @@
             
             if (!raw || accounts.length === 0) {
                 accounts = [
-                    { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
+                    { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: 'h0ilamgiha', role: 'owner' },
                     { id: 'acc-tholii', full_name: 'Thơ Lii', email: 'tholii@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-hieu', full_name: 'Trung Hiếu', email: 'hieutt@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' }
@@ -1604,6 +1604,12 @@
                     const isDelEmail = a.email && deletedIds.includes(a.email.toLowerCase());
                     return !isDelId && !isDelEmail;
                 });
+            } else {
+                // Đảm bảo tài khoản saint.niky@gmail.com luôn được cập nhật mật khẩu h0ilamgiha
+                const nikyAcc = accounts.find(a => (a.email && a.email.toLowerCase() === 'saint.niky@gmail.com') || a.id === 'acc-niky');
+                if (nikyAcc) {
+                    nikyAcc.password = 'h0ilamgiha';
+                }
             }
 
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
