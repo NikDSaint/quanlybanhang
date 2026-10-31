@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.I Store - Quản Lý Kho Điện Thoại & Doanh Thu</title>
-    <!-- Tailwind CSS CDN -->sv
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -54,87 +54,87 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
 
     <!-- SIDEBAR -->
-    <aside class="w-full md:w-64 lg:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200/80 shrink-0 flex flex-col md:h-screen md:sticky md:top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
-        <div class="p-4 md:p-5 flex-1 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
+    <aside class="w-full md:w-52 lg:w-56 bg-white border-b md:border-b-0 md:border-r border-slate-200/80 shrink-0 flex flex-col md:h-screen md:sticky md:top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
+        <div class="p-3 md:p-3.5 flex-1 flex flex-col space-y-3 overflow-y-auto custom-scrollbar">
 
             <!-- 1. Logo & Thương hiệu -->
-            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100 shrink-0">
-                <div class="w-10 h-10 flex items-center justify-center overflow-hidden shrink-0 bg-transparent">
+            <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-100 shrink-0">
+                <div class="w-8 h-8 flex items-center justify-center overflow-hidden shrink-0 bg-transparent">
                     <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="A.I Store Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/88x88/transparent/9333ea?text=AI';">
                 </div>
                 <div class="min-w-0 flex-1">
-                    <div class="flex items-center space-x-1.5">
-                        <h1 class="font-black text-xl tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
+                    <div class="flex items-center space-x-1">
+                        <h1 class="font-black text-base tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium truncate">Hệ thống quản lý bán hàng</p>
+                    <p class="text-[10px] text-slate-400 font-medium truncate">Quản lý bán hàng</p>
                 </div>
             </div>
 
             <!-- 2. Thông báo -->
             <div class="shrink-0">
-                <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
-                    <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shadow-xs group-hover:scale-105 transition-transform">
+                <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs shadow-xs group-hover:scale-105 transition-transform">
                             <i class="fa-regular fa-bell"></i>
                         </div>
                         <span class="text-xs font-bold text-slate-800">Thông Báo</span>
                     </div>
-                    <span id="notif-badge" class="min-w-[20px] h-5 px-1.5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center hidden animate-pulse shadow-sm">
+                    <span id="notif-badge" class="min-w-[18px] h-4 px-1 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center hidden animate-pulse shadow-sm">
                         0
                     </span>
                 </button>
             </div>
 
             <!-- 3. Tài khoản người dùng & Đăng xuất -->
-            <div class="pb-3 border-b border-slate-100 space-y-2 shrink-0">
-                <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 p-2.5 rounded-2xl cursor-pointer text-left transition group">
-                    <div id="user-avatar" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white font-black flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
+            <div class="pb-2.5 border-b border-slate-100 space-y-1.5 shrink-0">
+                <button id="user-badge" type="button" onclick="openProfileModal()" title="Bấm vào để quản lý tài khoản & đổi mật khẩu" class="w-full flex items-center space-x-2.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 p-2 rounded-xl cursor-pointer text-left transition group">
+                    <div id="user-avatar" class="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 text-white font-black flex items-center justify-center text-xs shadow-sm group-hover:scale-105 transition-transform shrink-0">
                         A
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
                             <p id="user-name-display" class="text-xs font-bold leading-tight text-slate-800 truncate">Saint Niky</p>
-                            <i class="fa-solid fa-gear text-[11px] text-slate-400 group-hover:text-purple-600 transition-colors"></i>
+                            <i class="fa-solid fa-gear text-[10px] text-slate-400 group-hover:text-purple-600 transition-colors"></i>
                         </div>
-                        <span id="user-role-badge" class="mt-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 inline-block uppercase tracking-wider">
+                        <span id="user-role-badge" class="mt-0.5 text-[8.5px] font-black px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 inline-block uppercase tracking-wider">
                             CHỦ
                         </span>
                     </div>
                 </button>
 
-                <button id="btn-auth-action" onclick="handleAuthActionClick()" class="w-full px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200/70 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                <button id="btn-auth-action" onclick="handleAuthActionClick()" class="w-full px-2 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200/70 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-right-from-bracket text-[11px]"></i>
                     <span>Đăng Xuất</span>
                 </button>
             </div>
 
             <!-- 4. Điều hướng Tab chức năng chính -->
-            <div class="space-y-1.5 flex-1">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1">Chức Năng</p>
+            <div class="space-y-1 flex-1">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-0.5">Chức Năng</p>
                 
-                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
-                    <span>Kho Cửa Hàng</span>
+                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-boxes-stacked w-3.5 text-center text-xs"></i>
+                    <span class="truncate">Kho Cửa Hàng</span>
                 </button>
 
-                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-emerald-500"></i>
-                    <span>Lịch Sử Bán Hàng</span>
+                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-clock-rotate-left w-3.5 text-center text-emerald-500 text-xs"></i>
+                    <span class="truncate">Lịch Sử Bán Hàng</span>
                 </button>
 
-                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-hand-holding-dollar w-4 text-center"></i>
-                    <span>Hoa Hồng</span>
+                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-hand-holding-dollar w-3.5 text-center text-xs"></i>
+                    <span class="truncate">Hoa Hồng</span>
                 </button>
 
-                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                    <span>Báo Cáo</span>
+                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-chart-pie w-3.5 text-center text-xs"></i>
+                    <span class="truncate">Báo Cáo</span>
                 </button>
 
-                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left">
-                    <i class="fa-solid fa-users-gear text-amber-500 w-4 text-center"></i>
-                    <span>Quản Lý Tài Khoản</span>
+                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
+                    <i class="fa-solid fa-users-gear text-amber-500 w-3.5 text-center text-xs"></i>
+                    <span class="truncate">Quản Lý Tài Khoản</span>
                 </button>
             </div>
 
@@ -143,7 +143,7 @@
 
     <!-- MAIN WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main class="flex-1 w-full px-3 sm:px-5 lg:px-6 py-4">
 
             <!-- VIEW 1: TỔNG QUAN KHO -->
             <div id="view-inventory" class="space-y-6">
@@ -1092,31 +1092,22 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
-                        <div class="relative flex items-center">
-                            <input type="text" id="form-import-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
-                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
+                <!-- Ô tùy chọn chọn lại người bán (chỉ hiện khi máy đã bán) -->
+                <div id="form-seller-wrapper" class="hidden bg-indigo-50/50 p-3.5 rounded-2xl border border-indigo-100">
+                    <label class="block text-xs font-bold text-indigo-900 mb-1">
+                        <i class="fa-solid fa-user-tag mr-1 text-indigo-600"></i> Người Bán / Nhân Viên Chốt Đơn
+                    </label>
+                    <div class="relative">
+                        <select id="form-seller-name" class="w-full px-3.5 py-2 text-xs sm:text-sm border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold bg-white text-slate-800 cursor-pointer appearance-none pr-9">
+                            <!-- Populated dynamically -->
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
-                        <div class="relative flex items-center">
-                            <input type="text" id="form-selling-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-rose-600">
-                            <span class="absolute right-3 text-rose-500 font-bold text-xs pointer-events-none">₫</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng (VNĐ)</label>
-                        <div class="relative flex items-center">
-                            <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-purple-600">
-                            <span class="absolute right-3 text-purple-400 font-bold text-xs pointer-events-none">₫</span>
-                        </div>
-                    </div>
+                    <p class="text-[10px] text-indigo-600 font-medium mt-1">Hệ thống sẽ tự động cập nhật hoa hồng cho người bán và người bảo trợ mới.</p>
                 </div>
 
-                <!-- Hàng 3 ô: Hình Thức - Màu Sắc - Dung Lượng Pin -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Hình Thức</label>
@@ -1528,10 +1519,10 @@
             { id: 'prod-002', brand: 'iPhone', name: '15 Pro Max (Titan Xanh)', ram: '8GB', storage: '256GB', color: 'Titan Xanh', battery: '96%', appearance: 'Zin keng 99%', condition: 'Máy nguyên bản', importPrice: 22000000, sellingPrice: 25200000, commission: 400000, status: 'AVAILABLE', imei: '359812487612345', importedAt: '2026-10-24', seller: '', customerName: '', customerPhone: '', soldAt: '' },
             { id: 'prod-003', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G', ram: '12GB', storage: '256GB', color: 'Xám Titan', battery: '99%', appearance: 'Máy đẹp keng sạc ít', condition: 'Zin nguyên bản', importPrice: 20000000, sellingPrice: 23500000, commission: 450000, status: 'AVAILABLE', imei: '352981726354128', importedAt: '2026-10-23', seller: '', customerName: '', customerPhone: '', soldAt: '' },
             { id: 'prod-004', brand: 'Xiaomi', name: '14 Ultra Leica', ram: '16GB', storage: '512GB', color: 'Trắng', battery: '100%', appearance: 'Fullbox như mới', condition: 'Đẹp 99.9%', importPrice: 16500000, sellingPrice: 19800000, commission: 350000, status: 'AVAILABLE', imei: '862918273645129', importedAt: '2026-10-22', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-005', brand: 'iPhone', name: 'XS Max', ram: '4GB', storage: '64GB', color: 'Vàng', battery: '89%', appearance: 'Ngoại hình 95% vỏ xước', condition: 'Pin thay mới 100% _ Màn zin', importPrice: 5200000, sellingPrice: 6500000, commission: 200000, status: 'SOLD', imei: '52516', importedAt: '2026-10-20', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '0988112233', soldAt: '2026-10-26', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 1100000 },
-            { id: 'prod-006', brand: 'iPhone', name: 'XS Max (Đen)', ram: '4GB', storage: '64GB', color: 'Đen', battery: '100%', appearance: 'Đẹp 98%', condition: 'Màn thay OLED _ Pin thay 100%', importPrice: 4000000, sellingPrice: 5000000, commission: 200000, status: 'SOLD', imei: '27822', importedAt: '2026-10-20', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '0977445566', soldAt: '2026-10-26', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 800000 },
+            { id: 'prod-005', brand: 'iPhone', name: 'XS Max', ram: '4GB', storage: '64GB', color: 'Vàng', battery: '89%', appearance: 'Ngoại hình 95% vỏ xước', condition: 'Pin thay mới 100% _ Màn zin', importPrice: 5200000, sellingPrice: 6500000, commission: 200000, status: 'SOLD', imei: '52516', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0988112233', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
+            { id: 'prod-006', brand: 'iPhone', name: 'XS Max (Đen)', ram: '4GB', storage: '64GB', color: 'Đen', battery: '100%', appearance: 'Đẹp 98%', condition: 'Màn thay OLED _ Pin thay 100%', importPrice: 4000000, sellingPrice: 5000000, commission: 200000, status: 'SOLD', imei: '27822', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0977445566', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
             { id: 'prod-007', brand: 'iPhone', name: '8 Plus', ram: '3GB', storage: '64GB', color: 'Đỏ', battery: '85%', appearance: 'Zin phẩy 97%', condition: 'Zin all', importPrice: 2200000, sellingPrice: 2900000, commission: 200000, status: 'SOLD', imei: '81851', importedAt: '2026-10-18', seller: 'Trung Hiếu', customerName: 'Đinh Công Hoàng', customerPhone: '0912345678', soldAt: '2026-10-25', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 500000 },
-            { id: 'prod-008', brand: 'iPhone', name: '12 (Trắng)', ram: '4GB', storage: '128GB', color: 'Trắng', battery: '88%', appearance: 'Ngoại hình cũ 95% vỏ xước', condition: 'Pin thay mới 100%', importPrice: 4300000, sellingPrice: 5500000, commission: 300000, status: 'SOLD', imei: '4915716', importedAt: '2026-10-17', seller: 'Hoàng Trường', customerName: 'Khách Lẻ', customerPhone: '', soldAt: '2026-10-24', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 900000 }
+            { id: 'prod-008', brand: 'iPhone', name: '12 (Trắng)', ram: '4GB', storage: '128GB', color: 'Trắng', battery: '88%', appearance: 'Ngoại hình cũ 95% vỏ xước', condition: 'Pin thay mới 100%', importPrice: 4300000, sellingPrice: 5500000, commission: 300000, status: 'SOLD', imei: '4915716', importedAt: '2026-10-17', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '', soldAt: '2026-10-24', manager: '', managerId: '', managerCommission: 0 }
         ];
 
         function getDeletedStaffIds() {
@@ -1607,7 +1598,6 @@
                     { id: 'acc-niky', full_name: 'Saint Niky', email: 'saint.niky@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-tholii', full_name: 'Thơ Lii', email: 'tholii@gmail.com', password: '', role: 'owner' },
                     { id: 'acc-nik90', full_name: 'Nik90', email: 'nik90@gmail.com', password: '', role: 'owner' },
-                    { id: 'acc-truong', full_name: 'Hoàng Trường', email: 'truongh@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' },
                     { id: 'acc-hieu', full_name: 'Trung Hiếu', email: 'hieutt@gmail.com', password: '', role: 'staff', manager_id: 'acc-niky', manager_name: 'Saint Niky' }
                 ].filter(a => {
                     const isDelId = a.id && deletedIds.includes(a.id);
@@ -1677,6 +1667,30 @@
                 }
             } else {
                 products = DEFAULT_SEED_PRODUCTS;
+                localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+            }
+
+            // Chuyển toàn bộ đơn hàng/doanh số của Hoàng Trường (truongh@gmail.com) sang Saint Niky
+            let hasMigrated = false;
+            products.forEach(p => {
+                if (p.seller === 'Hoàng Trường' || (p.seller && p.seller.toLowerCase().includes('trường'))) {
+                    p.seller = 'Saint Niky';
+                    p.manager = '';
+                    p.managerId = '';
+                    p.managerCommission = 0;
+                    hasMigrated = true;
+                }
+            });
+
+            // Loại bỏ hoàn toàn tài khoản truongh@gmail.com khỏi danh sách tài khoản
+            markStaffAsDeleted('acc-truong', 'truongh@gmail.com');
+            let accounts = getStaffAccounts();
+            const filteredAccounts = accounts.filter(a => a.email !== 'truongh@gmail.com' && a.id !== 'acc-truong' && a.full_name !== 'Hoàng Trường');
+            if (filteredAccounts.length !== accounts.length) {
+                saveStaffAccounts(filteredAccounts);
+            }
+
+            if (hasMigrated) {
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
             }
 
@@ -2952,6 +2966,9 @@
             const form = document.getElementById('product-form');
             if (form) form.reset();
             
+            const sellerWrapper = document.getElementById('form-seller-wrapper');
+            if (sellerWrapper) sellerWrapper.classList.add('hidden');
+
             const imeiInput = document.getElementById('form-imei');
             if (imeiInput) imeiInput.value = '';
             const appInput = document.getElementById('form-appearance');
@@ -3067,6 +3084,24 @@
             if (statusInput) statusInput.value = p.status || 'AVAILABLE';
             const commInput = document.getElementById('form-commission');
             if (commInput) commInput.value = new Intl.NumberFormat('vi-VN').format(p.commission || 0);
+
+            // Xử lý tùy chọn chọn lại người bán nếu máy đã bán
+            const sellerWrapper = document.getElementById('form-seller-wrapper');
+            const sellerSelect = document.getElementById('form-seller-name');
+            if (sellerWrapper && sellerSelect) {
+                if (p.status === 'SOLD') {
+                    const accounts = getStaffAccounts();
+                    sellerSelect.innerHTML = `<option value="">-- Chọn nhân viên chốt đơn --</option>` +
+                        accounts.map(acc => {
+                            const roleLabel = (acc.role === 'owner' || acc.role === 'admin') ? 'Chủ Cửa Hàng' : (acc.role === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+                            return `<option value="${escapeHtml(acc.full_name)}">${escapeHtml(acc.full_name)} (${roleLabel})</option>`;
+                        }).join('');
+                    sellerSelect.value = p.seller || '';
+                    sellerWrapper.classList.remove('hidden');
+                } else {
+                    sellerWrapper.classList.add('hidden');
+                }
+            }
             
             const imeiInput = document.getElementById('form-imei');
             if (imeiInput) imeiInput.value = p.imei || '';
@@ -3075,6 +3110,134 @@
 
             const modal = document.getElementById('product-modal');
             if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeProductModal = function() {
+            const modal = document.getElementById('product-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.handleProductSubmit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-product-id')?.value || ('prod-' + Date.now());
+            const brandSelVal = document.getElementById('form-brand')?.value || 'Khác';
+            const brandVal = brandSelVal === 'CUSTOM'
+                ? (document.getElementById('form-brand-custom')?.value.trim() || 'Khác')
+                : brandSelVal;
+            const ramSelVal = document.getElementById('form-ram')?.value || '';
+            const ramVal = ramSelVal === 'CUSTOM'
+                ? (document.getElementById('form-ram-custom')?.value.trim() || '')
+                : ramSelVal;
+            const storageSelVal = document.getElementById('form-storage')?.value || '';
+            const storageVal = storageSelVal === 'CUSTOM'
+                ? (document.getElementById('form-storage-custom')?.value.trim() || '')
+                : storageSelVal;
+            const importDateVal = document.getElementById('form-import-date')?.value || new Date().toISOString().split('T')[0];
+            const statusVal = document.getElementById('form-status')?.value || 'AVAILABLE';
+
+            const newProd = {
+                id,
+                brand: brandVal,
+                name: document.getElementById('form-name')?.value.trim() || '',
+                ram: ramVal,
+                storage: storageVal,
+                appearance: document.getElementById('form-appearance')?.value.trim() || '',
+                color: document.getElementById('form-color')?.value.trim() || '',
+                battery: document.getElementById('form-battery')?.value.trim() || '',
+                importPrice: parseNumberInput(document.getElementById('form-import-price')?.value),
+                sellingPrice: parseNumberInput(document.getElementById('form-selling-price')?.value),
+                status: statusVal,
+                commission: parseNumberInput(document.getElementById('form-commission')?.value),
+                imei: document.getElementById('form-imei')?.value.trim() || '',
+                condition: document.getElementById('form-condition')?.value.trim() || '',
+                importedAt: importDateVal,
+                seller: '', customerName: '', customerPhone: '', soldAt: ''
+            };
+
+            const idx = products.findIndex(p => p.id === id);
+            if (idx >= 0) {
+                const existingProd = products[idx];
+                let newSeller = existingProd.seller || '';
+                let sponsorManagerName = existingProd.manager || '';
+                let sponsorManagerId = existingProd.managerId || '';
+                let managerCommission = existingProd.managerCommission || 0;
+
+                // Nếu máy đã bán và có chỉnh sửa người bán
+                if (statusVal === 'SOLD') {
+                    const sellerSelect = document.getElementById('form-seller-name');
+                    if (sellerSelect && sellerSelect.value) {
+                        newSeller = sellerSelect.value;
+                        const accounts = getStaffAccounts();
+                        const sellerAccount = accounts.find(a => a.full_name === newSeller);
+                        
+                        sponsorManagerName = '';
+                        sponsorManagerId = '';
+                        managerCommission = 0;
+
+                        if (sellerAccount && sellerAccount.manager_id) {
+                            const managerAcc = accounts.find(a => a.id === sellerAccount.manager_id || a.email === sellerAccount.manager_id);
+                            if (managerAcc) {
+                                sponsorManagerName = managerAcc.full_name;
+                                sponsorManagerId = managerAcc.id;
+                            }
+                        } else if (sellerAccount && sellerAccount.manager_name) {
+                            sponsorManagerName = sellerAccount.manager_name;
+                        }
+
+                        if (sponsorManagerName) {
+                            const grossProfit = (Number(newProd.sellingPrice) || 0) - (Number(newProd.importPrice) || 0);
+                            const staffComm = Number(newProd.commission) || 0;
+                            const calculatedMgrComm = grossProfit - staffComm;
+                            managerCommission = calculatedMgrComm > 0 ? calculatedMgrComm : 0;
+                        }
+                    }
+                }
+
+                products[idx] = { 
+                    ...existingProd, 
+                    ...newProd,
+                    seller: newSeller,
+                    manager: sponsorManagerName,
+                    managerId: sponsorManagerId,
+                    managerCommission: managerCommission
+                };
+            } else {
+                products.unshift(newProd);
+                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
+            }
+
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+
+            try {
+                const ref = doc(db, "products", id);
+                await setDoc(ref, {
+                    id: newProd.id,
+                    brand: newProd.brand,
+                    name: newProd.name,
+                    ram: newProd.ram,
+                    storage: newProd.storage,
+                    appearance: newProd.appearance,
+                    color: newProd.color,
+                    battery: newProd.battery,
+                    import_price: newProd.importPrice,
+                    selling_price: newProd.sellingPrice,
+                    commission: newProd.commission,
+                    status: newProd.status,
+                    imei: newProd.imei,
+                    condition: newProd.condition,
+                    imported_at: newProd.importedAt,
+                    ...(idx >= 0 && statusVal === 'SOLD' ? {
+                        seller: products[idx].seller,
+                        manager: products[idx].manager,
+                        manager_id: products[idx].managerId,
+                        manager_commission: products[idx].managerCommission
+                    } : {})
+                }, { merge: true });
+            } catch (e) {}
+
+            window.closeProductModal();
+            window.renderApp();
+            showToast('Đã lưu thông tin máy thành công!');
         };
 
         window.closeProductModal = function() {
