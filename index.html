@@ -1481,7 +1481,7 @@
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1708,8 +1708,8 @@
                 try {
                     const savedSession = JSON.parse(savedSessionRaw);
                     if (savedSession && savedSession.id) {
-                        const accounts = getStaffAccounts();
-                        const found = accounts.find(a => 
+                        const currentAccounts = getStaffAccounts();
+                        const found = currentAccounts.find(a => 
                             (a.id === savedSession.id) || 
                             (a.email && savedSession.email && a.email.toLowerCase() === savedSession.email.toLowerCase())
                         );
@@ -1739,8 +1739,9 @@
             renderApp();
             startRealtimeSync();
 
+            // Lắng nghe Firebase Auth nhưng không được làm mất phiên local nếu đã đăng nhập nội bộ
             onAuthStateChanged(auth, async (user) => {
-                if (user) {
+                if (user && !currentUserProfile) {
                     currentUser = user;
                     await handleUserLoggedIn(user);
                 }
@@ -1879,11 +1880,12 @@
             }
         };
 
-        window.handleAuthSubmit = function(e) {
+        window.handleAuthSubmit = async function(e) {
             e.preventDefault();
             const inputLogin = document.getElementById('auth-email')?.value.trim();
             const inputPwd = document.getElementById('auth-password')?.value;
             const errorMsg = document.getElementById('auth-error-msg');
+            const submitBtn = document.getElementById('auth-submit-btn');
 
             if (!inputLogin || !inputPwd) {
                 if (errorMsg) {
@@ -1896,6 +1898,7 @@
             const normalizedLogin = inputLogin.toLowerCase();
             const accounts = getStaffAccounts();
 
+            // Tìm kiếm tài khoản trong danh sách hệ thống (email, username, họ tên)
             const found = accounts.find(a => {
                 const matchEmail = (a.email && a.email.toLowerCase() === normalizedLogin);
                 const username = a.email ? a.email.split('@')[0].toLowerCase() : '';
@@ -1912,8 +1915,9 @@
                 return;
             }
 
-            // Nếu tài khoản có mật khẩu cấu hình, kiểm tra chính xác
-            if (found.password && found.password !== inputPwd) {
+            // Kiểm tra mật khẩu tài khoản
+            const expectedPwd = found.password || 'h0ilamgiha';
+            if (expectedPwd && expectedPwd !== inputPwd) {
                 if (errorMsg) {
                     errorMsg.innerText = 'Mật khẩu không chính xác. Vui lòng thử lại!';
                     errorMsg.classList.remove('hidden');
@@ -1923,7 +1927,16 @@
 
             if (errorMsg) errorMsg.classList.add('hidden');
 
-            // Thiết lập tài khoản hiện tại
+            // Cố gắng đăng nhập Firebase Auth ngầm nếu được (không chặn luồng nếu Vercel chưa whitelist domain)
+            try {
+                if (found.email) {
+                    await signInWithEmailAndPassword(auth, found.email, inputPwd).catch(() => {});
+                }
+            } catch (err) {
+                // Bỏ qua lỗi Firebase Auth nếu domain Vercel chưa được cấp phép
+            }
+
+            // Thiết lập tài khoản hiện tại vào phiên làm việc
             currentUserProfile = { ...found };
             userRole = found.role || 'staff';
             currentUser = { uid: found.id, email: found.email };
