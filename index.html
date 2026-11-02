@@ -3655,8 +3655,8 @@
             }
         };
 
-        window.handleCreateStaffSubmit = async function(e) {
-            e.preventDefault();
+        window.handleCreateStaffSubmit = function(e) {
+            if (e && e.preventDefault) e.preventDefault();
             const msgBox = document.getElementById('create-staff-msg');
             const submitBtn = document.getElementById('btn-create-staff');
             
@@ -3667,18 +3667,18 @@
                 const roleInput = document.getElementById('staff-role');
                 const mgrInput = document.getElementById('staff-manager-id');
 
-                const name = nameInput?.value.trim();
-                let email = emailInput?.value.trim();
-                const password = pwdInput?.value.trim();
-                const role = roleInput?.value || 'staff';
-                const managerId = mgrInput?.value || '';
+                const name = (nameInput ? nameInput.value : '').trim();
+                let email = (emailInput ? emailInput.value : '').trim();
+                const password = (pwdInput ? pwdInput.value : '').trim();
+                const role = (roleInput ? roleInput.value : '') || 'staff';
+                const managerId = (mgrInput ? mgrInput.value : '') || '';
 
                 if (!name || !email || !password) {
                     if (msgBox) {
                         msgBox.innerText = 'Vui lòng điền đầy đủ tất cả các trường có dấu (*).';
                         msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
                     }
-                    return;
+                    return false;
                 }
 
                 if (email && !email.includes('@')) {
@@ -3692,12 +3692,7 @@
                         msgBox.innerText = `Tên đăng nhập hoặc email "${email}" đã tồn tại. Vui lòng chọn tên khác!`;
                         msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
                     }
-                    return;
-                }
-
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang tạo tài khoản...</span>';
+                    return false;
                 }
 
                 let managerName = '';
@@ -3717,27 +3712,14 @@
                     manager_name: (role === 'staff') ? managerName : ''
                 };
 
-                // Thêm vào danh sách nội bộ và lưu ngay vào localStorage
+                // 1. Thêm ngay vào danh sách nội bộ và lưu ngay vào localStorage
                 accounts.push(newAcc);
                 saveStaffAccounts(accounts);
 
-                // Cập nhật giao diện bảng và dropdown người bảo trợ ngay lập tức
+                // 2. Cập nhật bảng danh sách và dropdown ngay tức thì
                 window.loadProfilesList();
 
-                // Lưu lên Firebase Firestore (không để lỗi Firebase làm gián đoạn luồng)
-                try {
-                    await setDoc(doc(db, "staff_accounts", staffId), newAcc, { merge: true });
-                    await setDoc(doc(db, "profiles", staffId), {
-                        id: staffId,
-                        full_name: name,
-                        email: email,
-                        role: role
-                    }, { merge: true });
-                } catch (err) {
-                    console.warn("Firebase staff account sync warning:", err);
-                }
-
-                // Reset form sau khi tạo thành công
+                // 3. Reset form và báo thành công ngay lập tức
                 const form = document.getElementById('create-staff-form');
                 if (form) form.reset();
 
@@ -3750,17 +3732,32 @@
                 }
 
                 showToast(`Đã cấp tài khoản thành công cho "${name}"!`, 'success');
+
+                // 4. Đồng bộ lên Firebase Firestore chạy ngầm, không chặn giao diện nếu gặp lỗi quyền
+                try {
+                    setDoc(doc(db, "staff_accounts", staffId), newAcc, { merge: true }).catch(err => {
+                        console.warn("Firebase staff_accounts warning:", err);
+                    });
+                    setDoc(doc(db, "profiles", staffId), {
+                        id: staffId,
+                        full_name: name,
+                        email: email,
+                        role: role
+                    }, { merge: true }).catch(err => {
+                        console.warn("Firebase profiles warning:", err);
+                    });
+                } catch (cloudErr) {
+                    console.warn("Cloud save error ignored:", cloudErr);
+                }
+
+                return false;
             } catch (error) {
                 console.error("Create staff error:", error);
                 if (msgBox) {
-                    msgBox.innerText = 'Có lỗi xảy ra khi tạo tài khoản: ' + error.message;
+                    msgBox.innerText = 'Có lỗi xảy ra: ' + error.message;
                     msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
                 }
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> <span>Tạo & Cấp Quyền Truy Cập</span>';
-                }
+                return false;
             }
         };
 
