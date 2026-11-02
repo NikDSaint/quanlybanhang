@@ -3320,83 +3320,6 @@
             showToast('Đã lưu thông tin máy thành công!');
         };
 
-        window.closeProductModal = function() {
-            const modal = document.getElementById('product-modal');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        window.handleProductSubmit = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('form-product-id')?.value || ('prod-' + Date.now());
-            const brandSelVal = document.getElementById('form-brand')?.value || 'Khác';
-            const brandVal = brandSelVal === 'CUSTOM'
-                ? (document.getElementById('form-brand-custom')?.value.trim() || 'Khác')
-                : brandSelVal;
-            const ramSelVal = document.getElementById('form-ram')?.value || '';
-            const ramVal = ramSelVal === 'CUSTOM'
-                ? (document.getElementById('form-ram-custom')?.value.trim() || '')
-                : ramSelVal;
-            const storageSelVal = document.getElementById('form-storage')?.value || '';
-            const storageVal = storageSelVal === 'CUSTOM'
-                ? (document.getElementById('form-storage-custom')?.value.trim() || '')
-                : storageSelVal;
-            const importDateVal = document.getElementById('form-import-date')?.value || new Date().toISOString().split('T')[0];
-
-            const newProd = {
-                id,
-                brand: brandVal,
-                name: document.getElementById('form-name')?.value.trim() || '',
-                ram: ramVal,
-                storage: storageVal,
-                appearance: document.getElementById('form-appearance')?.value.trim() || '',
-                color: document.getElementById('form-color')?.value.trim() || '',
-                battery: document.getElementById('form-battery')?.value.trim() || '',
-                importPrice: parseNumberInput(document.getElementById('form-import-price')?.value),
-                sellingPrice: parseNumberInput(document.getElementById('form-selling-price')?.value),
-                status: document.getElementById('form-status')?.value || 'AVAILABLE',
-                commission: parseNumberInput(document.getElementById('form-commission')?.value),
-                imei: document.getElementById('form-imei')?.value.trim() || '',
-                condition: document.getElementById('form-condition')?.value.trim() || '',
-                importedAt: importDateVal,
-                seller: '', customerName: '', customerPhone: '', soldAt: ''
-            };
-
-            const idx = products.findIndex(p => p.id === id);
-            if (idx >= 0) {
-                products[idx] = { ...products[idx], ...newProd };
-            } else {
-                products.unshift(newProd);
-                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
-            }
-
-            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-
-            try {
-                const ref = doc(db, "products", id);
-                await setDoc(ref, {
-                    id: newProd.id,
-                    brand: newProd.brand,
-                    name: newProd.name,
-                    ram: newProd.ram,
-                    storage: newProd.storage,
-                    appearance: newProd.appearance,
-                    color: newProd.color,
-                    battery: newProd.battery,
-                    import_price: newProd.importPrice,
-                    selling_price: newProd.sellingPrice,
-                    commission: newProd.commission,
-                    status: newProd.status,
-                    imei: newProd.imei,
-                    condition: newProd.condition,
-                    imported_at: newProd.importedAt
-                }, { merge: true });
-            } catch (e) {}
-
-            window.closeProductModal();
-            window.renderApp();
-            showToast('Đã lưu máy vào kho thành công!');
-        };
-
         window.openSellModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
@@ -3734,52 +3657,111 @@
 
         window.handleCreateStaffSubmit = async function(e) {
             e.preventDefault();
-            const name = document.getElementById('staff-name')?.value.trim();
-            let email = document.getElementById('staff-email')?.value.trim();
-            const password = document.getElementById('staff-password')?.value;
-            const role = document.getElementById('staff-role')?.value;
-            const managerId = document.getElementById('staff-manager-id')?.value || '';
-
-            if (!name || !email) return;
-            if (email && !email.includes('@')) email += '@gmail.com';
-
-            const accounts = getStaffAccounts();
-            let managerName = '';
-            if (managerId) {
-                const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
-                if (mgrAcc) managerName = mgrAcc.full_name;
-            }
-
-            const staffId = 'staff-' + Date.now();
-            const newAcc = { 
-                id: staffId, 
-                full_name: name, 
-                email: email, 
-                password: password, 
-                role: role,
-                manager_id: managerId,
-                manager_name: managerName
-            };
-            accounts.push(newAcc);
-            saveStaffAccounts(accounts);
-
-            // Lưu trực tiếp lên Firebase Firestore
+            const msgBox = document.getElementById('create-staff-msg');
+            const submitBtn = document.getElementById('btn-create-staff');
+            
             try {
-                await setDoc(doc(db, "staff_accounts", staffId), newAcc, { merge: true });
-                await setDoc(doc(db, "profiles", staffId), {
-                    id: staffId,
-                    full_name: name,
-                    email: email,
-                    role: role
-                }, { merge: true });
-            } catch (err) {
-                console.warn("Could not save new staff to Firebase:", err);
-            }
+                const nameInput = document.getElementById('staff-name');
+                const emailInput = document.getElementById('staff-email');
+                const pwdInput = document.getElementById('staff-password');
+                const roleInput = document.getElementById('staff-role');
+                const mgrInput = document.getElementById('staff-manager-id');
 
-            const form = document.getElementById('create-staff-form');
-            if (form) form.reset();
-            window.loadProfilesList();
-            showToast(`Đã lưu tài khoản nhân viên "${name}" lên Firebase!`, 'success');
+                const name = nameInput?.value.trim();
+                let email = emailInput?.value.trim();
+                const password = pwdInput?.value.trim();
+                const role = roleInput?.value || 'staff';
+                const managerId = mgrInput?.value || '';
+
+                if (!name || !email || !password) {
+                    if (msgBox) {
+                        msgBox.innerText = 'Vui lòng điền đầy đủ tất cả các trường có dấu (*).';
+                        msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
+                    }
+                    return;
+                }
+
+                if (email && !email.includes('@')) {
+                    email += '@gmail.com';
+                }
+
+                let accounts = getStaffAccounts();
+                const emailExists = accounts.some(a => a.email && a.email.toLowerCase() === email.toLowerCase());
+                if (emailExists) {
+                    if (msgBox) {
+                        msgBox.innerText = `Tên đăng nhập hoặc email "${email}" đã tồn tại. Vui lòng chọn tên khác!`;
+                        msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
+                    }
+                    return;
+                }
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang tạo tài khoản...</span>';
+                }
+
+                let managerName = '';
+                if (managerId) {
+                    const mgrAcc = accounts.find(a => a.id === managerId || a.email === managerId);
+                    if (mgrAcc) managerName = mgrAcc.full_name;
+                }
+
+                const staffId = 'staff-' + Date.now();
+                const newAcc = { 
+                    id: staffId, 
+                    full_name: name, 
+                    email: email, 
+                    password: password, 
+                    role: role,
+                    manager_id: (role === 'staff') ? managerId : '',
+                    manager_name: (role === 'staff') ? managerName : ''
+                };
+
+                // Thêm vào danh sách nội bộ và lưu ngay vào localStorage
+                accounts.push(newAcc);
+                saveStaffAccounts(accounts);
+
+                // Cập nhật giao diện bảng và dropdown người bảo trợ ngay lập tức
+                window.loadProfilesList();
+
+                // Lưu lên Firebase Firestore (không để lỗi Firebase làm gián đoạn luồng)
+                try {
+                    await setDoc(doc(db, "staff_accounts", staffId), newAcc, { merge: true });
+                    await setDoc(doc(db, "profiles", staffId), {
+                        id: staffId,
+                        full_name: name,
+                        email: email,
+                        role: role
+                    }, { merge: true });
+                } catch (err) {
+                    console.warn("Firebase staff account sync warning:", err);
+                }
+
+                // Reset form sau khi tạo thành công
+                const form = document.getElementById('create-staff-form');
+                if (form) form.reset();
+
+                if (msgBox) {
+                    msgBox.innerText = `Tạo thành công tài khoản "${name}" (${email})!`;
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-700 block';
+                    setTimeout(() => {
+                        msgBox.className = 'hidden';
+                    }, 4000);
+                }
+
+                showToast(`Đã cấp tài khoản thành công cho "${name}"!`, 'success');
+            } catch (error) {
+                console.error("Create staff error:", error);
+                if (msgBox) {
+                    msgBox.innerText = 'Có lỗi xảy ra khi tạo tài khoản: ' + error.message;
+                    msgBox.className = 'p-3 rounded-xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 block';
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> <span>Tạo & Cấp Quyền Truy Cập</span>';
+                }
+            }
         };
 
         window.deleteStaffAccount = async function(id) {
