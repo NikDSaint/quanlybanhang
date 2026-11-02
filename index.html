@@ -112,28 +112,33 @@
             <div class="space-y-1 flex-1">
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-0.5">Chức Năng</p>
                 
-                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-boxes-stacked w-3.5 text-center text-xs"></i>
+                <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-boxes-stacked w-4 text-center text-xs text-indigo-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
                     <span class="truncate">Kho Cửa Hàng</span>
                 </button>
 
-                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-clock-rotate-left w-3.5 text-center text-emerald-500 text-xs"></i>
+                <button id="tab-partner-inventory-btn" onclick="switchTab('partner-inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-handshake w-4 text-center text-xs text-amber-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
+                    <span class="truncate">Kho Cộng Tác</span>
+                </button>
+
+                <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-xs text-emerald-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
                     <span class="truncate">Lịch Sử Bán Hàng</span>
                 </button>
 
-                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-hand-holding-dollar w-3.5 text-center text-xs"></i>
+                <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-hand-holding-dollar w-4 text-center text-xs text-purple-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
                     <span class="truncate">Hoa Hồng</span>
                 </button>
 
-                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-chart-pie w-3.5 text-center text-xs"></i>
+                <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-chart-pie w-4 text-center text-xs text-sky-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
                     <span class="truncate">Báo Cáo</span>
                 </button>
 
-                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-users-gear text-amber-500 w-3.5 text-center text-xs"></i>
+                <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group">
+                    <i class="fa-solid fa-users-gear w-4 text-center text-xs text-orange-500 group-[.pill-tab-active]:text-white group-hover:scale-110 transition-transform"></i>
                     <span class="truncate">Quản Lý Tài Khoản</span>
                 </button>
             </div>
@@ -193,19 +198,19 @@
                             <span class="hidden sm:inline">Xuất CSV</span>
                         </button>
 
-                        <button id="btn-add-product" onclick="openAddModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center space-x-2 text-xs sm:text-sm">
+                        <button id="btn-add-product" onclick="openAddModal('STORE')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center space-x-2 text-xs sm:text-sm">
                             <i class="fa-solid fa-plus"></i>
                             <span>Thêm Máy Mới</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Bảng sản phẩm còn trong kho -->
+                <!-- Bảng sản phẩm còn trong kho Cửa Hàng -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                     <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Sản Phẩm Còn Trong Kho</h3>
+                            <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Kho Cửa Hàng - Sản Phẩm Còn Lại</h3>
                         </div>
                         <span id="badge-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0 máy</span>
                     </div>
@@ -256,8 +261,118 @@
                         <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">
                             <i class="fa-solid fa-box-open"></i>
                         </div>
-                        <p class="text-slate-600 font-bold text-sm">Không còn máy nào trong kho</p>
+                        <p class="text-slate-600 font-bold text-sm">Không còn máy nào trong Kho Cửa Hàng</p>
                         <p class="text-slate-400 text-xs mt-0.5">Bấm "Thêm Máy Mới" để bổ sung sản phẩm vào kho.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: KHO CỘNG TÁC -->
+            <div id="view-partner-inventory" class="space-y-6 hidden">
+                <!-- Filter & Action Bar Kho Cộng Tác -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3 justify-between items-center">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto flex-1">
+                        <div class="relative min-w-[240px] flex-1 md:flex-initial">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="partner-search-input" oninput="renderApp()" placeholder="Tìm theo tên máy, số IMEI, tình trạng..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                        </div>
+                        <select id="partner-filter-brand" onchange="renderApp()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-slate-700">
+                            <option value="ALL">Tất cả hãng</option>
+                            <option value="iPhone">iPhone</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Xiaomi">Xiaomi</option>
+                            <option value="Redmi">Redmi</option>
+                            <option value="POCO">POCO</option>
+                            <option value="Huawei">Huawei</option>
+                            <option value="Honor">Honor</option>
+                            <option value="Vivo">Vivo</option>
+                            <option value="iQOO">iQOO</option>
+                            <option value="OPPO">OPPO</option>
+                            <option value="Realme">Realme</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                        <select id="partner-filter-sort" onchange="handlePartnerDropdownSortChange()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-slate-700">
+                            <option value="DATE_DESC">Ngày nhập: Mới nhất</option>
+                            <option value="DATE_ASC">Ngày nhập: Cũ nhất</option>
+                            <option value="PRICE_DESC">Giá bán: Cao -> Thấp</option>
+                            <option value="PRICE_ASC">Giá bán: Thấp -> Cao</option>
+                            <option value="NAME_ASC">Tên máy: A đến Z</option>
+                            <option value="NAME_DESC">Tên máy: Z đến A</option>
+                        </select>
+                    </div>
+
+                    <!-- Action Buttons Kho Cộng Tác -->
+                    <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+                        <button onclick="exportToCSV('PARTNER')" title="Xuất kho cộng tác ra tệp CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                            <span class="hidden sm:inline">Xuất CSV</span>
+                        </button>
+
+                        <button id="btn-add-partner-product" onclick="openAddModal('PARTNER')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition flex items-center space-x-2 text-xs sm:text-sm">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Thêm Máy Cộng Tác</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bảng sản phẩm còn trong kho Cộng Tác -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-3.5 px-4 bg-amber-50/70 border-b border-amber-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <h3 class="font-extrabold text-sm text-amber-900 uppercase tracking-wide">Kho Cộng Tác - Sản Phẩm Còn Lại</h3>
+                        </div>
+                        <span id="badge-partner-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900">0 máy</span>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
+                                <tr>
+                                    <th class="py-3.5 px-3 text-center w-12 whitespace-nowrap">STT</th>
+                                    <th class="py-3.5 px-4 text-center w-24">Xem / Copy</th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-amber-600 transition whitespace-nowrap" onclick="togglePartnerSortColumn('date')" title="Bấm để sắp xếp theo ngày nhập">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span>Ngày Nhập</span>
+                                            <span id="partner-sort-icon-date" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100 hover:text-amber-600 transition" onclick="togglePartnerSortColumn('name')" title="Bấm để sắp xếp theo tên sản phẩm">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span>Sản Phẩm & Cấu Hình / IMEI</span>
+                                            <span id="partner-sort-icon-name" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right col-import-price whitespace-nowrap">Giá Nhập</th>
+                                    <th class="py-3.5 px-4 text-right cursor-pointer hover:bg-slate-100 hover:text-orange-600 transition whitespace-nowrap" onclick="togglePartnerSortColumn('price')" title="Bấm để sắp xếp theo giá bán">
+                                        <div class="flex items-center justify-end space-x-1.5">
+                                            <span class="whitespace-nowrap">Giá Bán</span>
+                                            <span id="partner-sort-icon-price" class="text-xs text-slate-400">
+                                                <i class="fa-solid fa-sort"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
+                                    <th class="py-3.5 px-4 text-center">Trạng Thái</th>
+                                    <th class="py-3.5 px-4 text-center">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partner-product-table-body" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="partner-empty-state" class="hidden p-8 text-center">
+                        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                        <p class="text-slate-600 font-bold text-sm">Không còn máy nào trong Kho Cộng Tác</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Bấm "Thêm Máy Cộng Tác" để bổ sung sản phẩm vào kho này.</p>
                     </div>
                 </div>
             </div>
@@ -1084,55 +1199,44 @@
                         <input type="date" id="form-import-date" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Lưu Vào Kho <span class="text-rose-500">*</span></label>
+                        <select id="form-warehouse" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-bold text-slate-800">
+                            <option value="STORE">Kho Cửa Hàng</option>
+                            <option value="PARTNER">Kho Cộng Tác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Trạng Thái Trong Kho</label>
                         <select id="form-status" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-bold">
                             <option value="AVAILABLE">Còn hàng</option>
                             <option value="SOLD">Đã bán</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Ô tùy chọn chọn lại người bán (chỉ hiện khi máy đã bán) -->
-                <div id="form-seller-wrapper" class="hidden bg-indigo-50/50 p-3.5 rounded-2xl border border-indigo-100">
-                    <label class="block text-xs font-bold text-indigo-900 mb-1">
-                        <i class="fa-solid fa-user-tag mr-1 text-indigo-600"></i> Người Bán / Nhân Viên Chốt Đơn
-                    </label>
-                    <div class="relative">
-                        <select id="form-seller-name" class="w-full px-3.5 py-2 text-xs sm:text-sm border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold bg-white text-slate-800 cursor-pointer appearance-none pr-9">
-                            <!-- Populated dynamically -->
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng (VNĐ)</label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-purple-600">
+                            <span class="absolute right-3 text-purple-400 font-bold text-xs pointer-events-none">₫</span>
                         </div>
                     </div>
-                    <p class="text-[10px] text-indigo-600 font-medium mt-1">Hệ thống sẽ tự động cập nhật hoa hồng cho người bán và người bảo trợ mới.</p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Hình Thức</label>
-                        <input type="text" id="form-appearance" placeholder="VD: Zin keng, 99%, trầy xước nhẹ..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Màu Sắc</label>
-                        <input type="text" id="form-color" placeholder="VD: Đen, Titan..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng Pin</label>
-                        <input type="text" id="form-battery" placeholder="VD: 100%, 88%..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                </div>
-
-                <!-- Hàng 2 ô cùng khung: Tình Trạng (trái) - Số IMEI (phải) -->
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Tình Trạng Máy</label>
-                            <input type="text" id="form-condition" placeholder="VD: Thay màn, hỏng face, zin all..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-import-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-slate-800">
+                            <span class="absolute right-3 text-slate-400 font-bold text-xs pointer-events-none">₫</span>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Số IMEI</label>
-                            <input type="text" id="form-imei" placeholder="Nhập số IMEI..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="form-selling-price" required oninput="formatPriceInput(this)" placeholder="0" class="w-full pl-3 pr-7 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold text-rose-600">
+                            <span class="absolute right-3 text-rose-500 font-bold text-xs pointer-events-none">₫</span>
                         </div>
                     </div>
                 </div>
@@ -1507,6 +1611,7 @@
         let currentTab = 'inventory';
         let currentSalesSubTab = 'items';
         let sortMode = 'DATE_DESC';
+        let partnerSortMode = 'DATE_DESC';
         let soldSortMode = 'DATE_DESC';
         const LOCAL_CACHE_KEY = 'phonestore_pro_cache_v2';
         const LOCAL_STAFF_KEY = 'phonestore_pro_staff_accounts_v2';
@@ -1517,14 +1622,14 @@
 
         // Dữ liệu mẫu ban đầu
         const DEFAULT_SEED_PRODUCTS = [
-            { id: 'prod-001', brand: 'iPhone', name: '16 Pro Max (Titan Tự Nhiên)', ram: '8GB', storage: '256GB', color: 'Titan', battery: '100%', appearance: 'Zin keng 99.9%', condition: 'Zin all áp suất', importPrice: 28500000, sellingPrice: 32500000, commission: 500000, status: 'AVAILABLE', imei: '358912345678901', importedAt: '2026-10-25', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-002', brand: 'iPhone', name: '15 Pro Max (Titan Xanh)', ram: '8GB', storage: '256GB', color: 'Titan Xanh', battery: '96%', appearance: 'Zin keng 99%', condition: 'Máy nguyên bản', importPrice: 22000000, sellingPrice: 25200000, commission: 400000, status: 'AVAILABLE', imei: '359812487612345', importedAt: '2026-10-24', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-003', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G', ram: '12GB', storage: '256GB', color: 'Xám Titan', battery: '99%', appearance: 'Máy đẹp keng sạc ít', condition: 'Zin nguyên bản', importPrice: 20000000, sellingPrice: 23500000, commission: 450000, status: 'AVAILABLE', imei: '352981726354128', importedAt: '2026-10-23', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-004', brand: 'Xiaomi', name: '14 Ultra Leica', ram: '16GB', storage: '512GB', color: 'Trắng', battery: '100%', appearance: 'Fullbox như mới', condition: 'Đẹp 99.9%', importPrice: 16500000, sellingPrice: 19800000, commission: 350000, status: 'AVAILABLE', imei: '862918273645129', importedAt: '2026-10-22', seller: '', customerName: '', customerPhone: '', soldAt: '' },
-            { id: 'prod-005', brand: 'iPhone', name: 'XS Max', ram: '4GB', storage: '64GB', color: 'Vàng', battery: '89%', appearance: 'Ngoại hình 95% vỏ xước', condition: 'Pin thay mới 100% _ Màn zin', importPrice: 5200000, sellingPrice: 6500000, commission: 200000, status: 'SOLD', imei: '52516', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0988112233', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
-            { id: 'prod-006', brand: 'iPhone', name: 'XS Max (Đen)', ram: '4GB', storage: '64GB', color: 'Đen', battery: '100%', appearance: 'Đẹp 98%', condition: 'Màn thay OLED _ Pin thay 100%', importPrice: 4000000, sellingPrice: 5000000, commission: 200000, status: 'SOLD', imei: '27822', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0977445566', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
-            { id: 'prod-007', brand: 'iPhone', name: '8 Plus', ram: '3GB', storage: '64GB', color: 'Đỏ', battery: '85%', appearance: 'Zin phẩy 97%', condition: 'Zin all', importPrice: 2200000, sellingPrice: 2900000, commission: 200000, status: 'SOLD', imei: '81851', importedAt: '2026-10-18', seller: 'Trung Hiếu', customerName: 'Đinh Công Hoàng', customerPhone: '0912345678', soldAt: '2026-10-25', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 500000 },
-            { id: 'prod-008', brand: 'iPhone', name: '12 (Trắng)', ram: '4GB', storage: '128GB', color: 'Trắng', battery: '88%', appearance: 'Ngoại hình cũ 95% vỏ xước', condition: 'Pin thay mới 100%', importPrice: 4300000, sellingPrice: 5500000, commission: 300000, status: 'SOLD', imei: '4915716', importedAt: '2026-10-17', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '', soldAt: '2026-10-24', manager: '', managerId: '', managerCommission: 0 }
+            { id: 'prod-001', brand: 'iPhone', name: '16 Pro Max (Titan Tự Nhiên)', ram: '8GB', storage: '256GB', color: 'Titan', battery: '100%', appearance: 'Zin keng 99.9%', condition: 'Zin all áp suất', importPrice: 28500000, sellingPrice: 32500000, commission: 500000, status: 'AVAILABLE', warehouse: 'STORE', imei: '358912345678901', importedAt: '2026-10-25', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+            { id: 'prod-002', brand: 'iPhone', name: '15 Pro Max (Titan Xanh)', ram: '8GB', storage: '256GB', color: 'Titan Xanh', battery: '96%', appearance: 'Zin keng 99%', condition: 'Máy nguyên bản', importPrice: 22000000, sellingPrice: 25200000, commission: 400000, status: 'AVAILABLE', warehouse: 'STORE', imei: '359812487612345', importedAt: '2026-10-24', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+            { id: 'prod-003', brand: 'Samsung', name: 'Galaxy S24 Ultra 5G', ram: '12GB', storage: '256GB', color: 'Xám Titan', battery: '99%', appearance: 'Máy đẹp keng sạc ít', condition: 'Zin nguyên bản', importPrice: 20000000, sellingPrice: 23500000, commission: 450000, status: 'AVAILABLE', warehouse: 'STORE', imei: '352981726354128', importedAt: '2026-10-23', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+            { id: 'prod-004', brand: 'Xiaomi', name: '14 Ultra Leica', ram: '16GB', storage: '512GB', color: 'Trắng', battery: '100%', appearance: 'Fullbox như mới', condition: 'Đẹp 99.9%', importPrice: 16500000, sellingPrice: 19800000, commission: 350000, status: 'AVAILABLE', warehouse: 'PARTNER', imei: '862918273645129', importedAt: '2026-10-22', seller: '', customerName: '', customerPhone: '', soldAt: '' },
+            { id: 'prod-005', brand: 'iPhone', name: 'XS Max', ram: '4GB', storage: '64GB', color: 'Vàng', battery: '89%', appearance: 'Ngoại hình 95% vỏ xước', condition: 'Pin thay mới 100% _ Màn zin', importPrice: 5200000, sellingPrice: 6500000, commission: 200000, status: 'SOLD', warehouse: 'STORE', imei: '52516', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0988112233', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
+            { id: 'prod-006', brand: 'iPhone', name: 'XS Max (Đen)', ram: '4GB', storage: '64GB', color: 'Đen', battery: '100%', appearance: 'Đẹp 98%', condition: 'Màn thay OLED _ Pin thay 100%', importPrice: 4000000, sellingPrice: 5000000, commission: 200000, status: 'SOLD', warehouse: 'STORE', imei: '27822', importedAt: '2026-10-20', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '0977445566', soldAt: '2026-10-26', manager: '', managerId: '', managerCommission: 0 },
+            { id: 'prod-007', brand: 'iPhone', name: '8 Plus', ram: '3GB', storage: '64GB', color: 'Đỏ', battery: '85%', appearance: 'Zin phẩy 97%', condition: 'Zin all', importPrice: 2200000, sellingPrice: 2900000, commission: 200000, status: 'SOLD', warehouse: 'PARTNER', imei: '81851', importedAt: '2026-10-18', seller: 'Trung Hiếu', customerName: 'Đinh Công Hoàng', customerPhone: '0912345678', soldAt: '2026-10-25', manager: 'Saint Niky', managerId: 'acc-niky', managerCommission: 500000 },
+            { id: 'prod-008', brand: 'iPhone', name: '12 (Trắng)', ram: '4GB', storage: '128GB', color: 'Trắng', battery: '88%', appearance: 'Ngoại hình cũ 95% vỏ xước', condition: 'Pin thay mới 100%', importPrice: 4300000, sellingPrice: 5500000, commission: 300000, status: 'SOLD', warehouse: 'STORE', imei: '4915716', importedAt: '2026-10-17', seller: 'Saint Niky', customerName: 'Khách Lẻ', customerPhone: '', soldAt: '2026-10-24', manager: '', managerId: '', managerCommission: 0 }
         ];
 
         function getDeletedStaffIds() {
@@ -1831,6 +1936,7 @@
                                 sellingPrice: Number(item.selling_price || item.sellingPrice) || 0,
                                 commission: Number(item.commission) || 0,
                                 status: item.status || 'AVAILABLE',
+                                warehouse: item.warehouse || 'STORE',
                                 imei: item.imei || '',
                                 seller: item.seller || '',
                                 customerName: item.customer_name || item.customerName || '',
@@ -1893,6 +1999,7 @@
             const tabProfitBtn = document.getElementById('tab-profit-btn');
             const tabMgmtBtn = document.getElementById('tab-management-btn');
             const btnAddProduct = document.getElementById('btn-add-product');
+            const btnAddPartnerProduct = document.getElementById('btn-add-partner-product');
             const perm = getPermissions();
 
             const displayName = currentUserProfile?.full_name || (currentUser ? 'Người dùng' : 'Chưa đăng nhập');
@@ -1923,6 +2030,7 @@
                 tabMgmtBtn.style.display = perm.isOwner ? 'flex' : 'none';
             }
             if (btnAddProduct) btnAddProduct.style.display = perm.canAddEditProduct ? 'flex' : 'none';
+            if (btnAddPartnerProduct) btnAddPartnerProduct.style.display = perm.canAddEditProduct ? 'flex' : 'none';
 
             const importHeaders = document.querySelectorAll('.col-import-price');
             importHeaders.forEach(el => { el.style.display = perm.canViewCosts ? '' : 'none'; });
@@ -2144,14 +2252,14 @@
             }
 
             currentTab = tabName;
-            ['inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
+            ['inventory', 'partner-inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 const view = document.getElementById(`view-${t}`);
                 if (btn) {
                     const isSelected = (t === tabName);
                     btn.className = isSelected 
-                        ? "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold pill-tab-active transition-all flex items-center gap-3 text-left"
-                        : "w-full px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold pill-tab-inactive transition-all flex items-center gap-3 text-left";
+                        ? "w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left group"
+                        : "w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left group";
                 }
                 if (view) view.classList.toggle('hidden', t !== tabName);
             });
@@ -2762,7 +2870,7 @@
             const storage = document.getElementById('dt-storage');
 
             if (brandBadge) brandBadge.innerText = p.brand || 'Khác';
-            if (productName) productName.innerText = p.name || '--';
+            if (productName) productName.innerText = `${p.name || '--'} ${p.warehouse === 'PARTNER' ? '(Kho Cộng Tác)' : ''}`;
             if (brand) brand.innerText = p.brand || '--';
             if (ram) ram.innerText = p.ram || '--';
             if (storage) storage.innerText = p.storage || '--';
@@ -3038,14 +3146,17 @@
             showToast(`Đã copy bài đăng cho "${p.name}"!`, 'success');
         };
 
-        window.openAddModal = function() {
+        window.openAddModal = function(warehouseType = 'STORE') {
             const title = document.getElementById('modal-title');
-            if (title) title.innerText = 'Thêm Máy Mới Vào Kho';
+            if (title) title.innerText = warehouseType === 'PARTNER' ? 'Thêm Máy Vào Kho Cộng Tác' : 'Thêm Máy Vào Kho Cửa Hàng';
             const idInput = document.getElementById('form-product-id');
             if (idInput) idInput.value = '';
             const form = document.getElementById('product-form');
             if (form) form.reset();
             
+            const whSelect = document.getElementById('form-warehouse');
+            if (whSelect) whSelect.value = warehouseType;
+
             const sellerWrapper = document.getElementById('form-seller-wrapper');
             if (sellerWrapper) sellerWrapper.classList.add('hidden');
 
@@ -3165,6 +3276,9 @@
             const commInput = document.getElementById('form-commission');
             if (commInput) commInput.value = new Intl.NumberFormat('vi-VN').format(p.commission || 0);
 
+            const whSelect = document.getElementById('form-warehouse');
+            if (whSelect) whSelect.value = p.warehouse || 'STORE';
+
             // Xử lý tùy chọn chọn lại người bán nếu máy đã bán
             const sellerWrapper = document.getElementById('form-seller-wrapper');
             const sellerSelect = document.getElementById('form-seller-name');
@@ -3214,6 +3328,7 @@
                 : storageSelVal;
             const importDateVal = document.getElementById('form-import-date')?.value || new Date().toISOString().split('T')[0];
             const statusVal = document.getElementById('form-status')?.value || 'AVAILABLE';
+            const warehouseVal = document.getElementById('form-warehouse')?.value || 'STORE';
 
             const newProd = {
                 id,
@@ -3227,6 +3342,7 @@
                 importPrice: parseNumberInput(document.getElementById('form-import-price')?.value),
                 sellingPrice: parseNumberInput(document.getElementById('form-selling-price')?.value),
                 status: statusVal,
+                warehouse: warehouseVal,
                 commission: parseNumberInput(document.getElementById('form-commission')?.value),
                 imei: document.getElementById('form-imei')?.value.trim() || '',
                 condition: document.getElementById('form-condition')?.value.trim() || '',
@@ -3283,7 +3399,8 @@
                 };
             } else {
                 products.unshift(newProd);
-                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào kho.`, 'add');
+                const whName = warehouseVal === 'PARTNER' ? 'Kho Cộng Tác' : 'Kho Cửa Hàng';
+                window.pushNotification('Thêm máy mới', `Máy ${newProd.brand} ${newProd.name} vừa được nhập vào ${whName}.`, 'add');
             }
 
             localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
@@ -3303,6 +3420,7 @@
                     selling_price: newProd.sellingPrice,
                     commission: newProd.commission,
                     status: newProd.status,
+                    warehouse: newProd.warehouse,
                     imei: newProd.imei,
                     condition: newProd.condition,
                     imported_at: newProd.importedAt,
@@ -3848,6 +3966,13 @@
             window.renderApp();
         };
 
+        window.handlePartnerDropdownSortChange = function() {
+            const sel = document.getElementById('partner-filter-sort');
+            if (sel) partnerSortMode = sel.value;
+            updatePartnerSortIcons();
+            window.renderApp();
+        };
+
         window.toggleSortColumn = function(column) {
             if (column === 'date') {
                 sortMode = (sortMode === 'DATE_DESC') ? 'DATE_ASC' : 'DATE_DESC';
@@ -3859,6 +3984,20 @@
             const sortDropdown = document.getElementById('filter-sort');
             if (sortDropdown) sortDropdown.value = sortMode;
             updateSortIcons();
+            window.renderApp();
+        };
+
+        window.togglePartnerSortColumn = function(column) {
+            if (column === 'date') {
+                partnerSortMode = (partnerSortMode === 'DATE_DESC') ? 'DATE_ASC' : 'DATE_DESC';
+            } else if (column === 'name') {
+                partnerSortMode = (partnerSortMode === 'NAME_ASC') ? 'NAME_DESC' : 'NAME_ASC';
+            } else if (column === 'price') {
+                partnerSortMode = (partnerSortMode === 'PRICE_DESC') ? 'PRICE_ASC' : 'PRICE_DESC';
+            }
+            const sortDropdown = document.getElementById('partner-filter-sort');
+            if (sortDropdown) sortDropdown.value = partnerSortMode;
+            updatePartnerSortIcons();
             window.renderApp();
         };
 
@@ -3903,48 +4042,54 @@
             }
         }
 
-        function updateSortIcons() {
-            const iconDate = document.getElementById('sort-icon-date');
-            const iconName = document.getElementById('sort-icon-name');
-            const iconPrice = document.getElementById('sort-icon-price');
+        function updatePartnerSortIcons() {
+            const iconDate = document.getElementById('partner-sort-icon-date');
+            const iconName = document.getElementById('partner-sort-icon-name');
+            const iconPrice = document.getElementById('partner-sort-icon-price');
             if (iconDate) {
-                if (sortMode === 'DATE_DESC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-indigo-600"></i>';
-                else if (sortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-indigo-600"></i>';
+                if (partnerSortMode === 'DATE_DESC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-down-wide-short text-amber-600"></i>';
+                else if (partnerSortMode === 'DATE_ASC') iconDate.innerHTML = '<i class="fa-solid fa-arrow-up-short-wide text-amber-600"></i>';
                 else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
             if (iconName) {
-                if (sortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-indigo-600"></i>';
-                else if (sortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-indigo-600"></i>';
+                if (partnerSortMode === 'NAME_ASC') iconName.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-amber-600"></i>';
+                else if (partnerSortMode === 'NAME_DESC') iconName.innerHTML = '<i class="fa-solid fa-arrow-up-z-a text-amber-600"></i>';
                 else iconDate.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
             if (iconPrice) {
-                if (sortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-orange-600"></i>';
-                else if (sortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-orange-600"></i>';
+                if (partnerSortMode === 'PRICE_DESC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-down-9-1 text-orange-600"></i>';
+                else if (partnerSortMode === 'PRICE_ASC') iconPrice.innerHTML = '<i class="fa-solid fa-arrow-up-1-9 text-orange-600"></i>';
                 else iconPrice.innerHTML = '<i class="fa-solid fa-sort"></i>';
             }
         }
-
-        window.exportToCSV = function() {
+        window.exportToCSV = function(warehouseTarget = 'ALL') {
             if (!products || products.length === 0) {
                 showToast('Không có dữ liệu trong kho để xuất!', 'error');
                 return;
             }
             const isOwner = (userRole === 'owner' || userRole === 'admin');
-            const headers = ['Mã', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Hình Thức', 'Tình Trạng', 'Ngày Nhập', 'Người Bán', 'Khách Hàng', 'SĐT', 'Ngày Bán'].filter(Boolean);
+            const headers = ['Mã', 'Kho', 'Hãng', 'Tên Model', 'RAM', 'Bộ Nhớ', isOwner ? 'Giá Vốn' : '', 'Giá Bán', 'Hoa Hồng NV', 'Trạng Thái', 'IMEI', 'Hình Thức', 'Tình Trạng', 'Ngày Nhập', 'Người Bán', 'Khách Hàng', 'SĐT', 'Ngày Bán'].filter(Boolean);
 
-            const rows = products.map(p => [
-                `"${p.id || ''}"`, `"${p.brand || ''}"`, `"${p.name || ''}"`, `"${p.ram || ''}"`, `"${p.storage || ''}"`,
+            let exportList = products;
+            if (warehouseTarget === 'PARTNER') {
+                exportList = products.filter(p => p.warehouse === 'PARTNER');
+            } else if (warehouseTarget === 'STORE') {
+                exportList = products.filter(p => !p.warehouse || p.warehouse === 'STORE');
+            }
+
+            const rows = exportList.map(p => [
+                `"${p.id || ''}"`, `"${p.warehouse === 'PARTNER' ? 'Kho Cộng Tác' : 'Kho Cửa Hàng'}"`, `"${p.brand || ''}"`, `"${p.name || ''}"`, `"${p.ram || ''}"`, `"${p.storage || ''}"`,
                 isOwner ? p.importPrice || 0 : '', p.sellingPrice || 0, p.commission || 0,
                 `"${p.status === 'SOLD' ? 'Đã bán' : 'Còn hàng'}"`, `"${p.imei || ''}"`, `"${p.appearance || ''}"`, `"${p.condition || ''}"`,
                 `"${p.importedAt || ''}"`, `"${p.seller || ''}"`, `"${p.customerName || ''}"`, `"${p.customerPhone || ''}"`, `"${p.soldAt || ''}"`
-            ].filter((_, idx) => isOwner || idx !== 5).join(','));
+            ].filter((_, idx) => isOwner || idx !== 6).join(','));
 
             const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.setAttribute('href', url);
-            link.setAttribute('download', `aistore_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.setAttribute('download', `aistore_${warehouseTarget.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -4081,6 +4226,7 @@
 
         window.renderApp = function() {
             if (currentTab === 'inventory') renderInventoryTable();
+            else if (currentTab === 'partner-inventory') renderPartnerInventoryTable();
             else if (currentTab === 'sales-history') window.renderSalesHistoryView();
             else if (currentTab === 'commission') window.renderCommissionReport();
             else if (currentTab === 'profit') window.renderProfitReport();
@@ -4094,6 +4240,8 @@
 
             let availableList = products.filter(p => {
                 if (p.status === 'SOLD') return false;
+                // Chỉ lấy máy thuộc Kho Cửa Hàng
+                if (p.warehouse && p.warehouse !== 'STORE') return false;
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
                                     (p.brand || '').toLowerCase().includes(searchVal) || 
                                     (p.imei || '').toLowerCase().includes(searchVal) || 
@@ -4157,6 +4305,89 @@
                             </td>
                             <td class="py-3 px-4 text-center">
                                 <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
+                                    <i class="fa-solid fa-cart-shopping"></i> Bán
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+
+        function renderPartnerInventoryTable() {
+            const searchVal = document.getElementById('partner-search-input')?.value.toLowerCase().trim() || '';
+            const brandVal = document.getElementById('partner-filter-brand')?.value || 'ALL';
+            const perm = getPermissions();
+            const standardBrands = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme'];
+
+            let availableList = products.filter(p => {
+                if (p.status === 'SOLD') return false;
+                // Chỉ lấy máy thuộc Kho Cộng Tác
+                if (p.warehouse !== 'PARTNER') return false;
+                const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
+                                    (p.brand || '').toLowerCase().includes(searchVal) || 
+                                    (p.imei || '').toLowerCase().includes(searchVal) || 
+                                    (p.appearance || '').toLowerCase().includes(searchVal) || 
+                                    (p.condition || '').toLowerCase().includes(searchVal);
+                const matchBrand = (brandVal === 'ALL') || 
+                                   (brandVal === 'Khác' ? !standardBrands.includes(p.brand) : p.brand === brandVal);
+                return matchSearch && matchBrand;
+            });
+
+            if (partnerSortMode === 'DATE_DESC') availableList.sort((a, b) => (b.importedAt || '').localeCompare(a.importedAt || ''));
+            else if (partnerSortMode === 'DATE_ASC') availableList.sort((a, b) => (a.importedAt || '').localeCompare(b.importedAt || ''));
+            else if (partnerSortMode === 'PRICE_DESC') availableList.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+            else if (partnerSortMode === 'PRICE_ASC') availableList.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+            else if (partnerSortMode === 'NAME_ASC') availableList.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            else if (partnerSortMode === 'NAME_DESC') availableList.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+
+            const badgeAvailable = document.getElementById('badge-partner-available-count');
+            if (badgeAvailable) badgeAvailable.innerText = `${availableList.length} máy`;
+
+            const tbodyAvailable = document.getElementById('partner-product-table-body');
+            const emptyState = document.getElementById('partner-empty-state');
+            if (tbodyAvailable) {
+                if (availableList.length === 0) {
+                    tbodyAvailable.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                } else {
+                    if (emptyState) emptyState.classList.add('hidden');
+                    tbodyAvailable.innerHTML = availableList.map((p, index) => `
+                        <tr class="hover:bg-amber-50/40 transition">
+                            <td class="py-3 px-3 text-center text-xs font-bold text-slate-400 whitespace-nowrap">${index + 1}</td>
+                            <td class="py-3 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button onclick="openDetailModal('${p.id}')" class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition" title="Xem chi tiết máy">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                    <button onclick="copyProductPost('${p.id}', this)" class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 flex items-center justify-center transition" title="Sao chép bài đăng">
+                                        <i class="fa-regular fa-copy text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                                ${formatDateVN(p.importedAt || new Date().toISOString().split('T')[0])}
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+                                    <span class="font-bold text-slate-900">${escapeHtml(p.brand)}</span>
+                                    <span>${escapeHtml(p.name)}</span>
+                                    <span class="text-[9px] px-1.5 py-0.2 rounded font-black bg-amber-100 text-amber-800">Cộng tác</span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    ${p.ram || p.storage ? `<span class="text-xs text-slate-400">${escapeHtml(p.ram || '')} ${escapeHtml(p.storage || '')}</span>` : ''}
+                                    ${p.imei ? `<span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-bold">${escapeHtml(p.imei)}</span>` : ''}
+                                    ${p.appearance ? `<span class="text-[11px] text-slate-500 font-medium truncate max-w-[120px]">${escapeHtml(p.appearance)}</span>` : ''}
+                                </div>
+                            </td>
+                            ${perm.canViewCosts ? `<td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>` : ''}
+                            <td class="py-3 px-4 text-right font-black text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
+                            <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${formatVND(p.commission)}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Còn hàng</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
                                     <i class="fa-solid fa-cart-shopping"></i> Bán
                                 </button>
                             </td>
