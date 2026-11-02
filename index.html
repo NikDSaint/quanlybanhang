@@ -1482,7 +1482,7 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDvnLFK5iXODfWVlGZ9PQpPu4GnjQpV6WE",
@@ -1503,6 +1503,7 @@
         let currentUserProfile = null;
         let userRole = 'staff';
         let products = [];
+        let staffAccountsList = [];
         let currentTab = 'inventory';
         let currentSalesSubTab = 'items';
         let sortMode = 'DATE_DESC';
@@ -1512,6 +1513,7 @@
         const LOCAL_DELETED_STAFF_KEY = 'phonestore_pro_deleted_staff_ids_v1';
         const LOCAL_AUTH_SESSION_KEY = 'aistore_device_session_v1';
         let unsubscribeProducts = null;
+        let unsubscribeStaff = null;
 
         // Dữ liệu mẫu ban đầu
         const DEFAULT_SEED_PRODUCTS = [
@@ -1577,6 +1579,10 @@
         }
 
         function getStaffAccounts() {
+            if (staffAccountsList && staffAccountsList.length > 0) {
+                return staffAccountsList;
+            }
+
             const raw = localStorage.getItem(LOCAL_STAFF_KEY);
             const deletedIds = getDeletedStaffIds();
             let accounts = [];
@@ -1605,18 +1611,19 @@
                     return !isDelId && !isDelEmail;
                 });
             } else {
-                // Đảm bảo tài khoản saint.niky@gmail.com luôn được cập nhật mật khẩu h0ilamgiha
                 const nikyAcc = accounts.find(a => (a.email && a.email.toLowerCase() === 'saint.niky@gmail.com') || a.id === 'acc-niky');
                 if (nikyAcc) {
                     nikyAcc.password = 'h0ilamgiha';
                 }
             }
 
+            staffAccountsList = accounts;
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
             return accounts;
         }
 
         function saveStaffAccounts(accounts) {
+            staffAccountsList = accounts;
             localStorage.setItem(LOCAL_STAFF_KEY, JSON.stringify(accounts));
         }
 
@@ -1676,7 +1683,7 @@
                 localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
             }
 
-            // Chuyển toàn bộ đơn hàng/doanh số của Hoàng Trường (truongh@gmail.com) sang Saint Niky
+            // Chuyển toàn bộ đơn hàng/doanh số của Hoàng Trường sang Saint Niky
             let hasMigrated = false;
             products.forEach(p => {
                 if (p.seller === 'Hoàng Trường' || (p.seller && p.seller.toLowerCase().includes('trường'))) {
@@ -1688,7 +1695,6 @@
                 }
             });
 
-            // Loại bỏ hoàn toàn tài khoản truongh@gmail.com khỏi danh sách tài khoản
             markStaffAsDeleted('acc-truong', 'truongh@gmail.com');
             let accounts = getStaffAccounts();
             const filteredAccounts = accounts.filter(a => a.email !== 'truongh@gmail.com' && a.id !== 'acc-truong' && a.full_name !== 'Hoàng Trường');
@@ -1738,14 +1744,69 @@
             updateUserUI();
             renderApp();
             startRealtimeSync();
+            startStaffRealtimeSync();
 
-            // Lắng nghe Firebase Auth nhưng không được làm mất phiên local nếu đã đăng nhập nội bộ
             onAuthStateChanged(auth, async (user) => {
                 if (user && !currentUserProfile) {
                     currentUser = user;
                     await handleUserLoggedIn(user);
                 }
             });
+        }
+
+        // Tích hợp đồng bộ tài khoản thời gian thực với Firebase Firestore
+        function startStaffRealtimeSync() {
+            if (unsubscribeStaff) unsubscribeStaff();
+            try {
+                unsubscribeStaff = onSnapshot(collection(db, "staff_accounts"), async (snapshot) => {
+                    const deletedIds = getDeletedStaffIds();
+                    if (!snapshot.empty) {
+                        const cloudAccounts = [];
+                        snapshot.forEach((docSnap) => {
+                            const data = docSnap.data();
+                            const accId = data.id || docSnap.id;
+                            const accEmail = data.email || '';
+                            const isDeleted = (accId && deletedIds.includes(accId)) || (accEmail && deletedIds.includes(accEmail.toLowerCase()));
+                            if (!isDeleted) {
+                                cloudAccounts.push({
+                                    id: accId,
+                                    full_name: data.full_name || '',
+                                    email: accEmail,
+                                    password: data.password || '',
+                                    role: data.role || 'staff',
+                                    manager_id: data.manager_id || '',
+                                    manager_name: data.manager_name || ''
+                                });
+                            }
+                        });
+
+                        if (cloudAccounts.length > 0) {
+                            saveStaffAccounts(cloudAccounts);
+                            if (currentUserProfile) {
+                                const currentInCloud = cloudAccounts.find(a => a.id === currentUserProfile.id || (a.email && a.email.toLowerCase() === currentUserProfile.email?.toLowerCase()));
+                                if (currentInCloud) {
+                                    currentUserProfile = { ...currentInCloud };
+                                    userRole = currentInCloud.role || 'staff';
+                                    updateUserUI();
+                                }
+                            }
+                            if (currentTab === 'management') window.loadProfilesList();
+                        }
+                    } else {
+                        // Nếu trên Firebase Firestore chưa có tài khoản nào, khởi tạo danh sách mặc định lên Firebase
+                        const defaultAccs = getStaffAccounts();
+                        for (const acc of defaultAccs) {
+                            try {
+                                await setDoc(doc(db, "staff_accounts", acc.id), acc, { merge: true });
+                            } catch (e) {}
+                        }
+                    }
+                }, (error) => {
+                    console.warn("Realtime staff sync error:", error);
+                });
+            } catch (err) {
+                console.warn("Could not listen to staff_accounts:", err);
+            }
         }
 
         function startRealtimeSync() {
@@ -3537,17 +3598,17 @@
             const inputName = document.getElementById('edit-staff-name');
             const inputEmail = document.getElementById('edit-staff-email');
             const inputPwd = document.getElementById('edit-staff-password');
-            const selectRole = document.getElementById('edit-staff-role');
-            const selectMgr = document.getElementById('edit-staff-manager-id');
+            const selRole = document.getElementById('edit-staff-role');
+            const selMgr = document.getElementById('edit-staff-manager-id');
+            const mgrWrapper = document.getElementById('edit-staff-manager-wrapper');
 
             if (inputId) inputId.value = user.id;
             if (inputName) inputName.value = user.full_name || '';
             if (inputEmail) inputEmail.value = user.email || '';
-            if (inputPwd) inputPwd.value = user.password || '';
-            if (selectRole) selectRole.value = user.role || 'staff';
-            if (selectMgr) selectMgr.value = user.manager_id || '';
-
-            window.handleEditStaffRoleChange();
+            if (inputPwd) inputPwd.value = '';
+            if (selRole) selRole.value = user.role || 'staff';
+            if (selMgr) selMgr.value = user.manager_id || '';
+            if (mgrWrapper) mgrWrapper.style.display = (user.role === 'staff') ? 'block' : 'none';
 
             const modal = document.getElementById('edit-staff-modal');
             if (modal) {
@@ -3572,7 +3633,7 @@
             }
         };
 
-        window.handleEditStaffSubmit = function(e) {
+        window.handleEditStaffSubmit = async function(e) {
             e.preventDefault();
             const id = document.getElementById('edit-staff-id')?.value;
             const newName = document.getElementById('edit-staff-name')?.value.trim();
@@ -3597,8 +3658,9 @@
                 if (mgrAcc) managerName = mgrAcc.full_name;
             }
 
-            accounts[targetIndex] = {
+            const updatedAcc = {
                 ...oldUser,
+                id: id,
                 full_name: newName,
                 email: newEmail,
                 password: newPwd !== undefined && newPwd !== '' ? newPwd : oldUser.password,
@@ -3606,6 +3668,8 @@
                 manager_id: (newRole === 'staff') ? newMgrId : '',
                 manager_name: (newRole === 'staff') ? managerName : ''
             };
+
+            accounts[targetIndex] = updatedAcc;
 
             // Nếu sửa đúng tài khoản đang đăng nhập trên thiết bị thì cập nhật lại phiên
             if (currentUserProfile && (currentUserProfile.id === id || currentUserProfile.email === oldUser.email)) {
@@ -3619,6 +3683,19 @@
                     full_name: newName,
                     role: newRole
                 }));
+            }
+
+            // Đồng bộ trực tiếp lên Firebase Firestore (staff_accounts & profiles)
+            try {
+                await setDoc(doc(db, "staff_accounts", id), updatedAcc, { merge: true });
+                await setDoc(doc(db, "profiles", id), {
+                    id: id,
+                    full_name: newName,
+                    email: newEmail,
+                    role: newRole
+                }, { merge: true });
+            } catch (err) {
+                console.warn("Could not save staff to Firestore:", err);
             }
 
             // Nếu đổi tên, tự động cập nhật tên người bán / người bảo trợ ở các đơn hàng liên quan
@@ -3644,7 +3721,7 @@
             updateUserUI();
             window.loadProfilesList();
             renderApp();
-            showToast(`Đã cập nhật thông tin tài khoản "${newName}"!`, 'success');
+            showToast(`Đã cập nhật thông tin tài khoản "${newName}" lên Firebase!`, 'success');
         };
 
         window.handleStaffRoleChange = function() {
@@ -3655,7 +3732,7 @@
             }
         };
 
-        window.handleCreateStaffSubmit = function(e) {
+        window.handleCreateStaffSubmit = async function(e) {
             e.preventDefault();
             const name = document.getElementById('staff-name')?.value.trim();
             let email = document.getElementById('staff-email')?.value.trim();
@@ -3673,8 +3750,9 @@
                 if (mgrAcc) managerName = mgrAcc.full_name;
             }
 
+            const staffId = 'staff-' + Date.now();
             const newAcc = { 
-                id: 'staff-' + Date.now(), 
+                id: staffId, 
                 full_name: name, 
                 email: email, 
                 password: password, 
@@ -3685,13 +3763,26 @@
             accounts.push(newAcc);
             saveStaffAccounts(accounts);
 
+            // Lưu trực tiếp lên Firebase Firestore
+            try {
+                await setDoc(doc(db, "staff_accounts", staffId), newAcc, { merge: true });
+                await setDoc(doc(db, "profiles", staffId), {
+                    id: staffId,
+                    full_name: name,
+                    email: email,
+                    role: role
+                }, { merge: true });
+            } catch (err) {
+                console.warn("Could not save new staff to Firebase:", err);
+            }
+
             const form = document.getElementById('create-staff-form');
             if (form) form.reset();
             window.loadProfilesList();
-            showToast(`Đã thêm nhân viên: ${name}!`, 'success');
+            showToast(`Đã lưu tài khoản nhân viên "${name}" lên Firebase!`, 'success');
         };
 
-        window.deleteStaffAccount = function(id) {
+        window.deleteStaffAccount = async function(id) {
             let accounts = getStaffAccounts();
             const target = accounts.find(a => a.id === id);
             if (!target) return;
@@ -3700,9 +3791,17 @@
             accounts = accounts.filter(a => a.id !== id);
             saveStaffAccounts(accounts);
 
+            // Xóa tài khoản trên Firebase Firestore
+            try {
+                await deleteDoc(doc(db, "staff_accounts", id));
+                await deleteDoc(doc(db, "profiles", id));
+            } catch (err) {
+                console.warn("Could not delete staff from Firebase:", err);
+            }
+
             populateManagerOptions();
             renderProfilesTable(accounts);
-            showToast(`Đã xóa vĩnh viễn tài khoản "${target.full_name}"!`, 'success');
+            showToast(`Đã xóa vĩnh viễn tài khoản "${target.full_name}" trên Firebase!`, 'success');
         };
 
         window.openInvoiceModal = function(id) {
