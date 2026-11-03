@@ -113,32 +113,32 @@
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-0.5">Chức Năng</p>
                 
                 <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-boxes-stacked w-3.5 text-center text-xs"></i>
+                    <i class="fa-solid fa-boxes-stacked w-3.5 text-center text-xs text-white"></i>
                     <span class="truncate">Kho Cửa Hàng</span>
                 </button>
 
                 <button id="tab-partner-inventory-btn" onclick="switchTab('partner-inventory')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-handshake-angle w-3.5 text-center text-sky-500 text-xs"></i>
+                    <i class="fa-solid fa-handshake-angle w-3.5 text-center text-xs text-sky-500"></i>
                     <span class="truncate">Kho Liên Kết</span>
                 </button>
 
                 <button id="tab-sales-history-btn" onclick="switchTab('sales-history')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-clock-rotate-left w-3.5 text-center text-emerald-500 text-xs"></i>
+                    <i class="fa-solid fa-clock-rotate-left w-3.5 text-center text-xs text-rose-500"></i>
                     <span class="truncate">Lịch Sử Bán Hàng</span>
                 </button>
 
                 <button id="tab-commission-btn" onclick="switchTab('commission')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-hand-holding-dollar w-3.5 text-center text-xs"></i>
+                    <i class="fa-solid fa-hand-holding-dollar w-3.5 text-center text-xs text-emerald-500"></i>
                     <span class="truncate">Hoa Hồng</span>
                 </button>
 
                 <button id="tab-profit-btn" onclick="switchTab('profit')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-chart-pie w-3.5 text-center text-xs"></i>
+                    <i class="fa-solid fa-chart-pie w-3.5 text-center text-xs text-purple-600"></i>
                     <span class="truncate">Báo Cáo</span>
                 </button>
 
                 <button id="tab-management-btn" onclick="switchTab('management')" class="w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left">
-                    <i class="fa-solid fa-users-gear text-amber-500 w-3.5 text-center text-xs"></i>
+                    <i class="fa-solid fa-users-gear w-3.5 text-center text-xs text-amber-500"></i>
                     <span class="truncate">Quản Lý Tài Khoản</span>
                 </button>
             </div>
@@ -353,7 +353,6 @@
                                     </th>
                                     <th class="py-3.5 px-4 text-right whitespace-nowrap">Hoa Hồng (VNĐ)</th>
                                     <th class="py-3.5 px-4 text-center">Trạng Thái</th>
-                                    <th class="py-3.5 px-4 text-center">Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="partner-product-table-body" class="divide-y divide-slate-100 font-medium">
@@ -804,7 +803,7 @@
     </div>
 
     <!-- MODAL: HỒ SƠ CÁ NHÂN -->
-    <div id="profile-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div id="profile-modal" onclick="if(event.target === this) closeProfileModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
@@ -945,7 +944,7 @@
     </div>
 
     <!-- MODAL: XEM CHI TIẾT SẢN PHẨM -->
-    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+    <div id="detail-modal" onclick="if(event.target === this) closeDetailModal()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
                 <div class="flex items-center space-x-3">
@@ -1058,7 +1057,7 @@
     </div>
 
     <!-- MODAL: XÁC NHẬN XÓA SẢN PHẨM -->
-    <div id="confirm-delete-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+    <div id="confirm-delete-modal" onclick="if(event.target === this) closeConfirmDeleteModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 p-6 text-center">
             <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1080,7 +1079,7 @@
     </div>
 
     <!-- MODAL: XÁC NHẬN HỦY ĐƠN BÁN (HOÀN TRẢ KHO & BỎ CHIẾT KHẤU) -->
-    <div id="confirm-cancel-order-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+    <div id="confirm-cancel-order-modal" onclick="if(event.target === this) closeCancelOrderModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 p-6 text-center">
             <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
                 <i class="fa-solid fa-rotate-left"></i>
@@ -1113,7 +1112,7 @@
     </div>
 
     <!-- MODAL: THÊM / SỬA SẢN PHẨM -->
-    <div id="product-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div id="product-modal" onclick="if(event.target === this) closeProductModal()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-white text-slate-900 px-6 py-4 flex justify-between items-center border-b border-slate-100">
                 <div class="flex items-center space-x-3">
@@ -1282,7 +1281,7 @@
     </div>
 
     <!-- MODAL: XUẤT BÁN HÀNG -->
-    <div id="sell-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div id="sell-modal" onclick="if(event.target === this) closeSellModal()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-2.5">
@@ -1341,7 +1340,7 @@
     </div>
 
     <!-- MODAL: IN HÓA ĐƠN -->
-    <div id="invoice-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div id="invoice-modal" onclick="if(event.target === this) closeInvoiceModal()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center no-print">
                 <h3 class="font-bold text-base"><i class="fa-solid fa-receipt mr-2"></i> Phiếu Bán Hàng & Hóa Đơn</h3>
@@ -1402,7 +1401,7 @@
     </div>
 
     <!-- MODAL: LỊCH SỬ KHÁCH HÀNG -->
-    <div id="customer-history-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div id="customer-history-modal" onclick="if(event.target === this) closeCustomerHistoryModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
@@ -1465,7 +1464,7 @@
     </div>
 
     <!-- MODAL: SỬA TÊN & SĐT KHÁCH HÀNG -->
-    <div id="edit-customer-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+    <div id="edit-customer-modal" onclick="if(event.target === this) closeEditCustomerModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 flex flex-col">
             <div class="bg-indigo-600 text-white px-5 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-2.5">
@@ -1511,7 +1510,7 @@
     </div>
 
     <!-- MODAL: CHỈNH SỬA TÀI KHOẢN NHÂN SỰ -->
-    <div id="edit-staff-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
+    <div id="edit-staff-modal" onclick="if(event.target === this) closeEditStaffModal()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
@@ -2284,6 +2283,15 @@
             }
 
             currentTab = tabName;
+            const tabIconColors = {
+                'inventory': { active: 'text-white', inactive: 'text-orange-500' },
+                'partner-inventory': { active: 'text-white', inactive: 'text-sky-500' },
+                'sales-history': { active: 'text-white', inactive: 'text-rose-500' },
+                'commission': { active: 'text-white', inactive: 'text-emerald-500' },
+                'profit': { active: 'text-white', inactive: 'text-purple-600' },
+                'management': { active: 'text-white', inactive: 'text-amber-500' }
+            };
+
             ['inventory', 'partner-inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 const view = document.getElementById(`view-${t}`);
@@ -2292,6 +2300,13 @@
                     btn.className = isSelected 
                         ? "w-full px-3 py-2 rounded-xl text-xs font-bold pill-tab-active transition-all flex items-center gap-2.5 text-left"
                         : "w-full px-3 py-2 rounded-xl text-xs font-semibold pill-tab-inactive transition-all flex items-center gap-2.5 text-left";
+                    
+                    const icon = btn.querySelector('i');
+                    if (icon && tabIconColors[t]) {
+                        icon.className = icon.className
+                            .replace(/text-(indigo|sky|emerald|amber|rose|orange|purple|white)(-\d+)?/g, '')
+                            .trim() + ' ' + (isSelected ? tabIconColors[t].active : tabIconColors[t].inactive);
+                    }
                 }
                 if (view) view.classList.toggle('hidden', t !== tabName);
             });
@@ -4362,11 +4377,6 @@
                             <td class="py-3 px-4 text-center">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">Kho Liên Kết</span>
                             </td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="openSellModal('${p.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
-                                    <i class="fa-solid fa-cart-shopping"></i> Bán
-                                </button>
-                            </td>
                         </tr>
                     `).join('');
                 }
@@ -4458,6 +4468,23 @@
 
         window.onload = function() {
             initApp();
+
+            // Lắng nghe phím ESC để đóng nhanh bất kỳ modal nào đang mở
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    window.closeDetailModal();
+                    window.closeProductModal();
+                    window.closeSellModal();
+                    window.closeInvoiceModal();
+                    window.closeCustomerHistoryModal();
+                    window.closeEditCustomerModal();
+                    window.closeEditStaffModal();
+                    window.closeConfirmDeleteModal();
+                    window.closeCancelOrderModal();
+                    window.closeProfileModal();
+                    window.closeNotificationsModal();
+                }
+            });
         };
     </script>
 </body>
