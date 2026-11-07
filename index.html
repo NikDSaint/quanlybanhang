@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.I Store - Quản Lý Kho Điện Thoại & Doanh Thu</title>
+    <!-- Cài như ứng dụng (PWA) trên Android / Windows -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="icon" type="image/png" href="/icons/favicon.png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="A.I Store">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons CDN -->
@@ -84,6 +92,12 @@
                     </span>
                 </button>
             </div>
+
+            <!-- Nút cài ứng dụng (chỉ hiện khi trình duyệt cho phép cài) -->
+            <button id="btn-install-app" onclick="installApp()" class="hidden shrink-0 w-full items-center justify-center gap-2 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-sm transition">
+                <i class="fa-solid fa-download text-[11px]"></i>
+                <span>Cài ứng dụng</span>
+            </button>
 
             <!-- 3. Tài khoản người dùng & Đăng xuất -->
             <div class="pb-2.5 border-b border-slate-100 space-y-1.5 shrink-0">
@@ -1687,6 +1701,38 @@
 
     <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- CÀI ỨNG DỤNG (PWA) -->
+    <script>
+        // Đăng ký service worker (chỉ chạy khi trang mở qua https, ví dụ trên Vercel)
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW error:', err));
+            });
+        }
+
+        // Nút "Cài ứng dụng": hiện khi Chrome / Edge báo có thể cài, ẩn khi đã cài
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const btn = document.getElementById('btn-install-app');
+            if (btn) { btn.classList.remove('hidden'); btn.classList.add('flex'); }
+        });
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            const btn = document.getElementById('btn-install-app');
+            if (btn) { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+        });
+        window.installApp = async function() {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            const btn = document.getElementById('btn-install-app');
+            if (btn) { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+        };
+    </script>
 
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script type="module">
@@ -4925,6 +4971,24 @@
             updatePartnerSortIcons();
             renderStockTable({ warehouse: 'PARTNER', searchId: 'partner-search-input', brandId: 'partner-filter-brand', sortMode: partnerSortMode, badgeId: 'badge-partner-available-count', tbodyId: 'partner-product-table-body', emptyId: 'partner-empty-state' });
         }
+
+        // Gửi biểu mẫu bằng sự kiện tự tạo thay cho cách gửi mặc định của trình duyệt.
+        // Giúp các nút Lưu / Xác nhận chạy được cả trong khung nhúng chặn "form submit" (VD: khung xem trước).
+        function submitFormSafely(form) {
+            if (!form || !form.reportValidity()) return;
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[type="submit"]');
+            if (!btn || !btn.form) return;
+            e.preventDefault();
+            submitFormSafely(btn.form);
+        }, true);
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' || e.target.tagName !== 'INPUT' || !e.target.form) return;
+            e.preventDefault();
+            submitFormSafely(e.target.form);
+        }, true);
 
         window.onload = function() {
             initApp();
