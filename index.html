@@ -27,7 +27,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* ===== A.I STORE 2.0 – hệ giao diện chung ===== */
+        /* ===== A.I STORE 3.0 – hệ giao diện chung ===== */
         .app-bg {
             background-color: #f6f7fb;
             background-image:
@@ -140,7 +140,7 @@
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center space-x-1">
                         <h1 class="font-black text-base tracking-tight text-slate-900 truncate">A.I <span class="text-rose-500">Store</span></h1>
-                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-indigo-500 text-white">2.0</span>
+                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-indigo-500 text-white">3.0</span>
                     </div>
                     <p class="text-[10px] text-slate-400 font-medium truncate">Quản lý bán hàng</p>
                 </div>
@@ -233,7 +233,7 @@
         <img src="https://github.com/NikDSaint/aistore/blob/main/Untitled-1.png?raw=true" alt="" class="w-8 h-8 object-contain shrink-0" onerror="this.style.display='none'">
         <div class="flex items-center gap-1.5 flex-1 min-w-0">
             <span class="font-black text-[15px] tracking-tight text-slate-900">A.I <span class="text-rose-500">Store</span></span>
-            <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-indigo-500 text-white">2.0</span>
+            <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-indigo-500 text-white">3.0</span>
         </div>
         <button id="m-btn-install" onclick="installApp()" class="hidden w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-500 text-white items-center justify-center" title="Cài ứng dụng"><i class="fa-solid fa-download text-sm"></i></button>
         <button onclick="openNotificationsModal()" class="relative w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center" title="Thông báo">
@@ -809,7 +809,7 @@
                                 <h3 class="section-title">Lãi Từng Đơn Hàng</h3>
                             </div>
                         </div>
-                        <div class="overflow-x-auto custom-scrollbar">
+                        <div class="hidden md:block overflow-x-auto custom-scrollbar">
                             <table class="w-full text-left text-sm border-collapse">
                                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold">
                                     <tr>
@@ -827,6 +827,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div id="profit-cards" class="md:hidden divide-y divide-slate-100"></div>
                     </div>
                 </div>
             </div>
@@ -915,7 +916,7 @@
                             </button>
                         </div>
 
-                        <div class="overflow-x-auto custom-scrollbar flex-1">
+                        <div class="hidden md:block overflow-x-auto custom-scrollbar flex-1">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                                     <tr>
@@ -931,6 +932,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div id="mgmt-users-cards" class="md:hidden divide-y divide-slate-100"></div>
                     </div>
                 </div>
             </div>
@@ -1113,10 +1115,8 @@
 
                 <div class="grid grid-cols-3 gap-2.5">
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-barcode text-indigo-600"></i> Số IMEI
-                        </span>
-                        <p id="dt-imei" class="text-xs font-bold text-slate-800 mt-0.5 truncate">--</p>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Số IMEI</span>
+                        <p id="dt-imei" class="text-xs font-black text-slate-800 mt-0.5 truncate">--</p>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">RAM</span>
@@ -3486,6 +3486,14 @@
         //   Chi phí nhân viên = Hoa hồng NV (chỉ đơn do nhân viên bán) + Lương + Thưởng
         //   Còn lại cho Chủ & Quản lý = Lợi nhuận gộp - Chi phí nhân viên
         //   (phần còn lại này chia theo mục Hoa Hồng: bán trực tiếp + bảo trợ)
+        // Các đơn đang được bung chi tiết trong bảng lãi (giao diện điện thoại)
+        const expandedProfitRows = new Set();
+        window.toggleProfitRow = function(id) {
+            if (expandedProfitRows.has(id)) expandedProfitRows.delete(id);
+            else expandedProfitRows.add(id);
+            window.renderProfitReport();
+        };
+
         window.renderProfitReport = function() {
             const accounts = getStaffAccounts();
             const soldItems = filterItemsByDate(products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p)), 'profit')
@@ -3522,11 +3530,49 @@
             set('pf-profit-margin', `Tỷ suất: ${totalRev > 0 ? ((net / totalRev) * 100).toFixed(1) : 0}% doanh thu`);
 
             const tbody = document.getElementById('profit-table-body');
+            const cards = document.getElementById('profit-cards');
             if (!tbody) return;
             if (soldItems.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Không có đơn hàng nào trong kỳ đã chọn.</td></tr>`;
+                if (cards) cards.innerHTML = `<div class="py-8 text-center text-sm text-slate-400">Không có đơn hàng nào trong kỳ đã chọn.</div>`;
                 return;
             }
+
+            // Điện thoại: mỗi đơn một thẻ dọc; bấm "Xem" để bung chi tiết giá vốn / hoa hồng
+            if (cards) cards.innerHTML = soldItems.map(p => {
+                const c = staffComm(p);
+                const e = splitOrderEarnings(p, accounts);
+                const profit = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0) - c;
+                const open = expandedProfitRows.has(p.id);
+                const row = (label, val, cls) => `<div class="flex justify-between py-1"><span class="text-slate-500">${label}</span><span class="font-bold ${cls}">${val}</span></div>`;
+                return `
+                <div class="p-3.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="text-[15px] font-extrabold text-slate-900 leading-tight">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</div>
+                            <div class="text-[11px] text-slate-500 mt-1">
+                                <span class="font-semibold">${formatDateVN(p.soldAt)}</span> ·
+                                <span class="font-bold text-indigo-600">${escapeHtml(p.seller || '--')}</span>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Lãi đơn</div>
+                            <div class="text-[15px] font-black ${profit < 0 ? 'text-rose-600' : 'text-emerald-600'}">${formatVND(profit)}</div>
+                        </div>
+                    </div>
+                    <button onclick="toggleProfitRow('${p.id}')" class="mt-2.5 w-full py-2 rounded-xl ${open ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-700'} text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid ${open ? 'fa-chevron-up' : 'fa-eye'}"></i> ${open ? 'Thu gọn' : 'Xem chi tiết'}
+                    </button>
+                    ${open ? `
+                    <div class="mt-2 bg-slate-50 rounded-xl px-3 py-1.5 text-xs divide-y divide-slate-200/70">
+                        ${row('Giá bán', formatVND(p.sellingPrice), 'text-rose-600')}
+                        ${row('Giá vốn', formatVND(p.importPrice), 'text-slate-700')}
+                        ${row('Hoa hồng NV', c ? formatVND(c) : '—', 'text-purple-600')}
+                        ${e.managerName ? row('Bảo trợ', escapeHtml(e.managerName), 'text-purple-600') : ''}
+                        ${row('Lãi đơn', formatVND(profit), profit < 0 ? 'text-rose-600' : 'text-emerald-600')}
+                    </div>` : ''}
+                </div>`;
+            }).join('');
             tbody.innerHTML = soldItems.map(p => {
                 const c = staffComm(p);
                 const e = splitOrderEarnings(p, accounts);
@@ -3600,9 +3646,17 @@
             const isSold = p.status === 'SOLD';
             const statusContainer = document.getElementById('dt-status-container');
             if (statusContainer) {
-                statusContainer.innerHTML = isSold
-                    ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">Đã bán</span>`
-                    : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Còn hàng</span>`;
+                // Máy đã bán: Chủ / Quản lý thấy nút "Hủy đơn" ở góc trên; nhân viên vẫn thấy nhãn "Đã bán"
+                if (isSold && perm.canAddEditProduct) {
+                    statusContainer.innerHTML = `
+                        <button onclick="closeDetailModal(); requestCancelOrder('${p.id}');" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-full font-bold text-xs transition flex items-center gap-1.5" title="Hủy đơn bán và trả máy về kho">
+                            <i class="fa-solid fa-rotate-left"></i> Hủy đơn
+                        </button>`;
+                } else {
+                    statusContainer.innerHTML = isSold
+                        ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">Đã bán</span>`
+                        : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Còn hàng</span>`;
+                }
             }
 
             const soldBox = document.getElementById('dt-sold-info-box');
@@ -3632,12 +3686,6 @@
             if (actionsLeft) {
                 let btns = '';
                 if (perm.canAddEditProduct) {
-                    if (isSold) {
-                        btns += `
-                        <button onclick="closeDetailModal(); requestCancelOrder('${p.id}');" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5" title="Hủy đơn bán và trả máy về kho">
-                            <i class="fa-solid fa-rotate-left"></i> Hủy đơn
-                        </button>`;
-                    }
                     btns += `
                         <button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
                             <i class="fa-solid fa-pen-to-square"></i> Sửa
@@ -4327,10 +4375,42 @@
             const perm = getPermissions();
             if (countBadge) countBadge.innerText = `${accounts.length} tài khoản`;
 
+            const cards = document.getElementById('mgmt-users-cards');
             if (accounts.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Chưa có tài khoản nào được tạo.</td></tr>`;
+                if (cards) cards.innerHTML = `<div class="py-6 text-center text-sm text-slate-400">Chưa có tài khoản nào được tạo.</div>`;
                 return;
             }
+
+            // Điện thoại: mỗi tài khoản một thẻ dọc
+            if (cards) cards.innerHTML = accounts.map(u => {
+                const isCurrent = (currentUser && u.id === currentUser.uid) || (currentUserProfile && u.full_name === currentUserProfile.full_name);
+                const isOwnerAccount = u.role === 'owner' || u.role === 'admin';
+                const roleLabel = isOwnerAccount ? 'Chủ Cửa Hàng' : (u.role === 'manager' ? 'Quản Lý' : 'Nhân Viên');
+                const roleCls = isOwnerAccount ? 'bg-amber-50 text-amber-800 border-amber-200' : (u.role === 'manager' ? 'bg-purple-50 text-purple-800 border-purple-200' : 'bg-blue-50 text-blue-800 border-blue-200');
+                const avatarCls = isOwnerAccount ? 'from-amber-400 to-orange-500' : (u.role === 'manager' ? 'from-purple-500 to-fuchsia-500' : 'from-sky-500 to-indigo-500');
+                return `
+                <div class="p-3.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${avatarCls} text-white font-black flex items-center justify-center shrink-0">${escapeHtml((u.full_name || '?').charAt(0).toUpperCase())}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[15px] font-extrabold text-slate-900">${escapeHtml(u.full_name)}</span>
+                                ${isCurrent ? '<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Bạn</span>' : ''}
+                            </div>
+                            <div class="text-xs text-slate-500 truncate">${escapeHtml(u.email || '--')}</div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg text-[11px] font-black border shrink-0 ${roleCls}">${roleLabel}</span>
+                    </div>
+                    ${u.role === 'staff' ? `<div class="mt-2 text-xs text-slate-500"><i class="fa-solid fa-user-shield text-purple-500 mr-1"></i>Người bảo trợ: <span class="font-bold text-purple-700">${escapeHtml(u.manager_name || 'Cửa hàng')}</span></div>` : ''}
+                    <div class="flex items-center gap-2 mt-2.5">
+                        <button onclick="openEditStaffModal('${u.id}')" class="flex-1 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                        ${perm.canManageStaff && !isOwnerAccount
+                            ? `<button onclick="deleteStaffAccount('${u.id}')" class="flex-1 py-2 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold flex items-center justify-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Xóa</button>`
+                            : `<span class="flex-1 py-2 rounded-xl bg-slate-50 text-slate-400 text-xs font-bold text-center">Cố định</span>`}
+                    </div>
+                </div>`;
+            }).join('');
 
             tbody.innerHTML = accounts.map(u => {
                 const isCurrent = (currentUser && u.id === currentUser.uid) || (currentUserProfile && u.full_name === currentUserProfile.full_name);
