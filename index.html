@@ -4959,15 +4959,16 @@
         // Danh sách máy đang hiển thị ở mỗi kho (theo bộ lọc / sắp xếp hiện tại) để nút "Copy list" dùng
         const lastStockLists = { STORE: [], PARTNER: [] };
 
-        // Biểu tượng theo hãng cho danh sách copy
-        function brandIcon(brand) {
-            const b = (brand || '').toLowerCase();
-            if (b === 'iphone' || b === 'apple') return '🍎';
-            if (b === 'samsung') return '🌌';
-            if (['xiaomi', 'redmi', 'poco'].includes(b)) return '🔶';
-            if (['oppo', 'realme', 'vivo', 'iqoo'].includes(b)) return '🟢';
-            if (['huawei', 'honor'].includes(b)) return '🔴';
-            return '📱';
+        // Giá trong list copy:
+        //  - Dưới 2 triệu: ghi đủ (VD 900.000đ)
+        //  - Từ 2 triệu trở lên: che hàng trăm nghìn bằng "x" (3.700.000 -> 3.x00.000đ)
+        //  - Giá tròn triệu thì lùi 1 triệu (5.000.000 -> 4.x00.000đ)
+        function maskPrice(value) {
+            const v = Math.round(Number(value) || 0);
+            if (v < 2000000) return new Intl.NumberFormat('vi-VN').format(v) + 'đ';
+            let million = Math.floor(v / 1000000);
+            if (v % 1000000 === 0) million -= 1;
+            return new Intl.NumberFormat('vi-VN').format(million) + '.x00.000đ';
         }
 
         window.copyStockList = function(warehouse, btn) {
@@ -4976,19 +4977,15 @@
                 showToast('Không có máy nào để copy', 'error');
                 return;
             }
-            const title = warehouse === 'PARTNER' ? 'KHO LIÊN KẾT' : 'A.I STORE';
-            const lines = list.map((p, i) => {
+            const lines = list.map(p => {
                 const spec = [p.ram, p.storage].filter(Boolean).join('/');
                 const name = `${p.brand || ''} ${p.name || ''}`.trim() + (spec ? ` ${spec}` : '');
-                return `${i + 1}. ${brandIcon(p.brand)} ${name} 👉 💰 ${new Intl.NumberFormat('vi-VN').format(Number(p.sellingPrice) || 0)}đ`;
+                return `📱 ${name} 👉 💰 ${maskPrice(p.sellingPrice)}`;
             });
-            const text = `📱 DANH SÁCH MÁY ĐANG BÁN - ${title}\n` +
-                         `📅 Cập nhật ${formatDateVN(new Date().toISOString().slice(0, 10))} · ${list.length} máy\n` +
-                         `━━━━━━━━━━━━━━━━━━\n` +
-                         lines.join('\n') +
-                         `\n━━━━━━━━━━━━━━━━━━\n` +
+            const text = lines.join('\n') +
+                         `\n===========================\n` +
                          `✅ Máy test kỹ, bảo hành 03-06 tháng\n` +
-                         `📞 Inbox ngay để giữ máy!`;
+                         `📞`;
 
             const done = () => {
                 showToast(`Đã copy danh sách ${list.length} máy`, 'success');
