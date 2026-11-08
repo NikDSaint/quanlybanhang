@@ -1823,6 +1823,8 @@
                 <!-- Notifications dynamically inserted here -->
             </div>
 
+            <div id="notif-settings" class="px-4 py-1.5 border-t border-slate-200 bg-white divide-y divide-slate-100"></div>
+
             <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
                 <button onclick="closeNotificationsModal()" class="px-4 py-1.5 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition">
                     Đóng
@@ -2319,7 +2321,9 @@
         function startRealtimeSync() {
             if (unsubscribeProducts) unsubscribeProducts();
             try {
+                let firstProductsSnapshot = true;
                 unsubscribeProducts = onSnapshot(collection(db, "products"), (snapshot) => {
+                    const prevById = new Map(products.map(p => [p.id, p]));
                     if (!snapshot.empty) {
                         const cloudProducts = [];
                         snapshot.forEach((docSnap) => {
@@ -2355,6 +2359,25 @@
                         localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
                         renderApp();
                     }
+                    // Báo khi máy KHÁC vừa nhập máy / chốt đơn (thay đổi do chính máy này làm thì bỏ qua)
+                    if (!firstProductsSnapshot) {
+                        snapshot.docChanges().forEach(change => {
+                            if (change.doc.metadata.hasPendingWrites) return;
+                            const id = change.doc.data().id || change.doc.id;
+                            const p = products.find(x => x.id === id);
+                            if (!p) return;
+                            const prev = prevById.get(id);
+                            const name = `${p.brand} ${p.name}`.trim();
+                            const becameSold = p.status === 'SOLD' && (!prev || prev.status !== 'SOLD');
+                            if ((change.type === 'added' || change.type === 'modified') && becameSold) {
+                                if (!isOrderInUserScope(p)) return;
+                                notifyFromOtherDevice('Đã chốt đơn', `${p.seller || 'Nhân viên'} vừa bán ${name} giá ${formatVND(p.sellingPrice)}.`, 'sell');
+                            } else if (change.type === 'added' && p.status !== 'SOLD' && !prev) {
+                                notifyFromOtherDevice('Thêm máy mới', `${name} vừa được nhập vào ${p.warehouse === 'PARTNER' ? 'Kho Liên Kết' : 'Kho Cửa Hàng'}.`, 'add');
+                            }
+                        });
+                    }
+                    firstProductsSnapshot = false;
                 }, (error) => {
                     console.warn("Realtime products error:", error);
                 });
@@ -5174,12 +5197,133 @@
                 badgeEl.innerText = unreadCount;
                 badgeEl.classList.toggle('hidden', unreadCount === 0);
             }
+            updateAppBadge(unreadCount);
+            renderNotifSettings();
         };
+
+        // ===== THÔNG BÁO TRÊN MÁY: âm thanh, thông báo hệ thống, số trên biểu tượng app =====
+        const NOTIF_SOUND_KEY = 'aistore_notif_sound_v1';
+        let audioCtx = null;
+
+        function isSoundOn() {
+            try { return localStorage.getItem(NOTIF_SOUND_KEY) !== 'off'; } catch (e) { return true; }
+        }
+
+        // Trình duyệt chỉ cho phát âm thanh sau khi người dùng đã chạm vào trang ít nhất một lần
+        function unlockAudio() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch (e) {}
+        }
+        document.addEventListener('pointerdown', unlockAudio, { passive: true });
+
+        // Tiếng "ting ting" ngắn
+        function playNotifSound() {
+            if (!isSoundOn()) return;
+            try {
+                unlockAudio();
+                if (!audioCtx || audioCtx.state !== 'running') return;
+                const t0 = audioCtx.currentTime;
+                [[880, 0], [1318.5, 0.16]].forEach(([freq, delay]) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.0001, t0 + delay);
+                    gain.gain.exponentialRampToValueAtTime(0.35, t0 + delay + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + delay + 0.45);
+                    osc.connect(gain).connect(audioCtx.destination);
+                    osc.start(t0 + delay);
+                    osc.stop(t0 + delay + 0.5);
+                });
+            } catch (e) {}
+        }
+
+        // Số thông báo chưa đọc trên biểu tượng app (Windows / Mac, và một số máy Android)
+        function updateAppBadge(count) {
+            try {
+                if (!('setAppBadge' in navigator)) return;
+                if (count > 0) navigator.setAppBadge(count).catch(() => {});
+                else navigator.clearAppBadge().catch(() => {});
+            } catch (e) {}
+        }
+
+        // Hiện thông báo của hệ điều hành (có tiếng + chấm/số trên biểu tượng app Android)
+        function showSystemNotification(title, body, tag) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+            const opts = { body, tag, renotify: true, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png', vibrate: [150, 80, 150], silent: !isSoundOn() };
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, opts)).catch(() => {});
+            } else {
+                try { new Notification(title, opts); } catch (e) { return false; }
+            }
+            return true;
+        }
+
+        // Thông báo do máy khác tạo ra (nhân viên khác vừa bán / nhập máy)
+        function notifyFromOtherDevice(title, message, type) {
+            window.pushNotification(title, message, type);
+            if (document.hidden) {
+                // App đang chạy nền: dùng thông báo hệ thống (điện thoại tự kêu & hiện chấm trên icon)
+                if (!showSystemNotification(title, message, 'aistore-' + Date.now())) playNotifSound();
+            } else {
+                playNotifSound();
+                showToast(`${title}: ${message}`, 'success');
+            }
+        }
+
+        window.toggleNotifSound = function() {
+            try { localStorage.setItem(NOTIF_SOUND_KEY, isSoundOn() ? 'off' : 'on'); } catch (e) {}
+            if (isSoundOn()) playNotifSound();
+            renderNotifSettings();
+        };
+
+        window.enableDeviceNotifications = async function() {
+            unlockAudio();
+            if (!('Notification' in window)) {
+                showToast('Trình duyệt này không hỗ trợ thông báo', 'error');
+                return;
+            }
+            const result = await Notification.requestPermission();
+            if (result === 'granted') {
+                showSystemNotification('A.I Store', 'Đã bật thông báo. Bạn sẽ nhận tin khi có đơn mới hoặc máy mới.', 'aistore-test');
+                playNotifSound();
+                showToast('Đã bật thông báo trên máy này');
+            } else {
+                showToast('Thông báo đang bị chặn. Mở Cài đặt của trình duyệt / app để cho phép.', 'error');
+            }
+            renderNotifSettings();
+        };
+
+        function renderNotifSettings() {
+            const box = document.getElementById('notif-settings');
+            if (!box) return;
+            const supported = 'Notification' in window;
+            const perm = supported ? Notification.permission : 'unsupported';
+            const sound = isSoundOn();
+            const permBtn = perm === 'granted'
+                ? `<span class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Đã bật</span>`
+                : (perm === 'denied'
+                    ? `<span class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold" title="Mở Cài đặt trang web / ứng dụng để cho phép lại">Đang bị chặn</span>`
+                    : (supported ? `<button onclick="enableDeviceNotifications()" class="px-2.5 py-1.5 rounded-lg btn-grad text-white text-[11px] font-bold">Bật</button>` : `<span class="text-[11px] text-slate-400">Không hỗ trợ</span>`));
+            box.innerHTML = `
+                <div class="flex items-center justify-between gap-2 py-1.5">
+                    <div class="text-xs"><div class="font-bold text-slate-800"><i class="fa-solid fa-mobile-screen-button text-purple-600 mr-1.5"></i>Thông báo trên máy này</div><div class="text-[10px] text-slate-500">Hiện tin & chấm đỏ trên biểu tượng app</div></div>
+                    ${permBtn}
+                </div>
+                <div class="flex items-center justify-between gap-2 py-1.5">
+                    <div class="text-xs"><div class="font-bold text-slate-800"><i class="fa-solid fa-volume-high text-purple-600 mr-1.5"></i>Âm thanh thông báo</div><div class="text-[10px] text-slate-500">Kêu "ting ting" khi có đơn / máy mới</div></div>
+                    <button onclick="toggleNotifSound()" class="w-11 h-6 rounded-full relative transition ${sound ? 'bg-purple-600' : 'bg-slate-300'}" title="Bật / tắt âm thanh">
+                        <span class="absolute top-0.5 ${sound ? 'left-[22px]' : 'left-0.5'} w-5 h-5 rounded-full bg-white shadow transition-all"></span>
+                    </button>
+                </div>`;
+        }
 
         window.pushNotification = function(title, message, type) {
             const notifs = JSON.parse(localStorage.getItem(NOTIF_STORAGE_KEY) || '[]');
             notifs.unshift({
-                id: String(Date.now()),
+                id: String(Date.now()) + Math.random().toString(36).slice(2, 6),
                 title,
                 message,
                 type,
