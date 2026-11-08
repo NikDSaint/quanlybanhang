@@ -225,9 +225,11 @@
                     <div class="p-3.5 px-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Sản Phẩm Còn Trong Kho</h3>
+                            <h3 class="font-extrabold text-sm text-emerald-900 uppercase tracking-wide">Sản Phẩm Còn Trong Kho <span id="badge-available-count" class="normal-case">(0 máy)</span></h3>
+                            <button type="button" onclick="copyStockList('STORE', this)" title="Copy danh sách tên máy và giá bán" class="ml-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i><span>Copy list</span>
+                            </button>
                         </div>
-                        <span id="badge-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0 máy</span>
                     </div>
 
                     <div class="overflow-x-auto custom-scrollbar">
@@ -329,9 +331,11 @@
                     <div class="p-3.5 px-4 bg-sky-50/70 border-b border-sky-100 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
-                            <h3 class="font-extrabold text-sm text-sky-900 uppercase tracking-wide">Sản Phẩm Trong Kho Liên Kết</h3>
+                            <h3 class="font-extrabold text-sm text-sky-900 uppercase tracking-wide">Sản Phẩm Trong Kho Liên Kết <span id="badge-partner-available-count" class="normal-case">(0 máy)</span></h3>
+                            <button type="button" onclick="copyStockList('PARTNER', this)" title="Copy danh sách tên máy và giá bán" class="ml-1 px-2.5 py-1 rounded-lg bg-white border border-sky-200 text-sky-700 hover:bg-sky-100 text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i><span>Copy list</span>
+                            </button>
                         </div>
-                        <span id="badge-partner-available-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">0 máy</span>
                     </div>
 
                     <div class="overflow-x-auto custom-scrollbar">
@@ -4952,6 +4956,67 @@
         // Vẽ bảng máy còn hàng cho Kho Cửa Hàng hoặc Kho Liên Kết (dùng chung một hàm)
         const STANDARD_BRANDS = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme'];
 
+        // Danh sách máy đang hiển thị ở mỗi kho (theo bộ lọc / sắp xếp hiện tại) để nút "Copy list" dùng
+        const lastStockLists = { STORE: [], PARTNER: [] };
+
+        // Biểu tượng theo hãng cho danh sách copy
+        function brandIcon(brand) {
+            const b = (brand || '').toLowerCase();
+            if (b === 'iphone' || b === 'apple') return '🍎';
+            if (b === 'samsung') return '🌌';
+            if (['xiaomi', 'redmi', 'poco'].includes(b)) return '🔶';
+            if (['oppo', 'realme', 'vivo', 'iqoo'].includes(b)) return '🟢';
+            if (['huawei', 'honor'].includes(b)) return '🔴';
+            return '📱';
+        }
+
+        window.copyStockList = function(warehouse, btn) {
+            const list = lastStockLists[warehouse] || [];
+            if (list.length === 0) {
+                showToast('Không có máy nào để copy', 'error');
+                return;
+            }
+            const title = warehouse === 'PARTNER' ? 'KHO LIÊN KẾT' : 'A.I STORE';
+            const lines = list.map((p, i) => {
+                const spec = [p.ram, p.storage].filter(Boolean).join('/');
+                const name = `${p.brand || ''} ${p.name || ''}`.trim() + (spec ? ` ${spec}` : '');
+                return `${i + 1}. ${brandIcon(p.brand)} ${name} 👉 💰 ${new Intl.NumberFormat('vi-VN').format(Number(p.sellingPrice) || 0)}đ`;
+            });
+            const text = `📱 DANH SÁCH MÁY ĐANG BÁN - ${title}\n` +
+                         `📅 Cập nhật ${formatDateVN(new Date().toISOString().slice(0, 10))} · ${list.length} máy\n` +
+                         `━━━━━━━━━━━━━━━━━━\n` +
+                         lines.join('\n') +
+                         `\n━━━━━━━━━━━━━━━━━━\n` +
+                         `✅ Máy test kỹ, bảo hành 03-06 tháng\n` +
+                         `📞 Inbox ngay để giữ máy!`;
+
+            const done = () => {
+                showToast(`Đã copy danh sách ${list.length} máy`, 'success');
+                if (btn) {
+                    const old = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Đã copy</span>';
+                    setTimeout(() => { btn.innerHTML = old; }, 1800);
+                }
+            };
+            const fallback = () => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                done();
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(done).catch(fallback);
+            } else {
+                fallback();
+            }
+        };
+
         function renderStockTable(cfg) {
             const searchVal = document.getElementById(cfg.searchId)?.value.toLowerCase().trim() || '';
             const brandVal = document.getElementById(cfg.brandId)?.value || 'ALL';
@@ -4976,9 +5041,10 @@
                 NAME_DESC: (a, b) => fullName(b).localeCompare(fullName(a), 'vi')
             };
             list.sort(sorters[cfg.sortMode] || sorters.DATE_DESC);
+            lastStockLists[cfg.warehouse] = list;
 
             const badge = document.getElementById(cfg.badgeId);
-            if (badge) badge.innerText = `${list.length} máy`;
+            if (badge) badge.innerText = `(${list.length} máy)`;
 
             const tbody = document.getElementById(cfg.tbodyId);
             const empty = document.getElementById(cfg.emptyId);
