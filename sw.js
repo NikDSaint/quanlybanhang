@@ -3,7 +3,7 @@
 // - Chỉ dùng bản lưu sẵn khi mất mạng, để app vẫn mở được
 // - Không đụng tới dữ liệu Firebase (Firebase tự đồng bộ)
 // Khi sửa tệp này, tăng số phiên bản để máy người dùng nhận bản mới.
-const CACHE = 'aistore-v3';
+const CACHE = 'aistore-v3-1';
 const CORE = [
   '/',
   '/manifest.webmanifest',
@@ -50,5 +50,16 @@ self.addEventListener('fetch', (event) => {
       .catch(() =>
         caches.match(req).then((hit) => hit || (req.mode === 'navigate' ? caches.match('/') : undefined))
       )
+  );
+});
+
+// Bấm vào thông báo: mở lại app (hoặc đưa cửa sổ app đang mở lên trước)
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) { if ('focus' in c) return c.focus(); }
+      return self.clients.openWindow('/');
+    })
   );
 });
