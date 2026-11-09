@@ -659,7 +659,7 @@
                                         <th class="py-3.5 px-4 text-center">Số Máy Đã Mua</th>
                                         <th class="py-3.5 px-4 text-right">Tổng Tiền Đã Mua</th>
                                         <th class="py-3.5 px-4">Lần Mua Gần Nhất</th>
-                                        <th class="py-3.5 px-4 text-center">Lịch Sử Mua</th>
+                                        <th class="py-3.5 px-4 text-center">Thao Tác</th>
                                     </tr>
                                 </thead>
                                 <tbody id="customers-table-body" class="divide-y divide-slate-100 font-medium">
@@ -733,7 +733,7 @@
                             <div class="page-icon bg-gradient-to-br from-purple-500 to-fuchsia-500"><i class="fa-solid fa-chart-pie"></i></div>
                             <div class="min-w-0">
                                 <h2 class="page-title">Báo Cáo Doanh Thu</h2>
-                                <p class="page-sub">Còn lại = Doanh thu − Giá nhập − Chi phí nhân viên</p>
+                                <p class="page-sub">Còn lại = Doanh thu − Giá nhập − Chi phí nhân viên − Chi phí cửa hàng</p>
                             </div>
                         </div>
 
@@ -792,43 +792,83 @@
                             </div>
                             <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base shrink-0"><i class="fa-solid fa-user-tie"></i></div>
                         </div>
-                        <div class="bg-gradient-to-br from-amber-400 to-orange-500 text-white p-4 rounded-2xl shadow-[0_12px_28px_-14px_rgba(234,88,12,0.8)] flex items-start justify-between gap-2">
+                        <div class="bg-white p-4 rounded-2xl border shadow-sm flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Chi Phí Cửa Hàng</p>
+                                <h3 id="pf-total-expense" class="text-xl font-black text-rose-600 mt-1 truncate">0 ₫</h3>
+                                <span id="pf-expense-detail" class="text-[11px] text-slate-400 font-medium">Nhà, mạng, điện, nước...</span>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base shrink-0"><i class="fa-solid fa-store"></i></div>
+                        </div>
+                        <div class="sm:col-span-2 lg:col-span-4 bg-gradient-to-br from-amber-400 to-orange-500 text-white p-4 sm:p-5 rounded-2xl shadow-[0_12px_28px_-14px_rgba(234,88,12,0.8)] flex items-center justify-between gap-3">
                             <div class="min-w-0">
                                 <p class="text-[11px] font-black text-amber-50 uppercase tracking-wider">Còn Lại Cho Chủ & QL</p>
-                                <h3 id="pf-net-profit" class="text-2xl font-black mt-1 truncate">0 ₫</h3>
+                                <h3 id="pf-net-profit" class="text-2xl sm:text-3xl font-black mt-1">0 ₫</h3>
                                 <span id="pf-profit-margin" class="text-[11px] font-bold text-amber-50">Tỷ suất: 0%</span>
                             </div>
-                            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-base shrink-0"><i class="fa-solid fa-crown"></i></div>
+                            <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-crown"></i></div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div class="section-head">
+                    <!-- Chi phí cửa hàng: chủ tự điền theo từng tháng -->
+                    <form onsubmit="handleExpenseSubmit(event)" class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                        <div class="section-head flex-wrap">
                             <div class="flex items-center gap-2">
-                                <span class="section-dot bg-purple-500"></span>
-                                <h3 class="section-title">Lãi Từng Đơn Hàng</h3>
+                                <span class="section-dot bg-rose-500"></span>
+                                <h3 class="section-title">Chi Phí Cửa Hàng</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-slate-500">Nhập cho tháng</span>
+                                <input type="month" id="exp-month" required onchange="fillExpenseForm()" class="px-2.5 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700">
                             </div>
                         </div>
-                        <div class="hidden md:block overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left text-sm border-collapse">
-                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold">
-                                    <tr>
-                                        <th class="py-3.5 px-4">Ngày Bán</th>
-                                        <th class="py-3.5 px-4">Sản Phẩm</th>
-                                        <th class="py-3.5 px-4">Người Bán</th>
-                                        <th class="py-3.5 px-4 text-right">Giá Vốn</th>
-                                        <th class="py-3.5 px-4 text-right">Giá Bán</th>
-                                        <th class="py-3.5 px-4 text-right">HH Nhân Viên</th>
-                                        <th class="py-3.5 px-4 text-right">Lãi Đơn</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="profit-table-body" class="divide-y divide-slate-100 font-medium">
-                                    <!-- Populated dynamically -->
-                                </tbody>
-                            </table>
+                        <div class="p-4 grid grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-rent" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-xs"><i class="fa-solid fa-house"></i></span>Tiền nhà
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-rent" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-internet" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-xs"><i class="fa-solid fa-wifi"></i></span>Tiền mạng
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-internet" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-electric" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-bolt"></i></span>Tiền điện
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-electric" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-water" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs"><i class="fa-solid fa-droplet"></i></span>Tiền nước
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-water" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-bank" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-building-columns"></i></span>Lãi ngân hàng
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-bank" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="bg-slate-50/70 rounded-xl border border-slate-200/80 p-3">
+                                <label for="exp-other" class="flex items-center gap-2 text-xs font-bold text-slate-700 mb-1.5">
+                                    <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs"><i class="fa-solid fa-receipt"></i></span>Chi phí khác
+                                </label>
+                                <input type="text" inputmode="numeric" id="exp-other" oninput="formatPriceInput(this); updateExpenseTotal()" placeholder="0" class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-bold text-slate-800 text-right">
+                            </div>
+                            <div class="col-span-2 lg:col-span-3">
+                                <label for="exp-note" class="block text-xs font-bold text-slate-700 mb-1">Ghi chú</label>
+                                <input type="text" id="exp-note" placeholder="Nhập ghi chú cho chi phí khác..." class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg font-semibold">
+                            </div>
                         </div>
-                        <div id="profit-cards" class="md:hidden divide-y divide-slate-100"></div>
-                    </div>
+                        <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3 flex-wrap">
+                            <div class="text-sm"><span class="text-slate-500 font-semibold">Tổng chi phí tháng:</span> <span id="exp-month-total" class="font-black text-rose-600">0 ₫</span></div>
+                            <button type="submit" class="px-4 py-2 btn-grad text-white rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> Lưu chi phí</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -1084,35 +1124,26 @@
     <!-- MODAL: XEM CHI TIẾT SẢN PHẨM -->
     <div id="detail-modal" onclick="if(event.target === this) closeDetailModal()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
-            <div class="mh-grad bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-base shadow-xs">
-                        <i class="fa-solid fa-mobile-screen"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-extrabold text-base sm:text-lg text-slate-900 leading-tight">Chi Tiết Thông Tin Sản Phẩm</h3>
-                        <p class="text-[11px] text-slate-400 font-medium">Hồ sơ thông số kỹ thuật & định giá máy</p>
-                    </div>
+            <!-- Đầu popup: tên máy, kho, tình trạng nằm trên dải màu -->
+            <div class="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white px-5 sm:px-6 py-4 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 flex-wrap min-w-0">
+                    <h2 class="text-lg sm:text-xl font-black text-white flex items-center gap-1.5 leading-tight">
+                        <span id="dt-brand-badge">iPhone</span>
+                        <span id="dt-product-name">16 Pro Max</span>
+                    </h2>
+                    <span id="dt-warehouse-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/20 text-white">Kho Cửa Hàng</span>
                 </div>
-                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 transition w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div id="dt-status-container" class="flex items-center gap-2">
+                        <span id="dt-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold">Còn hàng</span>
+                    </div>
+                    <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-white/90 hover:text-white hover:bg-white/15 transition" title="Đóng">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-slate-800">
-                <div class="flex items-start justify-between pb-3 border-b border-slate-100">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h2 class="text-lg font-black text-slate-900 flex items-center gap-1.5">
-                            <span id="dt-brand-badge">iPhone</span>
-                            <span id="dt-product-name">16 Pro Max</span>
-                        </h2>
-                        <span id="dt-warehouse-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700">Kho Cửa Hàng</span>
-                    </div>
-                    <div id="dt-status-container" class="shrink-0 flex items-center gap-2">
-                        <span id="dt-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold shrink-0">Còn hàng</span>
-                    </div>
-                </div>
-
                 <div class="grid grid-cols-3 gap-2.5">
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Số IMEI</span>
@@ -1123,30 +1154,28 @@
                         <p id="dt-ram" class="text-xs font-black text-slate-800 mt-0.5">8GB</p>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Lưu Trữ</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Bộ Nhớ</span>
                         <p id="dt-storage" class="text-xs font-black text-slate-800 mt-0.5">256GB</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     <div id="dt-box-import" class="bg-slate-100/80 p-3 rounded-2xl border border-slate-200">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Giá Vốn Nhập</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Giá Nhập</span>
                         <p id="dt-import-price" class="text-sm font-black text-slate-700 mt-0.5">0 ₫</p>
                     </div>
                     <div class="bg-orange-50/70 p-3 rounded-2xl border border-orange-100">
-                        <span class="text-[10px] font-bold text-orange-700 uppercase">Giá Bán Niêm Yết</span>
+                        <span class="text-[10px] font-bold text-orange-700 uppercase">Giá Bán</span>
                         <p id="dt-selling-price" class="text-sm font-black text-orange-600 mt-0.5">0 ₫</p>
                     </div>
                     <div class="bg-purple-50/70 p-3 rounded-2xl border border-purple-100 col-span-2 sm:col-span-1">
-                        <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng (VNĐ)</span>
+                        <span class="text-[10px] font-bold text-purple-700 uppercase">Hoa Hồng</span>
                         <p id="dt-commission" class="text-sm font-black text-purple-600 mt-0.5">0 ₫</p>
                     </div>
                 </div>
 
                 <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Thông Tin Chi Tiết
-                    </span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tình Trạng</span>
                     <p id="dt-condition" class="text-xs font-semibold text-slate-800 mt-1 leading-relaxed whitespace-pre-line">Zin 100%</p>
                 </div>
 
@@ -1754,20 +1783,60 @@
         </div>
     </div>
 
-    <!-- MODAL: SỬA THÔNG TIN KHÁCH HÀNG (áp dụng cho mọi đơn của khách) -->
+    <!-- MODAL: HỒ SƠ KHÁCH HÀNG (xem & sửa: tên, SĐT, địa chỉ, ghi chú) -->
     <div id="edit-customer-group-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 flex flex-col">
-            <div class="mh-grad bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white px-5 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-user-pen"></i></div>
-                    <div>
-                        <h4 class="font-extrabold text-sm sm:text-base">Sửa Thông Tin Khách Hàng</h4>
-                        <p id="edit-cg-sub" class="text-[11px]">--</p>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
+            <div class="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div id="cg-avatar" class="w-11 h-11 rounded-2xl bg-white/20 text-white font-black text-lg flex items-center justify-center shrink-0">K</div>
+                    <div class="min-w-0">
+                        <h3 id="cg-title" class="font-black text-lg leading-tight truncate">Khách hàng</h3>
+                        <p id="cg-sub" class="text-[11px] text-white/80 font-medium">--</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeEditCustomerGroupModal()" class="w-7 h-7 rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeEditCustomerGroupModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-white/90 hover:text-white hover:bg-white/15 transition shrink-0" title="Đóng"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form onsubmit="handleEditCustomerGroupSubmit(event)" class="p-5 space-y-3.5">
+
+            <!-- Chế độ xem -->
+            <div id="cg-view" class="flex flex-col min-h-0">
+                <div class="p-5 space-y-2.5 overflow-y-auto custom-scrollbar text-sm">
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="bg-slate-50 rounded-xl border border-slate-200/80 p-2.5">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Số điện thoại</span>
+                            <p id="cg-v-phone" class="font-bold text-slate-800 mt-0.5">--</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl border border-slate-200/80 p-2.5">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Lần mua gần nhất</span>
+                            <p id="cg-v-last" class="font-bold text-slate-800 mt-0.5">--</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl border border-slate-200/80 p-2.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Địa chỉ</span>
+                        <p id="cg-v-address" class="font-semibold text-slate-800 mt-0.5 whitespace-pre-line">--</p>
+                    </div>
+                    <div class="bg-amber-50/70 rounded-xl border border-amber-100 p-2.5">
+                        <span class="text-[10px] font-bold text-amber-700 uppercase">Ghi chú</span>
+                        <p id="cg-v-note" class="font-semibold text-slate-800 mt-0.5 whitespace-pre-line">--</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="bg-emerald-50/70 rounded-xl border border-emerald-100 p-2.5">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase">Đã mua</span>
+                            <p id="cg-v-count" class="font-black text-emerald-700 mt-0.5">0 máy</p>
+                        </div>
+                        <div class="bg-purple-50/70 rounded-xl border border-purple-100 p-2.5">
+                            <span class="text-[10px] font-bold text-purple-700 uppercase">Tổng tiền</span>
+                            <p id="cg-v-total" class="font-black text-purple-700 mt-0.5">0 ₫</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+                    <button type="button" onclick="cgOpenHistory()" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử mua</button>
+                    <button type="button" onclick="cgSetMode('edit')" class="px-4 py-2 btn-grad text-white rounded-xl font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square"></i> Sửa / thêm thông tin</button>
+                </div>
+            </div>
+
+            <!-- Chế độ sửa -->
+            <form id="cg-form" onsubmit="handleEditCustomerGroupSubmit(event)" class="hidden p-5 space-y-3 overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="edit-cg-key">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tên khách hàng <span class="text-rose-500">*</span></label>
@@ -1777,9 +1846,17 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Số điện thoại</label>
                     <input type="tel" id="edit-cg-phone" placeholder="Nhập số điện thoại..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-semibold">
                 </div>
-                <p class="text-[11px] text-slate-500 bg-slate-50 rounded-xl px-3 py-2"><i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i>Thay đổi được áp dụng cho <b id="edit-cg-count">0</b> đơn đã mua của khách này.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Địa chỉ</label>
+                    <input type="text" id="edit-cg-address" placeholder="Nhập địa chỉ..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ghi chú</label>
+                    <textarea id="edit-cg-note" rows="3" placeholder="Nhập ghi chú..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-semibold resize-none"></textarea>
+                </div>
+                <p class="text-[11px] text-slate-500 bg-slate-50 rounded-xl px-3 py-2"><i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i>Tên và số điện thoại được cập nhật cho <b id="edit-cg-count">0</b> đơn đã mua của khách này.</p>
                 <div class="pt-2 flex justify-end space-x-2 border-t border-slate-100">
-                    <button type="button" onclick="closeEditCustomerGroupModal()" class="px-3.5 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50">Hủy</button>
+                    <button type="button" onclick="cgSetMode('view')" class="px-3.5 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50">Hủy</button>
                     <button type="submit" class="px-4 py-2 btn-grad text-white rounded-xl font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
                 </div>
             </form>
@@ -2164,6 +2241,8 @@
             startRealtimeSync();
             startStaffRealtimeSync();
             startPayrollSync();
+            startCustomersSync();
+            startExpensesSync();
 
             onAuthStateChanged(auth, async (user) => {
                 if (user && !currentUserProfile) {
@@ -2226,6 +2305,35 @@
             } catch (err) {
                 console.warn("Could not listen to staff_accounts:", err);
             }
+        }
+
+        // Hồ sơ khách hàng (địa chỉ, ghi chú...) — Firestore collection "customers"
+        let customerProfiles = [];
+        const LOCAL_CUSTOMERS_KEY = 'aistore_customers_v1';
+        let unsubscribeCustomers = null;
+        try { customerProfiles = JSON.parse(localStorage.getItem(LOCAL_CUSTOMERS_KEY) || '[]'); } catch (e) { customerProfiles = []; }
+
+        function customerDocId(key) {
+            return 'c_' + encodeURIComponent(key).replace(/\./g, '%2E');
+        }
+        function getCustomerProfile(key) {
+            return customerProfiles.find(c => c.id === customerDocId(key)) || null;
+        }
+
+        function startCustomersSync() {
+            if (unsubscribeCustomers) unsubscribeCustomers();
+            try {
+                unsubscribeCustomers = onSnapshot(collection(db, "customers"), (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(d => {
+                        const x = d.data();
+                        list.push({ id: d.id, key: x.key || '', name: x.name || '', phone: x.phone || '', address: x.address || '', note: x.note || '' });
+                    });
+                    customerProfiles = list;
+                    localStorage.setItem(LOCAL_CUSTOMERS_KEY, JSON.stringify(customerProfiles));
+                    if (typeof window.renderCustomersView === 'function') window.renderCustomersView();
+                }, (err) => console.warn("Customers sync error:", err));
+            } catch (err) {}
         }
 
         function startPayrollSync() {
@@ -3042,6 +3150,7 @@
             });
 
             let customersList = Object.values(customersMap);
+            customersList.forEach(c => { c.profile = getCustomerProfile(c.key); });
 
             const totalRevenueFromCustomers = soldItems.reduce((sum, p) => sum + (p.sellingPrice || 0), 0);
             const statTotalCust = document.getElementById('cust-stat-total');
@@ -3054,9 +3163,11 @@
             if (statRevenue) statRevenue.innerText = formatVND(totalRevenueFromCustomers);
 
             if (searchVal) {
-                customersList = customersList.filter(c => 
-                    c.name.toLowerCase().includes(searchVal) || 
-                    c.phone.toLowerCase().includes(searchVal)
+                customersList = customersList.filter(c =>
+                    c.name.toLowerCase().includes(searchVal) ||
+                    c.phone.toLowerCase().includes(searchVal) ||
+                    (c.profile?.address || '').toLowerCase().includes(searchVal) ||
+                    (c.profile?.note || '').toLowerCase().includes(searchVal)
                 );
             }
 
@@ -3076,8 +3187,11 @@
                             <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-black text-xs shrink-0">
                                 ${escapeHtml(c.name.charAt(0).toUpperCase())}
                             </div>
-                            <span class="truncate">${escapeHtml(c.name)}</span>
-                            ${c.key === 'name_khách lẻ' ? '' : `<button onclick="openEditCustomerGroupModal('${encodeURIComponent(c.key)}')" class="w-7 h-7 shrink-0 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 flex items-center justify-center transition" title="Sửa tên / số điện thoại khách"><i class="fa-solid fa-pen-to-square text-xs"></i></button>`}
+                            <div class="min-w-0">
+                                <div class="truncate">${escapeHtml(c.name)}</div>
+                                ${c.profile?.address ? `<div class="text-[11px] font-medium text-slate-500 truncate max-w-[260px]"><i class="fa-solid fa-location-dot text-[10px] text-rose-400 mr-1"></i>${escapeHtml(c.profile.address)}</div>` : ''}
+                                ${c.profile?.note ? `<div class="text-[11px] font-medium text-amber-700 truncate max-w-[260px]"><i class="fa-regular fa-note-sticky text-[10px] mr-1"></i>${escapeHtml(c.profile.note)}</div>` : ''}
+                            </div>
                         </td>
                         <td class="py-3 px-4 text-xs font-semibold text-slate-700">
                             ${escapeHtml(c.phone)}
@@ -3094,10 +3208,13 @@
                             <i class="fa-regular fa-calendar-check mr-1 text-slate-400"></i>${formatDateVN(c.lastPurchaseDate)}
                         </td>
                         <td class="py-3 px-4 text-center">
-                            <button onclick="openCustomerHistoryModal('${encodeURIComponent(c.key)}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                <span>Xem Lịch Sử (${c.items.length})</span>
-                            </button>
+                            <div class="flex items-center justify-center gap-1.5">
+                                ${c.key === 'name_khách lẻ' ? '' : `<button onclick="openEditCustomerGroupModal('${encodeURIComponent(c.key)}')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap" title="Xem & thêm thông tin khách"><i class="fa-solid fa-id-card"></i> Hồ sơ</button>`}
+                                <button onclick="openCustomerHistoryModal('${encodeURIComponent(c.key)}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                    <span>Lịch sử (${c.items.length})</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `).join('');
@@ -3114,20 +3231,50 @@
             });
         }
 
-        window.openEditCustomerGroupModal = function(encodedKey) {
-            const key = decodeURIComponent(encodedKey);
+        let cgCurrentKey = '';
+
+        window.cgSetMode = function(mode) {
+            document.getElementById('cg-view').classList.toggle('hidden', mode !== 'view');
+            document.getElementById('cg-form').classList.toggle('hidden', mode !== 'edit');
+            if (mode === 'edit') setTimeout(() => document.getElementById('edit-cg-name')?.focus(), 50);
+        };
+
+        function fillCustomerModal(key) {
             const orders = getCustomerOrders(key);
-            if (orders.length === 0) return;
-            const first = orders[0];
+            if (orders.length === 0) return false;
+            const prof = getCustomerProfile(key) || {};
+            const first = orders.slice().sort((a, b) => String(b.soldAt).localeCompare(String(a.soldAt)))[0];
+            const name = (first.customerName || 'Khách Lẻ').trim();
+            const phone = (first.customerPhone || '').trim();
+            const total = orders.reduce((sum, p) => sum + (Number(p.sellingPrice) || 0), 0);
+            cgCurrentKey = key;
+
+            document.getElementById('cg-avatar').innerText = name.charAt(0).toUpperCase();
+            document.getElementById('cg-title').innerText = name;
+            document.getElementById('cg-sub').innerText = `${orders.length} máy · ${formatVND(total)}`;
+            document.getElementById('cg-v-phone').innerText = phone || '--';
+            document.getElementById('cg-v-last').innerText = formatDateVN(first.soldAt);
+            document.getElementById('cg-v-address').innerText = prof.address || 'Chưa có';
+            document.getElementById('cg-v-note').innerText = prof.note || 'Chưa có';
+            document.getElementById('cg-v-count').innerText = `${orders.length} máy`;
+            document.getElementById('cg-v-total').innerText = formatVND(total);
+
             document.getElementById('edit-cg-key').value = key;
-            document.getElementById('edit-cg-name').value = (first.customerName || '').trim();
-            document.getElementById('edit-cg-phone').value = (first.customerPhone || '').trim();
+            document.getElementById('edit-cg-name').value = name;
+            document.getElementById('edit-cg-phone').value = phone;
+            document.getElementById('edit-cg-address').value = prof.address || '';
+            document.getElementById('edit-cg-note').value = prof.note || '';
             document.getElementById('edit-cg-count').innerText = orders.length;
-            document.getElementById('edit-cg-sub').innerText = `${(first.customerName || 'Khách Lẻ').trim()} · ${orders.length} đơn`;
+            return true;
+        }
+
+        window.openEditCustomerGroupModal = function(encodedKey, mode) {
+            const key = decodeURIComponent(encodedKey);
+            if (!fillCustomerModal(key)) return;
+            window.cgSetMode(mode || 'view');
             const modal = document.getElementById('edit-customer-group-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            setTimeout(() => document.getElementById('edit-cg-name')?.focus(), 50);
         };
 
         window.closeEditCustomerGroupModal = function() {
@@ -3135,26 +3282,44 @@
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         };
 
+        window.cgOpenHistory = function() {
+            const key = cgCurrentKey;
+            window.closeEditCustomerGroupModal();
+            window.openCustomerHistoryModal(encodeURIComponent(key));
+        };
+
         window.handleEditCustomerGroupSubmit = async function(e) {
             e.preventDefault();
-            const key = document.getElementById('edit-cg-key').value;
+            const oldKey = document.getElementById('edit-cg-key').value;
             const newName = document.getElementById('edit-cg-name').value.trim();
             const newPhone = document.getElementById('edit-cg-phone').value.trim();
+            const address = document.getElementById('edit-cg-address').value.trim();
+            const note = document.getElementById('edit-cg-note').value.trim();
             if (!newName) return;
-            const orders = getCustomerOrders(key);
+            const orders = getCustomerOrders(oldKey);
             if (orders.length === 0) { window.closeEditCustomerGroupModal(); return; }
 
-            orders.forEach(p => { p.customerName = newName; p.customerPhone = newPhone; });
-            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-            window.closeEditCustomerGroupModal();
-            window.renderApp();
+            const newKey = newPhone ? newPhone : `name_${newName.toLowerCase()}`;
+            const oldProf = getCustomerProfile(oldKey);
+            const profile = { id: customerDocId(newKey), key: newKey, name: newName, phone: newPhone, address, note };
 
-            const results = await Promise.allSettled(orders.map(p =>
-                setDoc(doc(db, "products", p.id), { customer_name: newName, customer_phone: newPhone }, { merge: true })
-            ));
+            // Cập nhật trên máy trước
+            orders.forEach(p => { p.customerName = newName; p.customerPhone = newPhone; });
+            customerProfiles = customerProfiles.filter(c => c.id !== customerDocId(oldKey) && c.id !== profile.id).concat([profile]);
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+            localStorage.setItem(LOCAL_CUSTOMERS_KEY, JSON.stringify(customerProfiles));
+            window.renderApp();
+            fillCustomerModal(newKey);
+            window.cgSetMode('view');
+
+            // Rồi lưu lên Firebase
+            const writes = orders.map(p => setDoc(doc(db, "products", p.id), { customer_name: newName, customer_phone: newPhone }, { merge: true }));
+            writes.push(setDoc(doc(db, "customers", profile.id), { ...profile, updated_by: currentUserProfile?.full_name || '', updated_at: new Date().toISOString() }, { merge: true }));
+            if (oldProf && customerDocId(oldKey) !== profile.id) writes.push(deleteDoc(doc(db, "customers", customerDocId(oldKey))));
+            const results = await Promise.allSettled(writes);
             const failed = results.filter(r => r.status === 'rejected').length;
-            if (failed) showToast(`Đã sửa trên máy, ${failed} đơn chưa lưu được lên Firebase`, 'error');
-            else showToast(`Đã cập nhật khách "${newName}" cho ${orders.length} đơn`);
+            if (failed) showToast(`Đã lưu trên máy, ${failed} mục chưa lưu được lên Firebase (kiểm tra quyền mục "customers")`, 'error');
+            else showToast(`Đã lưu hồ sơ khách "${newName}"`);
         };
 
         window.openCustomerHistoryModal = function(encodedKey) {
@@ -3640,13 +3805,71 @@
         //   Chi phí nhân viên = Hoa hồng NV (chỉ đơn do nhân viên bán) + Lương + Thưởng
         //   Còn lại cho Chủ & Quản lý = Lợi nhuận gộp - Chi phí nhân viên
         //   (phần còn lại này chia theo mục Hoa Hồng: bán trực tiếp + bảo trợ)
-        // Các đơn đang được bung chi tiết trong bảng lãi (giao diện điện thoại)
-        const expandedProfitRows = new Set();
-        window.toggleProfitRow = function(id) {
-            if (expandedProfitRows.has(id)) expandedProfitRows.delete(id);
-            else expandedProfitRows.add(id);
-            window.renderProfitReport();
+        // ===== Chi phí cửa hàng theo tháng (Firestore collection "expenses", mã tài liệu = "YYYY-MM") =====
+        const EXPENSE_FIELDS = [["rent", "Tiền nhà"], ["internet", "Tiền mạng"], ["electric", "Tiền điện"], ["water", "Tiền nước"], ["bank", "Lãi ngân hàng"], ["other", "Chi phí khác"]];
+        let expenses = [];
+        const LOCAL_EXPENSES_KEY = 'aistore_expenses_v1';
+        let unsubscribeExpenses = null;
+        try { expenses = JSON.parse(localStorage.getItem(LOCAL_EXPENSES_KEY) || '[]'); } catch (e) { expenses = []; }
+
+        const expenseTotal = r => EXPENSE_FIELDS.reduce((sum, [k]) => sum + (Number(r?.[k]) || 0), 0);
+
+        function startExpensesSync() {
+            if (unsubscribeExpenses) unsubscribeExpenses();
+            try {
+                unsubscribeExpenses = onSnapshot(collection(db, "expenses"), (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(d => {
+                        const x = d.data();
+                        const row = { month: x.month || d.id, note: x.note || '' };
+                        EXPENSE_FIELDS.forEach(([k]) => row[k] = Number(x[k]) || 0);
+                        list.push(row);
+                    });
+                    expenses = list;
+                    localStorage.setItem(LOCAL_EXPENSES_KEY, JSON.stringify(expenses));
+                    if (currentTab === 'profit') window.renderProfitReport();
+                }, (err) => console.warn("Expenses sync error:", err));
+            } catch (err) {}
+        }
+
+        // Điền form theo tháng đang chọn ở ô "Nhập cho tháng"
+        window.fillExpenseForm = function() {
+            const ym = document.getElementById('exp-month')?.value;
+            const rec = expenses.find(r => r.month === ym) || {};
+            const fmt = v => v ? new Intl.NumberFormat('vi-VN').format(v) : '';
+            EXPENSE_FIELDS.forEach(([k]) => { const el = document.getElementById('exp-' + k); if (el) el.value = fmt(rec[k]); });
+            const note = document.getElementById('exp-note'); if (note) note.value = rec.note || '';
+            window.updateExpenseTotal();
         };
+
+        window.updateExpenseTotal = function() {
+            const total = EXPENSE_FIELDS.reduce((sum, [k]) => sum + parseNumberInput(document.getElementById('exp-' + k)?.value || ''), 0);
+            const el = document.getElementById('exp-month-total'); if (el) el.innerText = formatVND(total);
+        };
+
+        window.handleExpenseSubmit = async function(e) {
+            e.preventDefault();
+            if (!getPermissions().isOwner) return;
+            const ym = document.getElementById('exp-month')?.value;
+            if (!ym) return;
+            const rec = { month: ym, note: document.getElementById('exp-note')?.value.trim() || '' };
+            EXPENSE_FIELDS.forEach(([k]) => rec[k] = parseNumberInput(document.getElementById('exp-' + k)?.value || ''));
+            expenses = expenses.filter(r => r.month !== ym).concat([rec]);
+            localStorage.setItem(LOCAL_EXPENSES_KEY, JSON.stringify(expenses));
+            window.renderProfitReport();
+            const [y, m] = ym.split('-');
+            try {
+                await setDoc(doc(db, "expenses", ym), { ...rec, updated_by: currentUserProfile?.full_name || '', updated_at: new Date().toISOString() }, { merge: true });
+                showToast(`Đã lưu chi phí T${parseInt(m, 10)}/${y}: ${formatVND(expenseTotal(rec))}`);
+            } catch (err) {
+                console.warn('Expense save error:', err);
+                showToast('Đã lưu trên máy nhưng chưa lưu được lên Firebase (kiểm tra quyền mục "expenses")', 'error');
+            }
+        };
+
+        // Tháng mặc định cho ô nhập chi phí = tháng đang lọc (nếu lọc theo tháng), không thì tháng hiện tại
+        let expenseMonthTouched = false;
+        document.addEventListener('change', (ev) => { if (ev.target && ev.target.id === 'exp-month') expenseMonthTouched = true; });
 
         window.renderProfitReport = function() {
             const accounts = getStaffAccounts();
@@ -3672,7 +3895,12 @@
             });
             const totalPay = payInScope.reduce((s, r) => s + r.salary + r.bonus, 0);
             const staffCost = totalComm + totalPay;
-            const net = totalRev - totalCost - staffCost;
+
+            // Chi phí cửa hàng trong kỳ
+            const expInPeriod = expenses.filter(r => r.month && monthInPeriod(r.month, 'profit'));
+            const shopCost = expInPeriod.reduce((sum, r) => sum + expenseTotal(r), 0);
+            const byField = EXPENSE_FIELDS.map(([k, label]) => [label, expInPeriod.reduce((sum, r) => sum + (Number(r[k]) || 0), 0)]).filter(([, v]) => v > 0);
+            const net = totalRev - totalCost - staffCost - shopCost;
 
             const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
             set('pf-total-revenue', formatVND(totalRev));
@@ -3680,70 +3908,23 @@
             set('pf-total-import', formatVND(totalCost));
             set('pf-total-commission', formatVND(staffCost));
             set('pf-commission-detail', `HH ${formatVND(totalComm)} · Lương+thưởng ${formatVND(totalPay)}`);
+            set('pf-total-expense', formatVND(shopCost));
+            set('pf-expense-detail', byField.length ? `${byField.length} khoản · ${expInPeriod.length} tháng` : 'Chưa nhập chi phí');
+            void (byField.length ? byField.map(([l, v]) => `${({ 'Tiền nhà': 'Nhà', 'Tiền mạng': 'Mạng', 'Tiền điện': 'Điện', 'Tiền nước': 'Nước', 'Lãi ngân hàng': 'Lãi NH', 'Chi phí khác': 'Khác' })[l] || l} ${formatVND(v)}`).join(' · ') : '');
             set('pf-net-profit', formatVND(net));
             set('pf-profit-margin', `Tỷ suất: ${totalRev > 0 ? ((net / totalRev) * 100).toFixed(1) : 0}% doanh thu`);
 
-            const tbody = document.getElementById('profit-table-body');
-            const cards = document.getElementById('profit-cards');
-            if (!tbody) return;
-            if (soldItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Không có đơn hàng nào trong kỳ đã chọn.</td></tr>`;
-                if (cards) cards.innerHTML = `<div class="py-8 text-center text-sm text-slate-400">Không có đơn hàng nào trong kỳ đã chọn.</div>`;
-                return;
+            // Ô nhập chi phí: theo tháng đang lọc (khi lọc theo tháng), hoặc tháng hiện tại
+            const expMonth = document.getElementById('exp-month');
+            if (expMonth && (!expenseMonthTouched || !expMonth.value)) {
+                const period = document.getElementById('profit-period-type')?.value;
+                const now = new Date();
+                const y = period === 'MONTH' ? document.getElementById('profit-filter-year')?.value : now.getFullYear();
+                const m = period === 'MONTH' ? document.getElementById('profit-filter-month')?.value : now.getMonth() + 1;
+                expMonth.value = `${y}-${String(m).padStart(2, '0')}`;
             }
-
-            // Điện thoại: mỗi đơn một thẻ dọc; bấm "Xem" để bung chi tiết giá vốn / hoa hồng
-            if (cards) cards.innerHTML = soldItems.map(p => {
-                const c = staffComm(p);
-                const e = splitOrderEarnings(p, accounts);
-                const profit = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0) - c;
-                const open = expandedProfitRows.has(p.id);
-                const row = (label, val, cls) => `<div class="flex justify-between py-1"><span class="text-slate-500">${label}</span><span class="font-bold ${cls}">${val}</span></div>`;
-                return `
-                <div class="p-3.5">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <div class="text-[15px] font-extrabold text-slate-900 leading-tight">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</div>
-                            <div class="text-[11px] text-slate-500 mt-1">
-                                <span class="font-semibold">${formatDateVN(p.soldAt)}</span> ·
-                                <span class="font-bold text-indigo-600">${escapeHtml(p.seller || '--')}</span>
-                            </div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">Lãi đơn</div>
-                            <div class="text-[15px] font-black ${profit < 0 ? 'text-rose-600' : 'text-emerald-600'}">${formatVND(profit)}</div>
-                        </div>
-                    </div>
-                    <button onclick="toggleProfitRow('${p.id}')" class="mt-2.5 w-full py-2 rounded-xl ${open ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-700'} text-xs font-bold flex items-center justify-center gap-1.5 transition">
-                        <i class="fa-solid ${open ? 'fa-chevron-up' : 'fa-eye'}"></i> ${open ? 'Thu gọn' : 'Xem chi tiết'}
-                    </button>
-                    ${open ? `
-                    <div class="mt-2 bg-slate-50 rounded-xl px-3 py-1.5 text-xs divide-y divide-slate-200/70">
-                        ${row('Giá bán', formatVND(p.sellingPrice), 'text-rose-600')}
-                        ${row('Giá vốn', formatVND(p.importPrice), 'text-slate-700')}
-                        ${row('Hoa hồng NV', c ? formatVND(c) : '—', 'text-purple-600')}
-                        ${e.managerName ? row('Bảo trợ', escapeHtml(e.managerName), 'text-purple-600') : ''}
-                        ${row('Lãi đơn', formatVND(profit), profit < 0 ? 'text-rose-600' : 'text-emerald-600')}
-                    </div>` : ''}
-                </div>`;
-            }).join('');
-            tbody.innerHTML = soldItems.map(p => {
-                const c = staffComm(p);
-                const e = splitOrderEarnings(p, accounts);
-                return `
-                <tr class="hover:bg-slate-50">
-                    <td class="py-3 px-4 text-xs whitespace-nowrap">${formatDateVN(p.soldAt)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-800">${escapeHtml(p.brand)} ${escapeHtml(p.name)}</td>
-                    <td class="py-3 px-4 text-xs font-bold text-indigo-600">
-                        <div>${escapeHtml(p.seller || '--')}</div>
-                        ${e.managerName ? `<div class="text-[10px] text-purple-600 font-medium">Bảo trợ: ${escapeHtml(e.managerName)}</div>` : ''}
-                    </td>
-                    <td class="py-3 px-4 text-right font-medium text-slate-600 whitespace-nowrap">${formatVND(p.importPrice)}</td>
-                    <td class="py-3 px-4 text-right font-bold text-rose-600 whitespace-nowrap">${formatVND(p.sellingPrice)}</td>
-                    <td class="py-3 px-4 text-right font-bold text-purple-600 whitespace-nowrap">${c ? formatVND(c) : '<span class="text-slate-300">—</span>'}</td>
-                    <td class="py-3 px-4 text-right font-black text-emerald-600 whitespace-nowrap">${formatVND((Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0) - c)}</td>
-                </tr>`;
-            }).join('');
+            const active = document.activeElement;
+            if (!(active && active.closest && active.closest('form') && active.id && active.id.startsWith('exp-'))) window.fillExpenseForm();
         };
 
         window.openDetailModal = function(id) {
@@ -3768,10 +3949,10 @@
             if (whBadge) {
                 if (p.warehouse === 'PARTNER') {
                     whBadge.innerText = 'Kho Liên Kết';
-                    whBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-100 text-sky-800';
+                    whBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-400/90 text-white';
                 } else {
                     whBadge.innerText = 'Kho Cửa Hàng';
-                    whBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-100 text-indigo-700';
+                    whBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-white/20 text-white';
                 }
             }
 
@@ -3789,11 +3970,12 @@
             const dtImei = document.getElementById('dt-imei');
             if (dtImei) dtImei.innerText = p.imei || '--';
             
+            // Ô "Tình trạng": ghi tình trạng máy trước (không lặp lại chữ "Tình trạng"), rồi hình thức / màu / pin
             const condParts = [];
+            if (p.condition) condParts.push(p.condition);
             if (p.appearance) condParts.push(`Hình thức: ${p.appearance}`);
             if (p.color) condParts.push(`Màu: ${p.color}`);
             if (p.battery) condParts.push(`Pin: ${p.battery}`);
-            if (p.condition) condParts.push(`Tình trạng: ${p.condition}`);
             const dtCond = document.getElementById('dt-condition');
             if (dtCond) dtCond.innerText = condParts.join(' | ') || 'Zin nguyên bản 100%';
 
@@ -3803,13 +3985,13 @@
                 // Máy đã bán: Chủ / Quản lý thấy nút "Hủy đơn" ở góc trên; nhân viên vẫn thấy nhãn "Đã bán"
                 if (isSold && perm.canAddEditProduct) {
                     statusContainer.innerHTML = `
-                        <button onclick="closeDetailModal(); requestCancelOrder('${p.id}');" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-full font-bold text-xs transition flex items-center gap-1.5" title="Hủy đơn bán và trả máy về kho">
+                        <button onclick="closeDetailModal(); requestCancelOrder('${p.id}');" class="px-3 py-1.5 bg-white hover:bg-amber-50 text-amber-700 rounded-full font-bold text-xs shadow-sm transition flex items-center gap-1.5" title="Hủy đơn bán và trả máy về kho">
                             <i class="fa-solid fa-rotate-left"></i> Hủy đơn
                         </button>`;
                 } else {
                     statusContainer.innerHTML = isSold
-                        ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">Đã bán</span>`
-                        : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Còn hàng</span>`;
+                        ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500 text-white shadow-sm">Đã bán</span>`
+                        : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-400 text-white shadow-sm">Còn hàng</span>`;
                 }
             }
 
