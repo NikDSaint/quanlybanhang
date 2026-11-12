@@ -4193,19 +4193,28 @@
             const p = products.find(prod => prod.id === id);
             if (!p) return;
 
-            const ramRom = [p.ram, p.storage].filter(Boolean).join('/') || 'Đang cập nhật';
-            const appearance = p.appearance || 'Đẹp keng';
-            const condition = p.condition || 'Zin nguyên bản';
-            const price = formatVND(p.sellingPrice);
-
-            const postContent = `#${p.brand} ${p.name}\n` +
-                                `📦 ${ramRom}\n` +
-                                `✨ ${appearance}\n` +
-                                `🔆 ${condition}\n` +
-                                `✅ Đã test mọi chức năng hoàn hảo\n` +
-                                `🧑‍🔧 Bảo hành 03-06 tháng\n` +
-                                `🔖 Giá chỉ ${price}\n` +
-                                `==================`;
+            // Mẫu bài đăng:
+            // #[Tên máy] - Ram/Rom
+            // ✨ Hình thức [Hình thức]
+            // 🔋 Pin [Pin]
+            // ✅ Đã test mọi chức năng hoàn hảo
+            // 🧑‍🔧 Bảo hành 03-06 tháng
+            // 🔖 Giá chỉ [Giá đã che hàng trăm nghìn, cùng quy tắc với Copy list]
+            // ===========================
+            const ramRom = [p.ram, p.storage].filter(Boolean).join('/');
+            const battery = String(p.battery || '').trim();
+            // Chỉ là con số (VD 99, 98,9) thì thêm dấu %
+            const withPercent = v => { const t = String(v).trim(); return /^\d+([.,]\d+)?$/.test(t) ? t + '%' : t; };
+            const lines = [
+                `#${`${p.brand || ''} ${p.name || ''}`.trim()}${ramRom ? ` - ${ramRom}` : ''}`,
+                p.appearance ? `✨ Hình thức ${withPercent(p.appearance)}` : '',
+                battery ? `🔋 Pin ${withPercent(battery)}` : '',
+                `✅ Đã test mọi chức năng hoàn hảo`,
+                `🧑‍🔧 Bảo hành 03-06 tháng`,
+                `🔖 Giá chỉ ${maskPrice(p.sellingPrice)}`,
+                `===========================`
+            ];
+            const postContent = lines.filter(Boolean).join('\n');
 
             const textarea = document.createElement('textarea');
             textarea.value = postContent;
@@ -4223,16 +4232,12 @@
             document.body.removeChild(textarea);
 
             if (btnElement) {
+                // Đổi tạm biểu tượng thành dấu tích (giữ nguyên kích thước nút trên máy tính lẫn điện thoại)
                 const originalHtml = btnElement.innerHTML;
-                const originalClass = btnElement.className;
-                
-                btnElement.innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
-                btnElement.className = 'w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center transition-all duration-200 transform scale-110 shadow-sm';
-
-                setTimeout(() => {
-                    btnElement.innerHTML = originalHtml;
-                    btnElement.className = originalClass;
-                }, 1800);
+                btnElement.innerHTML = btnElement.innerText.trim()
+                    ? '<i class="fa-solid fa-check"></i> Đã copy'
+                    : '<i class="fa-solid fa-check text-xs text-emerald-600"></i>';
+                setTimeout(() => { btnElement.innerHTML = originalHtml; }, 1800);
             }
 
             showToast(`Đã copy bài đăng cho "${p.name}"!`, 'success');
