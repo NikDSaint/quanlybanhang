@@ -1306,12 +1306,12 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Ngày Nhập Máy <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Ngày Nhập <span class="text-rose-500">*</span></label>
                         <input type="date" id="form-import-date" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Hãng Sản Xuất <span class="text-rose-500">*</span></label>
                         <select id="form-brand" onchange="handleBrandChange()" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
@@ -1331,12 +1331,16 @@
                         <input type="text" id="form-brand-custom" placeholder="Nhập tên hãng..." class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Tên Model Sản Phẩm <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tên Sản Phẩm <span class="text-rose-500">*</span></label>
                         <input type="text" id="form-name" required placeholder="Nhập tên máy..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Số IMEI</label>
+                        <input type="text" id="form-imei" placeholder="Nhập số IMEI..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng RAM</label>
                         <select id="form-ram" onchange="handleRamChange()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
@@ -1352,7 +1356,7 @@
                         <input type="text" id="form-ram-custom" placeholder="Nhập dung lượng RAM..." class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Bộ Nhớ Trong (ROM)</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Bộ Nhớ Trong</label>
                         <select id="form-storage" onchange="handleStorageChange()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
                             <option value="">Không chọn</option>
                             <option value="32GB">32GB</option>
@@ -1365,17 +1369,39 @@
                         </select>
                         <input type="text" id="form-storage-custom" placeholder="Nhập dung lượng bộ nhớ..." class="hidden mt-2 w-full px-3 py-1.5 text-xs border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium bg-indigo-50/40 text-slate-800">
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Pin Đỉnh</label>
+                        <input type="text" id="form-battery" placeholder="Nhập pin đỉnh..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
                 </div>
 
-                <!-- Số IMEI (trái) - Phụ kiện kèm theo (phải) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Số IMEI</label>
-                        <input type="text" id="form-imei" placeholder="Nhập số IMEI..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hình Thức</label>
+                        <input type="text" id="form-appearance" placeholder="Nhập hình thức..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Màu Sắc</label>
+                        <input type="text" id="form-color" placeholder="Nhập màu sắc..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Phụ Kiện Kèm Theo</label>
                         <input type="text" id="form-accessories" placeholder="Nhập phụ kiện kèm theo..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ)</label>
+                        <input type="text" id="form-import-price" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="form-selling-price" oninput="formatPriceInput(this)" required placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng Nhân Viên (VNĐ)</label>
+                        <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
                     </div>
                 </div>
 
@@ -1393,36 +1419,6 @@
                         </div>
                     </div>
                     <p class="text-[10px] text-indigo-600 font-medium mt-1">Hệ thống sẽ tự động cập nhật hoa hồng cho người bán và người bảo trợ mới.</p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Hình Thức</label>
-                        <input type="text" id="form-appearance" placeholder="Nhập hình thức..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Màu Sắc</label>
-                        <input type="text" id="form-color" placeholder="Nhập màu sắc..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Dung Lượng Pin</label>
-                        <input type="text" id="form-battery" placeholder="Nhập dung lượng pin..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Vốn Nhập (VNĐ)</label>
-                        <input type="text" id="form-import-price" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Niêm Yết (VNĐ) <span class="text-rose-500">*</span></label>
-                        <input type="text" id="form-selling-price" oninput="formatPriceInput(this)" required placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Hoa Hồng Nhân Viên (VNĐ)</label>
-                        <input type="text" id="form-commission" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-                    </div>
                 </div>
 
                 <!-- Tình trạng khác: một ô dài cả dòng -->
