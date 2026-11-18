@@ -127,8 +127,184 @@
             .new-item-flash { animation: newItemFlash 4s ease-out; }
         @keyframes newItemFlash { 0%, 60% { background-color: #fef9c3; } 100% { background-color: transparent; } }
 </style>
+    <style id="liquid-glass">
+/* ===== Giao diện Liquid Glass (kính lỏng kiểu iOS) – chỉ áp dụng khi <body> có class "lg" ===== */
+.lg {
+    --glass: rgba(255, 255, 255, 0.42);
+    --glass-strong: rgba(255, 255, 255, 0.62);
+    --glass-soft: rgba(255, 255, 255, 0.28);
+    --glass-edge: rgba(255, 255, 255, 0.75);
+    --glass-blur: blur(28px) saturate(185%);
+    --glass-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+        0 10px 40px -12px rgba(49, 46, 129, 0.22),
+        0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+/* Hình nền: các mảng màu loang, để lớp kính phía trên có thứ để khúc xạ */
+body.lg {
+    background-color: #e9ecf8 !important;
+    background-image:
+        radial-gradient(42% 38% at 8% 6%, rgba(167, 139, 250, 0.75) 0%, transparent 70%),
+        radial-gradient(38% 34% at 92% 4%, rgba(96, 165, 250, 0.65) 0%, transparent 70%),
+        radial-gradient(40% 40% at 78% 58%, rgba(244, 114, 182, 0.45) 0%, transparent 70%),
+        radial-gradient(44% 40% at 14% 82%, rgba(45, 212, 191, 0.45) 0%, transparent 70%),
+        radial-gradient(36% 30% at 52% 104%, rgba(251, 191, 36, 0.35) 0%, transparent 70%),
+        linear-gradient(160deg, #eef0ff 0%, #f4ecff 45%, #e8f4ff 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* Lớp kính chung */
+.lg main .bg-white,
+.lg main .section-head,
+.lg aside,
+.lg header,
+.lg #mobile-nav {
+    background-color: var(--glass) !important;
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.08) 55%, rgba(255, 255, 255, 0.18) 100%) !important;
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border-color: var(--glass-edge) !important;
+    box-shadow: var(--glass-shadow) !important;
+}
+/* Thẻ lớn bo tròn hơn, giống iOS */
+.lg main .bg-white.rounded-2xl { border-radius: 26px !important; }
+.lg main .bg-white.rounded-xl { border-radius: 18px !important; }
+/* Phần tử con nằm trong thẻ kính: trong suốt để không chồng nhiều lớp mờ */
+.lg main .bg-white .bg-white,
+.lg main .bg-white .section-head {
+    background-color: transparent !important;
+    background-image: none !important;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: none !important;
+}
+.lg main .section-head { box-shadow: none !important; border-bottom-color: rgba(255, 255, 255, 0.55) !important; }
+
+/* Thanh bên (máy tính): tấm kính nổi, cách mép */
+@media (min-width: 768px) {
+    .lg aside {
+        margin: 12px 0 12px 12px;
+        height: calc(100vh - 24px) !important;
+        top: 12px !important;
+        border-radius: 28px;
+        border: 1px solid var(--glass-edge) !important;
+    }
+}
+/* Đầu trang (điện thoại) */
+.lg header { border-bottom-color: rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 30px -18px rgba(49, 46, 129, 0.35), inset 0 -1px 0 rgba(255,255,255,.6) !important; }
+
+/* Thanh điều hướng dưới (điện thoại): viên thuốc kính nổi */
+.lg #mobile-nav {
+    left: 12px !important; right: 12px !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    border-radius: 30px;
+    border: 1px solid var(--glass-edge) !important;
+    padding: 6px !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(200%) !important; backdrop-filter: blur(30px) saturate(200%) !important;
+}
+.lg .mnav-btn { border-radius: 22px; color: #334155; }
+.lg .mnav-btn.active {
+    color: #4c1d95;
+    background-image: none !important;
+    background-color: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 1px 0 #fff, 0 6px 16px -8px rgba(76, 29, 149, 0.45) !important;
+}
+
+/* Menu bên trái */
+.lg .pill-tab-active {
+    background: rgba(255, 255, 255, 0.85) !important;
+    color: #4c1d95 !important;
+    border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 8px 20px -10px rgba(76, 29, 149, 0.45) !important;
+}
+.lg .pill-tab-active i { color: #7c3aed !important; }
+.lg .pill-tab-inactive { color: #334155 !important; }
+.lg .pill-tab-inactive:hover { background: rgba(255, 255, 255, 0.45) !important; }
+
+/* Ô nhập, ô chọn: kính nhạt */
+.lg main input:not([type=checkbox]):not([type=radio]),
+.lg main select,
+.lg main textarea,
+.lg .fixed.inset-0 input:not([type=checkbox]):not([type=radio]),
+.lg .fixed.inset-0 select,
+.lg .fixed.inset-0 textarea {
+    background-color: rgba(255, 255, 255, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+    border-radius: 14px !important;
+}
+.lg main .bg-slate-50, .lg .fixed.inset-0 .bg-slate-50 { background-color: var(--glass-soft) !important; }
+.lg main .bg-slate-100 { background-color: rgba(255, 255, 255, 0.45) !important; }
+.lg main [class*="border-slate-1"], .lg main [class*="border-slate-2"] { border-color: rgba(255, 255, 255, 0.6) !important; }
+.lg main .divide-y > * + *, .lg main .divide-slate-100 > * + * { border-color: rgba(255, 255, 255, 0.55) !important; }
+
+/* Bảng */
+.lg main table thead { background: rgba(255, 255, 255, 0.35) !important; }
+.lg main table thead th { color: #475569; }
+.lg main table tbody tr { border-color: rgba(255, 255, 255, 0.55) !important; }
+.lg main table tbody tr:hover { background-color: rgba(255, 255, 255, 0.5) !important; }
+.lg main table td, .lg main table th { border-color: rgba(255, 255, 255, 0.5) !important; }
+
+/* Nút chính: màu tím nhưng có ánh kính */
+.lg .btn-grad {
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 50%),
+        linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #6366f1 100%) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 24px -10px rgba(124, 58, 237, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+/* Nút trắng (Nhập CSV, Xuất CSV, Hủy…) thành kính */
+.lg button.bg-white, .lg a.bg-white, .lg label.bg-white {
+    background-color: rgba(255, 255, 255, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 4px 14px -8px rgba(15, 23, 42, 0.25) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%); backdrop-filter: blur(16px) saturate(180%);
+}
+/* Nút nhỏ có nền màu nhạt (Xem, Copy…) thêm viền sáng */
+.lg main button[class*="-50 "], .lg main button[class*="-50"] { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.5); }
+/* Nút xanh "Bán": thêm ánh kính */
+.lg main button[class*="from-emerald-500"] {
+    background-image: linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,0) 55%), linear-gradient(90deg, #10b981, #14b8a6) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 8px 18px -10px rgba(16,185,129,.9) !important;
+}
+
+/* Popup: nền sau mờ nhẹ, khung popup là kính dày */
+.lg .fixed.inset-0.z-50, .lg .fixed.inset-0.z-\[60\] {
+    background-color: rgba(30, 27, 75, 0.22) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+}
+.lg .fixed.inset-0.z-50 > div, .lg .fixed.inset-0.z-\[60\] > div {
+    background-color: rgba(255, 255, 255, 0.72) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(190%); backdrop-filter: blur(40px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 30px 80px -20px rgba(30, 27, 75, 0.45) !important;
+    border-radius: 30px !important;
+}
+.lg .fixed.inset-0 .bg-white { background-color: rgba(255, 255, 255, 0.5) !important; }
+/* Đầu popup gradient: giữ màu nhưng thêm ánh kính */
+.lg .mh-grad { position: relative; box-shadow: inset 0 1px 0 rgba(255,255,255,.55); }
+.lg .mh-grad::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,0) 60%); }
+.lg .mh-grad > div:first-child > div:first-child { background: rgba(255, 255, 255, 0.28) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.6) !important; }
+
+/* Thẻ KPI có nền màu đậm (báo cáo): thêm ánh kính */
+.lg main [class*="bg-gradient-to-br"] { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 14px 30px -16px rgba(49,46,129,.5) !important; }
+
+/* Cuộn mềm */
+.lg .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.lg .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.35); }
+
+/* Máy yếu / người dùng tắt hiệu ứng trong suốt: dùng nền trắng đặc cho dễ đọc */
+@media (prefers-reduced-transparency: reduce) {
+    .lg main .bg-white, .lg aside, .lg header, .lg #mobile-nav,
+    .lg .fixed.inset-0.z-50 > div, .lg .fixed.inset-0.z-\[60\] > div { background-color: rgba(255,255,255,.95) !important; }
+}
+    </style>
 </head>
-<body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
+<body class="lg app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
 
     <!-- SIDEBAR -->
     <aside class="hidden md:flex md:w-56 lg:w-60 bg-white/95 backdrop-blur border-r border-slate-200/80 shrink-0 flex-col h-screen sticky top-0 z-30 shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
@@ -1953,6 +2129,7 @@
         </div>
     </div>
 
+    <div style="position:fixed;top:8px;right:8px;z-index:9999" class="px-3 py-1 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow">XEM TRƯỚC · dữ liệu 07/11 · không lưu lên Firebase</div>
     <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
@@ -2004,11 +2181,10 @@
 
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script type="module">
-        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
-        const firebaseConfig = {
+        // [XEM TRƯỚC] Ngắt Firebase: mọi lệnh đọc/ghi đều không chạy
+const initializeApp=()=>({}),getApps=()=>[],getApp=()=>({}),getAuth=()=>({}),onAuthStateChanged=()=>{},signOut=async()=>{},signInWithEmailAndPassword=async()=>{},getFirestore=()=>({}),doc=()=>({}),setDoc=async()=>{},getDoc=async()=>({exists:()=>false}),collection=()=>({}),deleteDoc=async()=>{},onSnapshot=()=>()=>{},getDocs=async()=>[];
+const PREVIEW_DATA = {"products": [{"id": "prod-1791259457827", "warehouse": "STORE", "brand": "iPhone", "name": "8 Plus", "ram": "", "storage": "256GB", "color": "Trắng", "battery": "100", "appearance": "99", "condition": "", "importPrice": 1000000, "sellingPrice": 2900000, "commission": 200000, "status": "SOLD", "imei": "81851", "seller": "Trung Hiếu", "customerName": "Đinh Công Hoàng", "customerPhone": "", "soldAt": "2026-10-25", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791259763605", "warehouse": "STORE", "brand": "iPhone", "name": "7 Plus", "ram": "", "storage": "32GB", "color": "Đen", "battery": "100", "appearance": "90", "condition": "", "importPrice": 400000, "sellingPrice": 1100000, "commission": 150000, "status": "SOLD", "imei": "46475", "seller": "Thơ Lii", "customerName": "Cạnh nhà Hiếu", "customerPhone": "", "soldAt": "2026-10-26", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791259935836", "warehouse": "STORE", "brand": "iPhone", "name": "8 Plus", "ram": "", "storage": "64GB", "color": "Hồng", "battery": "100", "appearance": "99", "condition": "", "importPrice": 2600000, "sellingPrice": 3300000, "commission": 200000, "status": "AVAILABLE", "imei": "92774", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791260268796", "warehouse": "STORE", "brand": "iPhone", "name": "12", "ram": "", "storage": "", "color": "", "battery": "Pin thay mới 100%", "appearance": "", "condition": "95%", "importPrice": 3500000, "sellingPrice": 5200000, "commission": 200000, "status": "SOLD", "imei": "15716", "seller": "Trung Hiếu", "customerName": "", "customerPhone": "", "soldAt": "2026-10-10", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791260565215", "warehouse": "STORE", "brand": "iPhone", "name": "XS Max", "ram": "", "storage": "128GB", "color": "Đen", "battery": "84", "appearance": "99", "condition": "", "importPrice": 5000000, "sellingPrice": 6500000, "commission": 350000, "status": "AVAILABLE", "imei": "52516", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791260690038", "warehouse": "STORE", "brand": "iPhone", "name": "12 Pro Max", "ram": "", "storage": "", "color": "", "battery": "Pin thay mới 100%", "appearance": "", "condition": "95%", "importPrice": 6500000, "sellingPrice": 9500000, "commission": 300000, "status": "SOLD", "imei": "77232", "seller": "Hoàng Trường", "customerName": "Tuấn PC", "customerPhone": "", "soldAt": "2026-10-09", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791260994111", "warehouse": "STORE", "brand": "iPhone", "name": "11", "ram": "", "storage": "", "color": "", "battery": "Pin thay mới 100%", "appearance": "", "condition": "Màn thay", "importPrice": 2500000, "sellingPrice": 4800000, "commission": 200000, "status": "SOLD", "imei": "46264", "seller": "Hoàng Trường", "customerName": "a HXom", "customerPhone": "", "soldAt": "2026-10-11", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791261210670", "warehouse": "STORE", "brand": "Redmi", "name": "Note 8", "ram": "8GB", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "Ngoại hình đẹp", "importPrice": 500000, "sellingPrice": 1000000, "commission": 100000, "status": "SOLD", "imei": "78894", "seller": "Trung Hiếu", "customerName": "", "customerPhone": "", "soldAt": "2026-10-10", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791261418638", "warehouse": "STORE", "brand": "Honor", "name": "X9B", "ram": "8GB", "storage": "256GB", "color": "Đen", "battery": "", "appearance": "98", "condition": "", "importPrice": 3400000, "sellingPrice": 4500000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Hoàng Trường", "customerName": "", "customerPhone": "", "soldAt": "2026-10-26", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791261649447", "warehouse": "STORE", "brand": "Vivo", "name": "X90", "ram": "8GB", "storage": "256GB", "color": "Xanh", "battery": "", "appearance": "98", "condition": "Zin đẹp", "importPrice": 4200000, "sellingPrice": 5500000, "commission": 200000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791261711847", "warehouse": "STORE", "brand": "Samsung", "name": "A34", "ram": "8GB", "storage": "256GB", "color": "Đen", "battery": "", "appearance": "", "condition": "Zin đẹp 98%", "importPrice": 3600000, "sellingPrice": 4600000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Hoàng Trường", "customerName": "", "customerPhone": "", "soldAt": "2026-10-24", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263143423", "warehouse": "STORE", "brand": "iPhone", "name": "XS Max", "ram": "", "storage": "64GB", "color": "Đen", "battery": "84", "appearance": "97", "condition": "Pin thay", "importPrice": 4000000, "sellingPrice": 5000000, "commission": 200000, "status": "SOLD", "imei": "27822", "seller": "Hoàng Trường", "customerName": "", "customerPhone": "", "soldAt": "2026-10-26", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263406048", "warehouse": "STORE", "brand": "Realme", "name": "V50", "ram": "8GB", "storage": "256GB", "color": "Xanh", "battery": "", "appearance": "", "condition": "Máy mới 100%", "importPrice": 2600000, "sellingPrice": 3700000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Trung Hiếu", "customerName": "A Tâm chợ chăm", "customerPhone": "", "soldAt": "2026-10-27", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263545841", "warehouse": "STORE", "brand": "Realme", "name": "V50", "ram": "", "storage": "128GB", "color": "Xanh", "battery": "", "appearance": "", "condition": "Máy mới 100%", "importPrice": 2600000, "sellingPrice": 3700000, "commission": 250000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263585368", "warehouse": "STORE", "brand": "Realme", "name": "V50", "ram": "", "storage": "128GB", "color": "Đen", "battery": "", "appearance": "", "condition": "Máy mới 100%", "importPrice": 2600000, "sellingPrice": 3700000, "commission": 250000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263611847", "warehouse": "STORE", "brand": "Realme", "name": "V50", "ram": "", "storage": "128GB", "color": "Đen", "battery": "", "appearance": "", "condition": "Máy mới 100%", "importPrice": 2600000, "sellingPrice": 3700000, "commission": 250000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263784144", "warehouse": "STORE", "brand": "OPPO", "name": "Reno 2", "ram": "8GB", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "97% vỏ xước", "importPrice": 1400000, "sellingPrice": 2500000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Hoàng Trường", "customerName": "Đạt Taxi", "customerPhone": "", "soldAt": "2026-10-22", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791263784162", "warehouse": "STORE", "brand": "OPPO", "name": "Reno 2Z", "ram": "8GB", "storage": "128GB", "color": "Đen", "battery": "", "appearance": "", "condition": "Ngoại hình cũ 97% vỏ xước", "importPrice": 1400000, "sellingPrice": 2500000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Thơ Lii", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-04", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791275629371", "warehouse": "STORE", "brand": "iPhone", "name": "XS Max", "ram": "", "storage": "128GB", "color": "Đen", "battery": "85", "appearance": "99", "condition": "", "importPrice": 5000000, "sellingPrice": 6500000, "commission": 300000, "status": "AVAILABLE", "imei": "75923", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791346158723", "warehouse": "STORE", "brand": "iPhone", "name": "XS Max", "ram": "", "storage": "512GB", "color": "Đen", "battery": "100", "appearance": "99", "condition": "Pin thay", "importPrice": 4000000, "sellingPrice": 7000000, "commission": 300000, "status": "SOLD", "imei": "02289", "seller": "Hoàng Trường", "customerName": "Em trai Điện Biên Đông", "customerPhone": "", "soldAt": "2026-10-25", "importedAt": "2026-10-07", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791688972018", "warehouse": "STORE", "brand": "iPhone", "name": "11 Pro Max Lock", "ram": "", "storage": "256GB", "color": "Đen", "battery": "100", "appearance": "", "condition": "Vỏ xấu, pin thay, màn thay Oled", "importPrice": 2000000, "sellingPrice": 3500000, "commission": 200000, "status": "AVAILABLE", "imei": "60371", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-11", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1791689161641", "warehouse": "STORE", "brand": "iPhone", "name": "11 Pro Max", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "Màn thay oled", "importPrice": 3500000, "sellingPrice": 5500000, "commission": 200000, "status": "SOLD", "imei": "73147", "seller": "Hoàng Trường", "customerName": "Ngọc Chiên", "customerPhone": "", "soldAt": "2026-10-11", "importedAt": "2026-10-11", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792153032988", "warehouse": "STORE", "brand": "iPhone", "name": "11", "ram": "", "storage": "64GB", "color": "Xanh Min", "battery": "", "appearance": "97", "condition": "Thay báo màn", "importPrice": 2000000, "sellingPrice": 3500000, "commission": 300000, "status": "SOLD", "imei": "3720132", "seller": "Trung Hiếu", "customerName": "Nguyễn Đức Dũng", "customerPhone": "", "soldAt": "2026-11-02", "importedAt": "2026-10-16", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792548941368", "warehouse": "STORE", "brand": "iPhone", "name": "12", "ram": "", "storage": "128GB", "color": "Xanh Min", "battery": "100", "appearance": "97", "condition": "", "importPrice": 3500000, "sellingPrice": 5500000, "commission": 300000, "status": "SOLD", "imei": "4915716", "seller": "Hoàng Trường", "customerName": "", "customerPhone": "", "soldAt": "2026-10-24", "importedAt": "2026-10-21", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792549155987", "warehouse": "STORE", "brand": "Xiaomi", "name": "15 Ultra", "ram": "8GB", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "Zin 98%", "importPrice": 11000000, "sellingPrice": 12500000, "commission": 300000, "status": "SOLD", "imei": "", "seller": "Trung Hiếu", "customerName": "e Long meiko", "customerPhone": "", "soldAt": "2026-10-22", "importedAt": "2026-10-21", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792549221674", "warehouse": "STORE", "brand": "Xiaomi", "name": "17 Ultra By Leica", "ram": "16GB", "storage": "512GB", "color": "Đen", "battery": "99", "appearance": "99", "condition": "Zin đẹp 98% , Fullbox", "importPrice": 19500000, "sellingPrice": 20700000, "commission": 300000, "status": "SOLD", "imei": "", "seller": "Thơ Lii", "customerName": "Bạn Quốc Oai", "customerPhone": "", "soldAt": "2026-10-28", "importedAt": "2026-10-21", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792575178903", "warehouse": "STORE", "brand": "iPhone", "name": "12 Mini", "ram": "", "storage": "128GB", "color": "xanh", "battery": "81%", "appearance": "cũ đẹp , có xước", "condition": "Zin đẹp 98%", "importPrice": 3200000, "sellingPrice": 4500000, "commission": 200000, "status": "AVAILABLE", "imei": "10713", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-21", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792633236745", "warehouse": "STORE", "brand": "Black Shark", "name": "4", "ram": "6GB", "storage": "128GB", "color": "Đen", "battery": "", "appearance": "95", "condition": "Vỏ xấu, full chức năng", "importPrice": 1700000, "sellingPrice": 2800000, "commission": 200000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-22", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1792724317282", "warehouse": "STORE", "brand": "iPhone", "name": "7", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 400000, "sellingPrice": 900000, "commission": 150000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-10-23", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793025565791", "warehouse": "STORE", "brand": "Redmi", "name": "Note 13 5G", "ram": "8GB", "storage": "128GB", "color": "Trắng", "battery": "", "appearance": "", "condition": "99%", "importPrice": 1600000, "sellingPrice": 2600000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Thơ Lii", "customerName": "Hoàng", "customerPhone": "0878732882", "soldAt": "2026-11-04", "importedAt": "2026-10-26", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793064179784", "warehouse": "STORE", "brand": "Redmi", "name": "Note 12 Turbo", "ram": "8GB", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "Màn ám, móp góc 3 chỗ", "importPrice": 500000, "sellingPrice": 900000, "commission": 100000, "status": "SOLD", "imei": "480348", "seller": "Trung Hiếu", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-03", "importedAt": "2026-10-27", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793165149925", "warehouse": "STORE", "brand": "iPhone", "name": "Xs", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "Thay màn, hỏng faceid", "importPrice": 600000, "sellingPrice": 1200000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Ngọc Anh", "customerName": "Văn Minh", "customerPhone": "", "soldAt": "2026-11-04", "importedAt": "2026-10-28", "manager": "Hoàng Trường", "managerId": "acc-niky", "managerCommission": 400000}, {"id": "prod-1793360053355", "warehouse": "STORE", "brand": "Xiaomi", "name": "15T Pro", "ram": "", "storage": "", "color": "Gold", "battery": "95%", "appearance": "", "condition": "Fullbox Zin đẹp 99", "importPrice": 7500000, "sellingPrice": 8800000, "commission": 300000, "status": "SOLD", "imei": "479646", "seller": "Ngọc Anh", "customerName": "Toán", "customerPhone": "0378565657", "soldAt": "2026-11-05", "importedAt": "2026-10-30", "manager": "Hoàng Trường", "managerId": "acc-niky", "managerCommission": 1000000}, {"id": "prod-1793421877883", "warehouse": "STORE", "brand": "Realme", "name": "Neo 7", "ram": "", "storage": "", "color": "bạc", "battery": "", "appearance": "cũ đẹp , có xước", "condition": "Zin đẹp 98%", "importPrice": 4500000, "sellingPrice": 6000000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Hoàng Trường", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-02", "importedAt": "2026-10-31", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793615941129", "warehouse": "PARTNER", "brand": "iPhone", "name": "11", "ram": "", "storage": "64GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 4900000, "sellingPrice": 6000000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-02", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793619157722", "warehouse": "STORE", "brand": "Samsung", "name": "A26", "ram": "8GB", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 3500000, "sellingPrice": 5000000, "commission": 400000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-02", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793761185058", "warehouse": "PARTNER", "brand": "iPhone", "name": "11 Pro Max", "ram": "", "storage": "64GB", "color": "", "battery": "8x-9x", "appearance": "", "condition": "", "importPrice": 5900000, "sellingPrice": 7000000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793764761007", "warehouse": "PARTNER", "brand": "iPhone", "name": "12", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 5400000, "sellingPrice": 6500000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793764785533", "warehouse": "PARTNER", "brand": "iPhone", "name": "12 Pro Max", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 8000000, "sellingPrice": 9500000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793764882561", "warehouse": "PARTNER", "brand": "iPhone", "name": "13", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 6900000, "sellingPrice": 8200000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793764943410", "warehouse": "PARTNER", "brand": "iPhone", "name": "14", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 7300000, "sellingPrice": 8800000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765063141", "warehouse": "PARTNER", "brand": "iPhone", "name": "14 Pro", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 11500000, "sellingPrice": 13000000, "commission": 400000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765114397", "warehouse": "PARTNER", "brand": "iPhone", "name": "13 Pro Max", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 10000000, "sellingPrice": 11500000, "commission": 350000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765208422", "warehouse": "PARTNER", "brand": "iPhone", "name": "15 Pro Max", "ram": "", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 16000000, "sellingPrice": 17500000, "commission": 400000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765235634", "warehouse": "PARTNER", "brand": "iPhone", "name": "16 Pro Max", "ram": "", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 22500000, "sellingPrice": 24000000, "commission": 400000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765262180", "warehouse": "PARTNER", "brand": "iPhone", "name": "17 Pro Max", "ram": "", "storage": "256GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 27000000, "sellingPrice": 28500000, "commission": 400000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765328938", "warehouse": "PARTNER", "brand": "iPhone", "name": "Xs Max", "ram": "", "storage": "64GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 4300000, "sellingPrice": 5500000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765377168", "warehouse": "PARTNER", "brand": "iPhone", "name": "11 Pro", "ram": "", "storage": "64GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 5200000, "sellingPrice": 6500000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765434197", "warehouse": "PARTNER", "brand": "iPhone", "name": "12 Pro", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 6900000, "sellingPrice": 8200000, "commission": 300000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793765510015", "warehouse": "PARTNER", "brand": "iPhone", "name": "14 Plus", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 9000000, "sellingPrice": 10500000, "commission": 350000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793802082961", "warehouse": "STORE", "brand": "iPhone", "name": "test", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 11, "sellingPrice": 111, "commission": 111, "status": "SOLD", "imei": "", "seller": "Ngọc Anh", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-04", "importedAt": "2026-11-04", "manager": "Hoàng Trường", "managerId": "acc-niky", "managerCommission": 0}, {"id": "prod-1793848336535", "warehouse": "PARTNER", "brand": "iPhone", "name": "14 Pro Max", "ram": "", "storage": "", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 12800000, "sellingPrice": 14000000, "commission": 350000, "status": "AVAILABLE", "imei": "", "seller": "", "customerName": "", "customerPhone": "", "soldAt": "", "importedAt": "2026-11-05", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793934791593", "warehouse": "STORE", "brand": "Redmi", "name": "Turbo 4 Pro", "ram": "16GB", "storage": "256GB", "color": "Đen", "battery": "97%", "appearance": "Xước màn, xước khung", "condition": "Zin, kèm ốp", "importPrice": 3800000, "sellingPrice": 5500000, "commission": 300000, "status": "SOLD", "imei": "5547882", "seller": "Hoàng Trường", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-06", "importedAt": "2026-11-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1793977934684", "warehouse": "STORE", "brand": "Samsung", "name": "Galaxy Tab A7 Lite", "ram": "", "storage": "128GB", "color": "Bạc", "battery": "", "appearance": "90%", "condition": "", "importPrice": 1000000, "sellingPrice": 1400000, "commission": 0, "status": "SOLD", "imei": "", "seller": "Hoàng Trường", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-06", "importedAt": "2026-11-06", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "prod-1794046512965", "warehouse": "STORE", "brand": "iPhone", "name": "14", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "zin đẹp , màn thay chính hãng . Pin 84", "importPrice": 7500000, "sellingPrice": 8800000, "commission": 200000, "status": "SOLD", "imei": "", "seller": "Trung Hiếu", "customerName": "Vũ Văn Tú", "customerPhone": "0399484556", "soldAt": "2026-11-07", "importedAt": "2026-11-07", "manager": "", "managerId": "", "managerCommission": 0}, {"id": "sold-partner-1793800455154", "warehouse": "PARTNER", "brand": "iPhone", "name": "12 Pro Max", "ram": "", "storage": "128GB", "color": "", "battery": "", "appearance": "", "condition": "", "importPrice": 8000000, "sellingPrice": 9200000, "commission": 300000, "status": "SOLD", "imei": "", "seller": "Thơ Lii", "customerName": "Khách Lẻ", "customerPhone": "", "soldAt": "2026-11-04", "importedAt": "2026-11-04", "manager": "", "managerId": "", "managerCommission": 0}], "staff": [{"id": "acc-hieu", "full_name": "Trung Hiếu", "email": "trunghieu@gmail.com", "role": "manager", "manager_id": "", "manager_name": ""}, {"id": "acc-niky", "full_name": "Hoàng Trường", "email": "saint.niky@gmail.com", "role": "owner", "manager_id": "", "manager_name": ""}, {"id": "acc-tholii", "full_name": "Thơ Lii", "email": "tholii@gmail.com", "role": "owner", "manager_id": "", "manager_name": ""}, {"id": "staff-1793589261971", "full_name": "Ngọc Anh", "email": "cola@gmail.com", "role": "staff", "manager_id": "acc-niky", "manager_name": "Hoàng Trường"}]};
+const firebaseConfig = {
             apiKey: "AIzaSyDvnLFK5iXODfWVlGZ9PQpPu4GnjQpV6WE",
             authDomain: "aistore-8f52c.firebaseapp.com",
             projectId: "aistore-8f52c",
@@ -2203,6 +2379,20 @@
         async function initApp() {
             initPeriodSelects();
             window.loadAndRenderNotifications();
+            // [XEM TRƯỚC] Nạp dữ liệu thật đã xuất, tự đăng nhập, bỏ qua Firebase
+            products = PREVIEW_DATA.products.map(p => ({...p, isPartnerSaleClone: String(p.id).startsWith('sold-partner-')}));
+            try { payroll = JSON.parse(localStorage.getItem(LOCAL_PAYROLL_KEY) || '[]'); } catch (e) { payroll = []; }
+            staffAccountsList = PREVIEW_DATA.staff.map(a => ({...a, password: ''}));
+            const previewAs = new URLSearchParams(location.search).get('as') || 'acc-niky';
+            const previewUser = staffAccountsList.find(a => a.id === previewAs) || staffAccountsList[0];
+            currentUserProfile = {...previewUser};
+            userRole = previewUser.role || 'staff';
+            currentUser = { uid: previewUser.id, email: previewUser.email };
+            window.showAuthModal(false);
+            updateUserUI();
+            window.switchTab('commission');
+            window.__t = { get products() { return products; }, get me() { return currentUserProfile; }, CSV_COLUMNS, csvCell, parseCSV };
+            return;
 
             // Dữ liệu lưu tạm trên máy (dùng khi chưa tải xong / mất kết nối Firebase)
             try {
