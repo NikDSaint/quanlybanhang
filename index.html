@@ -124,7 +124,9 @@
             }
             .no-print { display: none !important; }
         }
-    </style>
+            .new-item-flash { animation: newItemFlash 4s ease-out; }
+        @keyframes newItemFlash { 0%, 60% { background-color: #fef9c3; } 100% { background-color: transparent; } }
+</style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
 
@@ -311,8 +313,8 @@
                             <option value="Khác">Khác</option>
                         </select>
                         <select id="filter-sort" onchange="handleDropdownSortChange()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
-                            <option value="DATE_DESC">Ngày nhập: Mới nhất</option>
-                            <option value="DATE_ASC">Ngày nhập: Cũ nhất</option>
+                            <option value="DATE_DESC">Mới thêm lên đầu</option>
+                            <option value="DATE_ASC">Cũ nhất lên đầu</option>
                             <option value="PRICE_DESC">Giá bán: Cao -> Thấp</option>
                             <option value="PRICE_ASC">Giá bán: Thấp -> Cao</option>
                             <option value="NAME_ASC">Tên máy: A đến Z</option>
@@ -427,8 +429,8 @@
                             <option value="Khác">Khác</option>
                         </select>
                         <select id="partner-filter-sort" onchange="handlePartnerDropdownSortChange()" class="px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium text-slate-700">
-                            <option value="DATE_DESC">Ngày nhập: Mới nhất</option>
-                            <option value="DATE_ASC">Ngày nhập: Cũ nhất</option>
+                            <option value="DATE_DESC">Mới thêm lên đầu</option>
+                            <option value="DATE_ASC">Cũ nhất lên đầu</option>
                             <option value="PRICE_DESC">Giá bán: Cao -> Thấp</option>
                             <option value="PRICE_ASC">Giá bán: Thấp -> Cao</option>
                             <option value="NAME_ASC">Tên máy: A đến Z</option>
@@ -1459,6 +1461,15 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Giá Bán Cho Khách (VNĐ) <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" inputmode="numeric" id="sell-final-price" required oninput="formatPriceInput(this); updateSellDiscount()" class="w-full px-3 py-2 pr-24 text-base border border-slate-300 rounded-xl font-black text-rose-600">
+                        <button type="button" onclick="resetSellPrice()" class="absolute right-1.5 top-1/2 -translate-y-1/2 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-bold" title="Trả về giá niêm yết">Giá gốc</button>
+                    </div>
+                    <p id="sell-discount-hint" class="text-[11px] font-semibold text-slate-400 mt-1">Sửa nếu muốn bớt cho khách</p>
+                </div>
+
+                <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Ngày Bán Máy <span class="text-rose-500">*</span></label>
                     <input type="date" id="sell-date" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-semibold text-slate-800">
                 </div>
@@ -2480,6 +2491,7 @@
                                 appearance: item.appearance || '',
                                 condition: item.condition || '',
                                 accessories: item.accessories || '',
+                                listedPrice: Number(item.listed_price || item.listedPrice) || 0,
                                 importPrice: Number(item.import_price || item.importPrice) || 0,
                                 sellingPrice: Number(item.selling_price || item.sellingPrice) || 0,
                                 commission: Number(item.commission) || 0,
@@ -3965,7 +3977,12 @@
             const commission = document.getElementById('dt-commission');
 
             if (importPrice) importPrice.innerText = formatVND(p.importPrice);
-            if (sellingPrice) sellingPrice.innerText = formatVND(p.sellingPrice);
+            if (sellingPrice) {
+                // Đơn đã bớt giá: hiện thêm giá niêm yết gạch ngang
+                const listed = Number(p.listedPrice) || 0;
+                sellingPrice.innerHTML = formatVND(p.sellingPrice) + (listed && listed !== Number(p.sellingPrice)
+                    ? ` <span class="block text-[10px] font-semibold text-slate-400 line-through">${formatVND(listed)}</span>` : '');
+            }
             if (commission) commission.innerText = formatVND(p.commission);
             
             const dtImei = document.getElementById('dt-imei');
@@ -4140,7 +4157,10 @@
                     await deleteDoc(doc(db, "products", id));
                 } catch (e) {}
             } else {
-                // Đơn hàng từ Kho Cửa Hàng: Hoàn trả lại kho
+                // Đơn hàng từ Kho Cửa Hàng: Hoàn trả lại kho (giá bán trở về giá niêm yết nếu đã bớt)
+                const restorePrice = Number(p.listedPrice) || Number(p.sellingPrice) || 0;
+                p.sellingPrice = restorePrice;
+                p.listedPrice = 0;
                 p.status = 'AVAILABLE';
                 p.soldAt = '';
                 p.seller = '';
@@ -4156,6 +4176,8 @@
                     const ref = doc(db, "products", id);
                     await setDoc(ref, {
                         status: 'AVAILABLE',
+                        selling_price: restorePrice,
+                        listed_price: 0,
                         sold_at: '',
                         seller: '',
                         customer_name: '',
@@ -4542,8 +4564,24 @@
             } catch (e) {}
 
             window.closeProductModal();
+            if (!existingProd) {
+                // Máy mới thêm: chuyển kho đó về "Mới thêm lên đầu" để máy nằm trên cùng, tô sáng vài giây
+                if (warehouseVal === 'PARTNER') {
+                    partnerSortMode = 'DATE_DESC';
+                    const el = document.getElementById('partner-filter-sort'); if (el) el.value = 'DATE_DESC';
+                } else {
+                    sortMode = 'DATE_DESC';
+                    const el = document.getElementById('filter-sort'); if (el) el.value = 'DATE_DESC';
+                }
+                justAddedId = id;
+                setTimeout(() => { if (justAddedId === id) { justAddedId = null; window.renderApp(); } }, 4000);
+            }
             window.renderApp();
-            showToast('Đã lưu thông tin máy thành công!');
+            if (!existingProd) {
+                const tb = document.getElementById(warehouseVal === 'PARTNER' ? 'partner-product-table-body' : 'product-table-body');
+                (tb?.closest('.overflow-x-auto') || tb)?.scrollTo?.({ top: 0, behavior: 'smooth' });
+            }
+            showToast(existingProd ? 'Đã lưu thông tin máy thành công!' : 'Đã thêm máy mới lên đầu danh sách!');
         };
 
         window.openSellModal = function(id) {
@@ -4563,6 +4601,8 @@
             if (titleEl) titleEl.innerText = `${p.brand} - ${p.name}`;
             if (infoEl) infoEl.innerText = `Giá bán: ${formatVND(p.sellingPrice)} | Hoa hồng: ${formatVND(p.commission)}`;
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            sellListedPrice = Number(p.sellingPrice) || 0;
+            window.resetSellPrice();
 
             if (sel) {
                 const accounts = getStaffAccounts();
@@ -4579,6 +4619,35 @@
             if (custName) custName.value = '';
             if (custPhone) custPhone.value = '';
             if (modal) modal.classList.remove('hidden');
+        };
+
+        // Giá niêm yết của máy đang mở trong popup bán (để so sánh khi bớt giá)
+        let sellListedPrice = 0;
+
+        window.resetSellPrice = function() {
+            const input = document.getElementById('sell-final-price');
+            if (input) input.value = sellListedPrice ? new Intl.NumberFormat('vi-VN').format(sellListedPrice) : '';
+            window.updateSellDiscount();
+        };
+
+        window.updateSellDiscount = function() {
+            const hint = document.getElementById('sell-discount-hint');
+            if (!hint) return;
+            const finalPrice = parseNumberInput(document.getElementById('sell-final-price')?.value || '');
+            const diff = sellListedPrice - finalPrice;
+            if (!finalPrice) {
+                hint.className = 'text-[11px] font-semibold text-rose-500 mt-1';
+                hint.innerText = 'Vui lòng nhập giá bán';
+            } else if (diff > 0) {
+                hint.className = 'text-[11px] font-bold text-amber-600 mt-1';
+                hint.innerText = `Bớt cho khách ${formatVND(diff)} (giá niêm yết ${formatVND(sellListedPrice)})`;
+            } else if (diff < 0) {
+                hint.className = 'text-[11px] font-bold text-emerald-600 mt-1';
+                hint.innerText = `Cao hơn giá niêm yết ${formatVND(-diff)}`;
+            } else {
+                hint.className = 'text-[11px] font-semibold text-slate-400 mt-1';
+                hint.innerText = 'Đúng giá niêm yết · sửa nếu muốn bớt cho khách';
+            }
         };
 
         window.closeSellModal = function() {
@@ -4602,6 +4671,13 @@
                 const soldDate = document.getElementById('sell-date')?.value || new Date().toISOString().split('T')[0];
                 const custName = document.getElementById('sell-customer-name')?.value.trim() || 'Khách Lẻ';
                 const custPhone = document.getElementById('sell-customer-phone')?.value.trim() || '';
+                // Giá bán thực tế cho khách (có thể đã bớt); giữ lại giá niêm yết để tham chiếu
+                const listedPrice = Number(p.sellingPrice) || 0;
+                const finalPrice = parseNumberInput(document.getElementById('sell-final-price')?.value || '') || listedPrice;
+                if (finalPrice <= 0) {
+                    showToast('Vui lòng nhập giá bán cho khách!', 'error');
+                    return;
+                }
 
                 const accounts = getStaffAccounts();
                 const sellerAccount = accounts.find(a => a.full_name === seller);
@@ -4621,7 +4697,7 @@
                 }
 
                 if (sponsorManagerName) {
-                    const grossProfit = (Number(p.sellingPrice) || 0) - (Number(p.importPrice) || 0);
+                    const grossProfit = finalPrice - (Number(p.importPrice) || 0);
                     const staffComm = Number(p.commission) || 0;
                     const calculatedMgrComm = grossProfit - staffComm;
                     managerCommission = calculatedMgrComm > 0 ? calculatedMgrComm : 0;
@@ -4635,6 +4711,8 @@
                         id: soldRecordId,
                         isPartnerSaleClone: true,
                         status: 'SOLD',
+                        sellingPrice: finalPrice,
+                        listedPrice: listedPrice,
                         soldAt: soldDate,
                         seller: seller,
                         customerName: custName,
@@ -4667,6 +4745,7 @@
                             accessories: soldRecord.accessories || '',
                             imported_at: soldRecord.importedAt,
                             is_partner_sale_clone: true,
+                            listed_price: soldRecord.listedPrice,
                             sold_at: soldRecord.soldAt,
                             seller: soldRecord.seller,
                             customer_name: soldRecord.customerName,
@@ -4681,6 +4760,8 @@
                 } else {
                     // NẾU LÀ KHO CỬA HÀNG: CẬP NHẬT TRẠNG THÁI SANG SOLD
                     p.status = 'SOLD';
+                    p.listedPrice = listedPrice;
+                    p.sellingPrice = finalPrice;
                     p.soldAt = soldDate;
                     p.seller = seller;
                     p.customerName = custName;
@@ -4695,6 +4776,8 @@
                         const ref = doc(db, "products", p.id);
                         await setDoc(ref, {
                             status: p.status,
+                            selling_price: p.sellingPrice,
+                            listed_price: p.listedPrice,
                             sold_at: p.soldAt,
                             seller: p.seller,
                             customer_name: p.customerName,
@@ -4706,9 +4789,10 @@
                     } catch (e) {}
                 }
 
-                const notifMsg = sponsorManagerName 
-                    ? `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}. Quản lý bảo trợ ${sponsorManagerName} nhận ${formatVND(managerCommission)}.`
-                    : `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}.`;
+                const discountTxt = finalPrice < listedPrice ? ` giá ${formatVND(finalPrice)} (bớt ${formatVND(listedPrice - finalPrice)})` : ` giá ${formatVND(finalPrice)}`;
+                const notifMsg = sponsorManagerName
+                    ? `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}${discountTxt}. Quản lý bảo trợ ${sponsorManagerName} nhận ${formatVND(managerCommission)}.`
+                    : `Nhân viên ${seller} vừa xuất bán ${p.brand} ${p.name}${discountTxt}.`;
                 window.pushNotification('Đã chốt đơn', notifMsg, 'sell');
                 
                 window.closeSellModal();
@@ -5162,6 +5246,7 @@
                 appearance: p.appearance || '',
                 condition: p.condition || '',
                 accessories: p.accessories || '',
+                listed_price: Number(p.listedPrice) || 0,
                 imei: p.imei || '',
                 import_price: Number(p.importPrice) || 0,
                 selling_price: Number(p.sellingPrice) || 0,
@@ -5743,6 +5828,13 @@
             }
         };
 
+        // Thời điểm máy được thêm vào kho, lấy từ mã máy dạng prod-<số mili giây>
+        let justAddedId = null;
+        function addedTs(p) {
+            const m = String(p.id || '').match(/(\d{12,})/);
+            return m ? Number(m[1]) : 0;
+        }
+
         function renderStockTable(cfg) {
             const searchVal = document.getElementById(cfg.searchId)?.value.toLowerCase().trim() || '';
             const brandVal = document.getElementById(cfg.brandId)?.value || 'ALL';
@@ -5759,8 +5851,10 @@
 
             const fullName = p => `${p.brand || ''} ${p.name || ''}`.trim();
             const sorters = {
-                DATE_DESC: (a, b) => (b.importedAt || '').localeCompare(a.importedAt || ''),
-                DATE_ASC: (a, b) => (a.importedAt || '').localeCompare(b.importedAt || ''),
+                // Mới nhất = máy vừa thêm vào kho lên đầu (theo thời điểm thêm, ghi trong mã máy),
+                // máy không có thời điểm thêm thì xếp theo ngày nhập
+                DATE_DESC: (a, b) => (addedTs(b) - addedTs(a)) || (b.importedAt || '').localeCompare(a.importedAt || ''),
+                DATE_ASC: (a, b) => (addedTs(a) - addedTs(b)) || (a.importedAt || '').localeCompare(b.importedAt || ''),
                 PRICE_DESC: (a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0),
                 PRICE_ASC: (a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0),
                 NAME_ASC: (a, b) => fullName(a).localeCompare(fullName(b), 'vi'),
@@ -5779,8 +5873,9 @@
 
             const accent = isPartner ? 'sky' : 'indigo';
             const cards = document.getElementById(cfg.tbodyId + '-cards');
+            const hl = p => p.id === justAddedId ? ' new-item-flash' : '';
             if (cards) cards.innerHTML = list.map((p, i) => `
-                <div class="p-3.5 flex gap-3">
+                <div class="p-3.5 flex gap-3${hl(p)}">
                     <div class="w-7 text-center text-[11px] font-bold text-slate-300 pt-0.5">${i + 1}</div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
@@ -5807,7 +5902,7 @@
                     </div>
                 </div>`).join('');
             tbody.innerHTML = list.map((p, i) => `
-                <tr class="hover:bg-slate-50 transition">
+                <tr class="hover:bg-slate-50 transition${hl(p)}">
                     <td class="py-3 px-3 text-center text-xs font-bold text-slate-400">${i + 1}</td>
                     <td class="py-3 px-4 text-center">
                         <div class="flex items-center justify-center gap-1.5">
