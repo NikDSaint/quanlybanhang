@@ -183,20 +183,92 @@
         button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         button:active:not(:disabled) { transform: scale(0.96); transition: transform 60ms; }
 
-        /* ===== Ô ngày giờ + thời tiết ở cột bên trái ===== */
-        .side-widget {
+        /* ===== Thẻ ngày giờ + thời tiết kiểu kính lỏng =====
+           Lớp dưới (sw-scene) là bầu trời + mây/mặt trời nét; lớp kính (sw-glass) làm mờ lớp dưới.
+           Chỉ 1 lớp làm mờ nhỏ nên không nặng máy. Màu trời đổi theo thời tiết và ngày/đêm. */
+        .sw-card {
             position: relative; isolation: isolate; overflow: hidden;
-            border-radius: 22px; padding: 12px 14px; color: #fff;
-            background: linear-gradient(145deg, #8b5cf6 0%, #6366f1 55%, #3b82f6 100%);
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            box-shadow: inset 0 1.5px 1px rgba(255,255,255,.6), inset 0 -2px 8px rgba(255,255,255,.18), 0 12px 26px -14px rgba(79, 70, 229, 0.75);
+            border-radius: 26px; color: #fff;
+            text-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
+            box-shadow: 0 16px 34px -18px rgba(30, 41, 59, 0.75), 0 2px 6px rgba(15, 23, 42, 0.08);
+            background: linear-gradient(165deg, #38bdf8 0%, #6366f1 100%);
+            transition: background .6s;
         }
-        .side-widget::after {
-            content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-            background:
-                radial-gradient(90% 70% at 15% 0%, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 60%),
-                radial-gradient(60% 60% at 100% 100%, rgba(125, 211, 252, .45) 0%, rgba(125,211,252,0) 70%);
+        .sw-card[data-sky="cloudy"] { background: linear-gradient(165deg, #94a3b8 0%, #64748b 55%, #475569 100%); }
+        .sw-card[data-sky="rain"]   { background: linear-gradient(165deg, #64748b 0%, #334155 50%, #1e3a8a 100%); }
+        .sw-card[data-sky="storm"]  { background: linear-gradient(165deg, #475569 0%, #1e293b 55%, #312e81 100%); }
+        .sw-card[data-sky="night"]  { background: linear-gradient(165deg, #312e81 0%, #1e1b4b 55%, #0f172a 100%); }
+        .sw-scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+        .sw-scene i { position: absolute; border-radius: 9999px; display: block; }
+        /* mặt trời / mặt trăng */
+        .sw-scene i:nth-child(1) { width: 84px; height: 84px; right: -14px; top: -18px; background: radial-gradient(circle at 40% 40%, #fef3c7, #fbbf24 60%, #f59e0b); }
+        .sw-card[data-sky="night"] .sw-scene i:nth-child(1) { background: radial-gradient(circle at 40% 40%, #f8fafc, #cbd5e1 70%); }
+        .sw-card:is([data-sky="cloudy"], [data-sky="rain"], [data-sky="storm"]) .sw-scene i:nth-child(1) { opacity: .35; }
+        /* các đám mây */
+        .sw-scene i:nth-child(2) { width: 120px; height: 56px; left: -24px; top: 38%; background: rgba(255, 255, 255, 0.75); }
+        .sw-scene i:nth-child(3) { width: 90px; height: 90px; left: 34%; bottom: -40px; background: rgba(255, 255, 255, 0.55); }
+        .sw-scene i:nth-child(4) { width: 70px; height: 34px; right: 10%; top: 52%; background: rgba(224, 242, 254, 0.7); }
+        .sw-card:is([data-sky="rain"], [data-sky="storm"], [data-sky="night"]) .sw-scene i:not(:first-child) { background: rgba(203, 213, 225, 0.35); }
+        /* lớp kính */
+        .sw-glass {
+            position: relative; z-index: 1; border-radius: inherit;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0.12) 100%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
+            box-shadow:
+                inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
+                inset 1.5px 0 0 rgba(255, 255, 255, 0.35),
+                inset 0 -1.5px 0 rgba(255, 255, 255, 0.25),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.22);
         }
+        /* biểu tượng thời tiết nhiều lớp (mặt trời vàng sau đám mây trắng) */
+        .sw-icon { position: relative; width: 1.25em; height: 1em; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.28)); }
+        .sw-icon i { position: absolute; }
+        .sw-icon .sun { right: 0; top: -0.08em; font-size: .78em; background: linear-gradient(160deg, #fde68a, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sw-icon .moon { right: 0; top: -0.08em; font-size: .72em; background: linear-gradient(160deg, #ffffff, #c7d2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sw-icon .cloud { left: 0; bottom: 0; background: linear-gradient(180deg, #ffffff 30%, #cbd5e1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sw-icon .cloud.back { left: auto; right: 0; bottom: .25em; font-size: .7em; opacity: .85; }
+        .sw-icon .drops { left: .2em; bottom: -.35em; font-size: .42em; color: #7dd3fc; }
+        .sw-icon .bolt { left: .45em; bottom: -.35em; font-size: .45em; color: #fde047; }
+        .sw-icon .big { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        .sw-ic-wind { color: #e0f2fe; }
+        .sw-ic-rain { color: #bae6fd; }
+        .sw-ic-hum { color: #7dd3fc; }
+
+        /* ===== Ô tìm kiếm, ô chọn, ô nhập: kính lỏng cho đồng bộ với nút ===== */
+        :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]):not([type=hidden]), select, textarea) {
+            background-color: transparent !important;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 255, 0.75) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.95) !important;
+            box-shadow:
+                inset 0 1.5px 2px rgba(15, 23, 42, 0.07),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.95),
+                0 0 0 1px rgba(148, 163, 184, 0.28),
+                0 6px 16px -10px rgba(30, 41, 59, 0.28) !important;
+            transition: box-shadow .15s;
+        }
+        :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]):not([type=hidden]), select, textarea):focus {
+            outline: none !important;
+            box-shadow:
+                inset 0 1.5px 2px rgba(15, 23, 42, 0.07),
+                0 0 0 1px rgba(139, 92, 246, 0.55),
+                0 0 0 4px rgba(139, 92, 246, 0.16),
+                0 6px 16px -10px rgba(76, 29, 149, 0.4) !important;
+        }
+        /* Ô chọn: mũi tên tự vẽ (vì nền đã thay bằng lớp kính); ô nào đã có mũi tên riêng (appearance-none) thì bỏ qua */
+        select:not([multiple]):not(.appearance-none) {
+            -webkit-appearance: none; appearance: none;
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 255, 0.75) 100%) !important;
+            background-repeat: no-repeat, no-repeat !important;
+            background-position: right 12px center, 0 0 !important;
+            background-size: 12px 12px, 100% 100% !important;
+            padding-right: 34px !important;
+        }
+        /* Thanh lọc trong trang: dáng viên thuốc như ảnh mẫu */
+        main :is(input:not([type=checkbox]):not([type=radio]):not([type=file]), select) { border-radius: 9999px !important; }
+        textarea { border-radius: 16px !important; }
+        .fixed.inset-0 :is(input, select) { border-radius: 14px !important; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -219,22 +291,28 @@
                 </div>
             </div>
 
-            <!-- 2. Ngày giờ + thời tiết Hòa Bình -->
-            <div class="side-widget shrink-0" title="Thời tiết hiện tại ở TP. Hòa Bình">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                        <div id="sw-time" class="text-[30px] font-black leading-none tracking-tight tabular-nums">--:--</div>
-                        <div id="sw-weekday" class="text-[11px] font-bold mt-1.5 opacity-95">&nbsp;</div>
-                        <div id="sw-date" class="text-[11px] font-semibold opacity-85">&nbsp;</div>
+            <!-- 2. Ngày giờ + thời tiết Hòa Bình (kính lỏng) -->
+            <div class="sw-card shrink-0" data-sky="day" title="Thời tiết hiện tại ở TP. Hòa Bình">
+                <div class="sw-scene"><i></i><i></i><i></i><i></i></div>
+                <div class="sw-glass px-3.5 pt-3 pb-3">
+                    <div class="flex items-end justify-between gap-2">
+                        <div data-sw="time" class="text-[30px] font-black leading-none tracking-tight tabular-nums">--:--</div>
+                        <div class="text-right leading-tight">
+                            <div data-sw="weekday" class="text-[11px] font-bold">&nbsp;</div>
+                            <div data-sw="date" class="text-[11px] font-semibold opacity-90">&nbsp;</div>
+                        </div>
                     </div>
-                    <div class="text-right shrink-0">
-                        <i id="sw-icon" class="fa-solid fa-cloud-sun text-[26px] drop-shadow"></i>
-                        <div id="sw-temp" class="text-[22px] font-black leading-none mt-1 tabular-nums">--°</div>
+                    <div class="flex items-center justify-center gap-3 mt-3">
+                        <div data-sw="icon" class="sw-icon text-[44px]"></div>
+                        <div data-sw="temp" class="text-[38px] font-black leading-none tabular-nums">--°</div>
                     </div>
-                </div>
-                <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/25 text-[10.5px] font-semibold">
-                    <span class="truncate"><i class="fa-solid fa-location-dot mr-1 opacity-80"></i>Hòa Bình</span>
-                    <span id="sw-desc" class="truncate opacity-90 ml-2">Đang tải…</span>
+                    <div class="text-center mt-1.5 text-[12px] font-bold"><span data-sw="desc">Đang tải…</span></div>
+                    <div class="text-center text-[10.5px] font-semibold opacity-90"><i class="fa-solid fa-location-dot mr-1"></i>Hòa Bình <span data-sw="hilo"></span></div>
+                    <div class="grid grid-cols-3 gap-1 mt-2.5 pt-2.5 border-t border-white/25 text-center">
+                        <div><i class="fa-solid fa-wind text-[15px] sw-ic-wind"></i><div data-sw="wind" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
+                        <div><i class="fa-solid fa-cloud-rain text-[15px] sw-ic-rain"></i><div data-sw="rain" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
+                        <div><i class="fa-solid fa-droplet text-[15px] sw-ic-hum"></i><div data-sw="hum" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
+                    </div>
                 </div>
             </div>
 
@@ -349,6 +427,32 @@
     <!-- MAIN WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
+            <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại) -->
+            <div class="sw-card md:hidden mb-4" data-sky="day">
+                <div class="sw-scene"><i></i><i></i><i></i><i></i></div>
+                <div class="sw-glass px-4 py-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div data-sw="time" class="text-[32px] font-black leading-none tracking-tight tabular-nums">--:--</div>
+                            <div class="text-[11px] font-bold mt-1 truncate"><span data-sw="weekday"></span>, <span data-sw="date"></span></div>
+                            <div class="text-[11px] font-semibold opacity-90 truncate"><i class="fa-solid fa-location-dot mr-1"></i>Hòa Bình · <span data-sw="desc">Đang tải…</span></div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div data-sw="icon" class="sw-icon text-[40px]"></div>
+                            <div class="text-right">
+                                <div data-sw="temp" class="text-[34px] font-black leading-none tabular-nums">--°</div>
+                                <div data-sw="hilo" class="text-[10.5px] font-semibold opacity-90 mt-0.5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-around mt-2.5 pt-2 border-t border-white/25 text-[11px] font-bold tabular-nums">
+                        <span><i class="fa-solid fa-wind mr-1.5 sw-ic-wind"></i><span data-sw="wind">--</span></span>
+                        <span><i class="fa-solid fa-cloud-rain mr-1.5 sw-ic-rain"></i><span data-sw="rain">--</span></span>
+                        <span><i class="fa-solid fa-droplet mr-1.5 sw-ic-hum"></i><span data-sw="hum">--</span></span>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- VIEW 1: TỔNG QUAN KHO -->
             <div id="view-inventory" class="space-y-4">
@@ -6060,48 +6164,79 @@
         };
     </script>
     <script>
-    // Ô ngày giờ + thời tiết TP. Hòa Bình ở cột bên trái (thời tiết lấy từ Open-Meteo, miễn phí, không cần khóa)
+    // Ô ngày giờ + thời tiết TP. Hòa Bình (cột trái trên máy tính, đầu trang trên điện thoại)
+    // Thời tiết lấy từ Open-Meteo: miễn phí, không cần khóa, cập nhật 15 phút/lần
     (function () {
         const TZ = 'Asia/Ho_Chi_Minh';
         const LAT = 20.8172, LON = 105.3376;
-        const KEY = 'aistore-weather-hb';
-        const $ = id => document.getElementById(id);
+        const KEY = 'aistore-weather-hb2';
         const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-        let lastMin = '';
-        function tick() {
-            const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+        const setAll = (k, v, html) => document.querySelectorAll('[data-sw="' + k + '"]').forEach(el => { if (html) el.innerHTML = v; else el.textContent = v; });
+        const setSky = sky => document.querySelectorAll('.sw-card').forEach(el => el.dataset.sky = sky);
+        let lastMin = '', current = null;
+
+        function nowParts() {
+            return Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
                 timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit',
                 year: 'numeric', weekday: 'short', hourCycle: 'h23'
             }).formatToParts(new Date()).map(p => [p.type, p.value]));
-            const hm = parts.hour + ':' + parts.minute;
+        }
+        function tick() {
+            const p = nowParts();
+            const hm = p.hour + ':' + p.minute;
             if (hm === lastMin) return;
             lastMin = hm;
-            const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
-            if ($('sw-time')) $('sw-time').textContent = hm;
-            if ($('sw-weekday')) $('sw-weekday').textContent = WEEKDAYS[wd] || '';
-            if ($('sw-date')) $('sw-date').textContent = parts.day + '/' + parts.month + '/' + parts.year;
+            setAll('time', hm);
+            setAll('weekday', WEEKDAYS[['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday)] || '');
+            setAll('date', p.day + '/' + p.month + '/' + p.year);
+            if (!current) { const h = +p.hour; setSky(h >= 6 && h < 18 ? 'day' : 'night'); setAll('icon', icon(1, h >= 6 && h < 18), true); }
         }
-        // Mã thời tiết WMO -> chữ tiếng Việt + biểu tượng
-        function describe(code, isDay) {
-            const sun = isDay ? 'fa-sun' : 'fa-moon', part = isDay ? 'fa-cloud-sun' : 'fa-cloud-moon';
-            if (code === 0) return ['Trời quang', sun];
-            if (code <= 2) return ['Ít mây', part];
-            if (code === 3) return ['Nhiều mây', 'fa-cloud'];
-            if (code === 45 || code === 48) return ['Sương mù', 'fa-smog'];
-            if (code >= 51 && code <= 57) return ['Mưa phùn', 'fa-cloud-rain'];
-            if (code >= 61 && code <= 67) return [code >= 65 ? 'Mưa to' : 'Mưa', 'fa-cloud-showers-heavy'];
-            if (code >= 71 && code <= 77) return ['Tuyết', 'fa-snowflake'];
-            if (code >= 80 && code <= 82) return ['Mưa rào', 'fa-cloud-showers-heavy'];
-            if (code >= 95) return ['Dông', 'fa-cloud-bolt'];
-            return ['', part];
+
+        // Mã thời tiết WMO -> [chữ, kiểu trời, nhóm biểu tượng]
+        function classify(code) {
+            if (code === 0) return ['Trời quang', 'clear'];
+            if (code === 1) return ['Nắng nhẹ, ít mây', 'partly'];
+            if (code === 2) return ['Có mây', 'partly'];
+            if (code === 3) return ['Nhiều mây', 'cloudy'];
+            if (code === 45 || code === 48) return ['Sương mù', 'fog'];
+            if (code >= 51 && code <= 57) return ['Mưa phùn', 'rain'];
+            if (code >= 61 && code <= 67) return [code >= 65 ? 'Mưa to' : (code === 61 ? 'Mưa nhỏ' : 'Mưa'), 'rain'];
+            if (code >= 71 && code <= 77) return ['Tuyết', 'cloudy'];
+            if (code >= 80 && code <= 82) return [code === 82 ? 'Mưa rào rất to' : 'Mưa rào', 'rain'];
+            if (code >= 95) return ['Dông', 'storm'];
+            return ['', 'partly'];
+        }
+        function icon(code, isDay) {
+            const kind = classify(code)[1];
+            const sun = isDay ? '<i class="fa-solid fa-sun sun"></i>' : '<i class="fa-solid fa-moon moon"></i>';
+            if (kind === 'clear') return isDay
+                ? '<i class="fa-solid fa-sun sun big" style="font-size:1em"></i>'
+                : '<i class="fa-solid fa-moon moon big" style="font-size:.9em"></i>';
+            if (kind === 'partly') return sun + '<i class="fa-solid fa-cloud cloud"></i>';
+            if (kind === 'cloudy') return '<i class="fa-solid fa-cloud cloud back"></i><i class="fa-solid fa-cloud cloud"></i>';
+            if (kind === 'fog') return '<i class="fa-solid fa-smog cloud"></i>';
+            if (kind === 'rain') return '<i class="fa-solid fa-cloud cloud"></i><i class="fa-solid fa-droplet drops"></i>';
+            return '<i class="fa-solid fa-cloud cloud"></i><i class="fa-solid fa-bolt bolt"></i>';
+        }
+        function skyOf(code, isDay) {
+            const kind = classify(code)[1];
+            if (kind === 'storm') return 'storm';
+            if (kind === 'rain') return 'rain';
+            if (!isDay) return 'night';
+            if (kind === 'cloudy' || kind === 'fog') return 'cloudy';
+            return 'day';
         }
         function show(w) {
             if (!w) return;
-            const [desc, icon] = describe(w.code, w.isDay);
-            if ($('sw-temp')) $('sw-temp').textContent = Math.round(w.temp) + '°';
-            if ($('sw-icon')) $('sw-icon').className = 'fa-solid ' + icon + ' text-[26px] drop-shadow';
-            const hl = (w.max != null && w.min != null) ? ' · ' + Math.round(w.max) + '°/' + Math.round(w.min) + '°' : '';
-            if ($('sw-desc')) $('sw-desc').textContent = desc + hl;
+            current = w;
+            setAll('temp', Math.round(w.temp) + '°');
+            setAll('desc', classify(w.code)[0]);
+            setAll('icon', icon(w.code, w.isDay), true);
+            setAll('hilo', (w.max != null && w.min != null) ? 'C:' + Math.round(w.max) + '° T:' + Math.round(w.min) + '°' : '');
+            setAll('wind', w.wind != null ? Math.round(w.wind) + ' km/h' : '--');
+            setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
+            setAll('hum', w.hum != null ? Math.round(w.hum) + '%' : '--');
+            setSky(skyOf(w.code, w.isDay));
         }
         async function loadWeather() {
             let cached = null;
@@ -6110,21 +6245,24 @@
             if (cached && Date.now() - cached.at < 15 * 60 * 1000) return;
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
-                    '&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min' +
+                    '&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day' +
+                    '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
                     '&forecast_days=1&timezone=' + encodeURIComponent(TZ);
                 const r = await fetch(url, { cache: 'no-store' });
                 if (!r.ok) throw new Error(r.status);
                 const d = await r.json();
+                const c = d.current || {}, dy = d.daily || {};
+                const first = a => (Array.isArray(a) && a.length) ? a[0] : null;
                 const w = {
-                    temp: d.current.temperature_2m, code: d.current.weather_code, isDay: d.current.is_day === 1,
-                    max: d.daily && d.daily.temperature_2m_max ? d.daily.temperature_2m_max[0] : null,
-                    min: d.daily && d.daily.temperature_2m_min ? d.daily.temperature_2m_min[0] : null,
-                    at: Date.now()
+                    temp: c.temperature_2m, code: c.weather_code, isDay: c.is_day === 1,
+                    hum: c.relative_humidity_2m, wind: c.wind_speed_10m,
+                    max: first(dy.temperature_2m_max), min: first(dy.temperature_2m_min),
+                    rain: first(dy.precipitation_probability_max), at: Date.now()
                 };
                 show(w);
                 try { localStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {}
             } catch (e) {
-                if (!cached && $('sw-desc')) $('sw-desc').textContent = 'Chưa tải được thời tiết';
+                if (!cached) setAll('desc', 'Chưa tải được thời tiết');
             }
         }
         tick(); setInterval(tick, 1000);
