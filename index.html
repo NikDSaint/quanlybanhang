@@ -126,6 +126,77 @@
         }
             .new-item-flash { animation: newItemFlash 4s ease-out; }
         @keyframes newItemFlash { 0%, 60% { background-color: #fef9c3; } 100% { background-color: transparent; } }
+
+        /* ===== Nút bấm kiểu kính lỏng (Liquid Glass) =====
+           Nút màu: giữ màu, thêm ánh sáng mặt kính + viền sáng.
+           Nút nhạt: kính trong, viền trắng sáng, bóng nhẹ.
+           Không dùng làm mờ nền (backdrop-filter) nên không làm chậm máy. */
+        :is(.btn-grad, .pill-tab-active, .mnav-btn.active,
+            button[class^="bg-gradient-to"], button[class*=" bg-gradient-to"],
+            button[class*=" bg-emerald-6"], button[class*=" bg-rose-6"], button[class*=" bg-amber-6"],
+            button[class*=" bg-purple-6"], button[class*=" bg-indigo-6"], button[class*=" bg-slate-8"]):not([class*="w-11"]) {
+            isolation: isolate;
+            border: 1px solid rgba(255, 255, 255, 0.38) !important;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.55),
+                inset 0 -2px 6px rgba(255, 255, 255, 0.18),
+                0 8px 18px -10px rgba(76, 29, 149, 0.55) !important;
+        }
+        :is(.btn-grad, .pill-tab-active, .mnav-btn.active,
+            button[class^="bg-gradient-to"], button[class*=" bg-gradient-to"],
+            button[class*=" bg-emerald-6"], button[class*=" bg-rose-6"], button[class*=" bg-amber-6"],
+            button[class*=" bg-purple-6"], button[class*=" bg-indigo-6"], button[class*=" bg-slate-8"]):not([class*="w-11"])::after {
+            content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+            background:
+                radial-gradient(120% 90% at 18% 0%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.10) 100%);
+        }
+        :is(button[class^="bg-white"], button[class*=" bg-white"], button[class*=" bg-slate-50"], button[class*=" bg-slate-100"],
+            button[class*=" bg-indigo-50"], button[class*=" bg-purple-50"], button[class*=" bg-rose-50"], button[class*=" bg-emerald-50"],
+            button[class*=" bg-sky-50"], button[class*=" bg-amber-50"], button[class*="border-slate-300"]):not(.no-glass) {
+            isolation: isolate;
+            border: 1px solid rgba(255, 255, 255, 0.95) !important;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255, 255, 255, 1),
+                inset 0 -1.5px 3px rgba(15, 23, 42, 0.06),
+                0 0 0 1px rgba(148, 163, 184, 0.22),
+                0 6px 14px -8px rgba(15, 23, 42, 0.22) !important;
+        }
+        :is(button[class^="bg-white"], button[class*=" bg-white"], button[class*=" bg-slate-50"], button[class*=" bg-slate-100"],
+            button[class*=" bg-indigo-50"], button[class*=" bg-purple-50"], button[class*=" bg-rose-50"], button[class*=" bg-emerald-50"],
+            button[class*=" bg-sky-50"], button[class*=" bg-amber-50"], button[class*="border-slate-300"]):not(.no-glass)::after {
+            content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 55%, rgba(255, 255, 255, 0.35) 100%);
+        }
+        /* Dáng viên thuốc như iOS (trừ các thẻ to: thẻ tài khoản, nút Thông Báo) */
+        :is(.btn-grad, .pill-tab-active, .mnav-btn.active,
+            button[class^="bg-gradient-to"], button[class*=" bg-gradient-to"],
+            button[class*=" bg-emerald-6"], button[class*=" bg-rose-6"], button[class*=" bg-amber-6"],
+            button[class*=" bg-purple-6"], button[class*=" bg-indigo-6"], button[class*=" bg-slate-8"], .pill-tab-inactive, button[class^="bg-white"], button[class*=" bg-white"], button[class*=" bg-slate-50"], button[class*=" bg-slate-100"],
+            button[class*=" bg-indigo-50"], button[class*=" bg-purple-50"], button[class*=" bg-rose-50"], button[class*=" bg-emerald-50"],
+            button[class*=" bg-sky-50"], button[class*=" bg-amber-50"], button[class*="border-slate-300"]):not([class*="justify-between"]):not([class*="p-2 "]):not([class*="w-11"]) {
+            border-radius: 9999px !important;
+        }
+        /* Lớp ánh kính cần nút làm mốc vị trí; nút đã đặt vị trí riêng (absolute, fixed) thì giữ nguyên */
+        button:not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) { position: relative; }
+        /* Bấm vào: lún nhẹ ngay lập tức */
+        button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        button:active:not(:disabled) { transform: scale(0.96); transition: transform 60ms; }
+
+        /* ===== Ô ngày giờ + thời tiết ở cột bên trái ===== */
+        .side-widget {
+            position: relative; isolation: isolate; overflow: hidden;
+            border-radius: 22px; padding: 12px 14px; color: #fff;
+            background: linear-gradient(145deg, #8b5cf6 0%, #6366f1 55%, #3b82f6 100%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: inset 0 1.5px 1px rgba(255,255,255,.6), inset 0 -2px 8px rgba(255,255,255,.18), 0 12px 26px -14px rgba(79, 70, 229, 0.75);
+        }
+        .side-widget::after {
+            content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+            background:
+                radial-gradient(90% 70% at 15% 0%, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 60%),
+                radial-gradient(60% 60% at 100% 100%, rgba(125, 211, 252, .45) 0%, rgba(125,211,252,0) 70%);
+        }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -148,7 +219,26 @@
                 </div>
             </div>
 
-            <!-- 2. Thông báo -->
+            <!-- 2. Ngày giờ + thời tiết Hòa Bình -->
+            <div class="side-widget shrink-0" title="Thời tiết hiện tại ở TP. Hòa Bình">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <div id="sw-time" class="text-[30px] font-black leading-none tracking-tight tabular-nums">--:--</div>
+                        <div id="sw-weekday" class="text-[11px] font-bold mt-1.5 opacity-95">&nbsp;</div>
+                        <div id="sw-date" class="text-[11px] font-semibold opacity-85">&nbsp;</div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <i id="sw-icon" class="fa-solid fa-cloud-sun text-[26px] drop-shadow"></i>
+                        <div id="sw-temp" class="text-[22px] font-black leading-none mt-1 tabular-nums">--°</div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/25 text-[10.5px] font-semibold">
+                    <span class="truncate"><i class="fa-solid fa-location-dot mr-1 opacity-80"></i>Hòa Bình</span>
+                    <span id="sw-desc" class="truncate opacity-90 ml-2">Đang tải…</span>
+                </div>
+            </div>
+
+            <!-- 3. Thông báo -->
             <div class="shrink-0">
                 <button id="btn-notifications" onclick="openNotificationsModal()" title="Xem thông báo hệ thống" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-slate-700 transition group">
                     <div class="flex items-center space-x-2">
@@ -5968,6 +6058,79 @@
                 }
             });
         };
+    </script>
+    <script>
+    // Ô ngày giờ + thời tiết TP. Hòa Bình ở cột bên trái (thời tiết lấy từ Open-Meteo, miễn phí, không cần khóa)
+    (function () {
+        const TZ = 'Asia/Ho_Chi_Minh';
+        const LAT = 20.8172, LON = 105.3376;
+        const KEY = 'aistore-weather-hb';
+        const $ = id => document.getElementById(id);
+        const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        let lastMin = '';
+        function tick() {
+            const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+                timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit',
+                year: 'numeric', weekday: 'short', hourCycle: 'h23'
+            }).formatToParts(new Date()).map(p => [p.type, p.value]));
+            const hm = parts.hour + ':' + parts.minute;
+            if (hm === lastMin) return;
+            lastMin = hm;
+            const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
+            if ($('sw-time')) $('sw-time').textContent = hm;
+            if ($('sw-weekday')) $('sw-weekday').textContent = WEEKDAYS[wd] || '';
+            if ($('sw-date')) $('sw-date').textContent = parts.day + '/' + parts.month + '/' + parts.year;
+        }
+        // Mã thời tiết WMO -> chữ tiếng Việt + biểu tượng
+        function describe(code, isDay) {
+            const sun = isDay ? 'fa-sun' : 'fa-moon', part = isDay ? 'fa-cloud-sun' : 'fa-cloud-moon';
+            if (code === 0) return ['Trời quang', sun];
+            if (code <= 2) return ['Ít mây', part];
+            if (code === 3) return ['Nhiều mây', 'fa-cloud'];
+            if (code === 45 || code === 48) return ['Sương mù', 'fa-smog'];
+            if (code >= 51 && code <= 57) return ['Mưa phùn', 'fa-cloud-rain'];
+            if (code >= 61 && code <= 67) return [code >= 65 ? 'Mưa to' : 'Mưa', 'fa-cloud-showers-heavy'];
+            if (code >= 71 && code <= 77) return ['Tuyết', 'fa-snowflake'];
+            if (code >= 80 && code <= 82) return ['Mưa rào', 'fa-cloud-showers-heavy'];
+            if (code >= 95) return ['Dông', 'fa-cloud-bolt'];
+            return ['', part];
+        }
+        function show(w) {
+            if (!w) return;
+            const [desc, icon] = describe(w.code, w.isDay);
+            if ($('sw-temp')) $('sw-temp').textContent = Math.round(w.temp) + '°';
+            if ($('sw-icon')) $('sw-icon').className = 'fa-solid ' + icon + ' text-[26px] drop-shadow';
+            const hl = (w.max != null && w.min != null) ? ' · ' + Math.round(w.max) + '°/' + Math.round(w.min) + '°' : '';
+            if ($('sw-desc')) $('sw-desc').textContent = desc + hl;
+        }
+        async function loadWeather() {
+            let cached = null;
+            try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+            if (cached) show(cached);
+            if (cached && Date.now() - cached.at < 15 * 60 * 1000) return;
+            try {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
+                    '&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min' +
+                    '&forecast_days=1&timezone=' + encodeURIComponent(TZ);
+                const r = await fetch(url, { cache: 'no-store' });
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                const w = {
+                    temp: d.current.temperature_2m, code: d.current.weather_code, isDay: d.current.is_day === 1,
+                    max: d.daily && d.daily.temperature_2m_max ? d.daily.temperature_2m_max[0] : null,
+                    min: d.daily && d.daily.temperature_2m_min ? d.daily.temperature_2m_min[0] : null,
+                    at: Date.now()
+                };
+                show(w);
+                try { localStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {}
+            } catch (e) {
+                if (!cached && $('sw-desc')) $('sw-desc').textContent = 'Chưa tải được thời tiết';
+            }
+        }
+        tick(); setInterval(tick, 1000);
+        loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); loadWeather(); } });
+    })();
     </script>
 </body>
 </html>

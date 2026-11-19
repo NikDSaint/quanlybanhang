@@ -3,7 +3,7 @@
 // - Chỉ dùng bản lưu sẵn khi mất mạng, để app vẫn mở được
 // - Không đụng tới dữ liệu Firebase (Firebase tự đồng bộ)
 // Khi sửa tệp này, tăng số phiên bản để máy người dùng nhận bản mới.
-const CACHE = 'aistore-v3-5';
+const CACHE = 'aistore-v3-6';
 const CORE = [
   '/',
   '/manifest.webmanifest',
