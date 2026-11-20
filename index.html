@@ -17,7 +17,7 @@
     <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body, input, select, textarea, button { font-family: 'Inter', sans-serif; }
@@ -183,56 +183,49 @@
         button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         button:active:not(:disabled) { transform: scale(0.96); transition: transform 60ms; }
 
-        /* ===== Thẻ ngày giờ + thời tiết kiểu kính lỏng =====
-           Lớp dưới (sw-scene) là bầu trời + mây/mặt trời nét; lớp kính (sw-glass) làm mờ lớp dưới.
-           Chỉ 1 lớp làm mờ nhỏ nên không nặng máy. Màu trời đổi theo thời tiết và ngày/đêm. */
+        /* ===== Thẻ ngày giờ + thời tiết: kính mờ tông hoàng hôn, chữ mảnh =====
+           Lớp ngoài (sw-card) là khung cảnh: nền chuyển màu dịu + quầng mặt trời mờ.
+           Bên trong là các tấm kính (sw-panel) xếp chồng. Màu khung cảnh đổi theo thời tiết, ngày/đêm. */
         .sw-card {
             position: relative; isolation: isolate; overflow: hidden;
-            border-radius: 26px; color: #fff;
-            text-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
-            box-shadow: 0 16px 34px -18px rgba(30, 41, 59, 0.75), 0 2px 6px rgba(15, 23, 42, 0.08);
-            background: linear-gradient(165deg, #38bdf8 0%, #6366f1 100%);
+            border-radius: 28px; padding: 6px; display: flex; flex-direction: column; gap: 6px;
+            color: #fff; font-weight: 400;
+            background: linear-gradient(180deg, #a99bb8 0%, #c98f9b 50%, #9c6a76 100%);
+            box-shadow: 0 18px 36px -20px rgba(68, 44, 60, 0.7), 0 2px 6px rgba(15, 23, 42, 0.06);
             transition: background .6s;
         }
-        .sw-card[data-sky="cloudy"] { background: linear-gradient(165deg, #94a3b8 0%, #64748b 55%, #475569 100%); }
-        .sw-card[data-sky="rain"]   { background: linear-gradient(165deg, #64748b 0%, #334155 50%, #1e3a8a 100%); }
-        .sw-card[data-sky="storm"]  { background: linear-gradient(165deg, #475569 0%, #1e293b 55%, #312e81 100%); }
-        .sw-card[data-sky="night"]  { background: linear-gradient(165deg, #312e81 0%, #1e1b4b 55%, #0f172a 100%); }
-        .sw-scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-        .sw-scene i { position: absolute; border-radius: 9999px; display: block; }
-        /* mặt trời / mặt trăng */
-        .sw-scene i:nth-child(1) { width: 84px; height: 84px; right: -14px; top: -18px; background: radial-gradient(circle at 40% 40%, #fef3c7, #fbbf24 60%, #f59e0b); }
-        .sw-card[data-sky="night"] .sw-scene i:nth-child(1) { background: radial-gradient(circle at 40% 40%, #f8fafc, #cbd5e1 70%); }
-        .sw-card:is([data-sky="cloudy"], [data-sky="rain"], [data-sky="storm"]) .sw-scene i:nth-child(1) { opacity: .35; }
-        /* các đám mây */
-        .sw-scene i:nth-child(2) { width: 120px; height: 56px; left: -24px; top: 38%; background: rgba(255, 255, 255, 0.75); }
-        .sw-scene i:nth-child(3) { width: 90px; height: 90px; left: 34%; bottom: -40px; background: rgba(255, 255, 255, 0.55); }
-        .sw-scene i:nth-child(4) { width: 70px; height: 34px; right: 10%; top: 52%; background: rgba(224, 242, 254, 0.7); }
-        .sw-card:is([data-sky="rain"], [data-sky="storm"], [data-sky="night"]) .sw-scene i:not(:first-child) { background: rgba(203, 213, 225, 0.35); }
-        /* lớp kính */
-        .sw-glass {
-            position: relative; z-index: 1; border-radius: inherit;
-            background: linear-gradient(160deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0.12) 100%);
-            -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
-            box-shadow:
-                inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
-                inset 1.5px 0 0 rgba(255, 255, 255, 0.35),
-                inset 0 -1.5px 0 rgba(255, 255, 255, 0.25),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+        .sw-card[data-sky="cloudy"] { background: linear-gradient(180deg, #9fa3b4 0%, #8e8a9e 50%, #6f6a80 100%); }
+        .sw-card[data-sky="rain"]   { background: linear-gradient(180deg, #a9b1c0 0%, #858da0 50%, #646a7e 100%); }
+        .sw-card[data-sky="storm"]  { background: linear-gradient(180deg, #858899 0%, #5f6175 50%, #44455a 100%); }
+        .sw-card[data-sky="night"]  { background: linear-gradient(180deg, #57537a 0%, #6d5878 50%, #3b3653 100%); }
+        /* quầng sáng mờ phía sau tấm kính */
+        .sw-card::before, .sw-card::after { content: ''; position: absolute; z-index: -1; border-radius: 9999px; pointer-events: none; }
+        .sw-card::before { width: 120px; height: 120px; left: -30px; bottom: 18%; background: radial-gradient(circle, rgba(255, 154, 162, 0.95), rgba(255, 154, 162, 0) 70%); }
+        .sw-card::after  { width: 160px; height: 90px; right: -40px; bottom: -30px; background: radial-gradient(ellipse, rgba(92, 58, 72, 0.55), rgba(92, 58, 72, 0) 70%); }
+        .sw-card[data-sky="night"]::before { background: radial-gradient(circle, rgba(196, 181, 253, 0.7), rgba(196, 181, 253, 0) 70%); }
+        .sw-card:is([data-sky="rain"], [data-sky="storm"], [data-sky="cloudy"])::before { background: radial-gradient(circle, rgba(226, 232, 240, 0.6), rgba(226, 232, 240, 0) 70%); }
+
+        /* tấm kính */
+        .sw-panel {
+            position: relative; border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.10) 100%);
+            -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+            text-shadow: 0 1px 1px rgba(60, 40, 55, 0.18);
         }
-        /* biểu tượng thời tiết nhiều lớp (mặt trời vàng sau đám mây trắng) */
-        .sw-icon { position: relative; width: 1.25em; height: 1em; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.28)); }
-        .sw-icon i { position: absolute; }
-        .sw-icon .sun { right: 0; top: -0.08em; font-size: .78em; background: linear-gradient(160deg, #fde68a, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .sw-icon .moon { right: 0; top: -0.08em; font-size: .72em; background: linear-gradient(160deg, #ffffff, #c7d2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .sw-icon .cloud { left: 0; bottom: 0; background: linear-gradient(180deg, #ffffff 30%, #cbd5e1); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .sw-icon .cloud.back { left: auto; right: 0; bottom: .25em; font-size: .7em; opacity: .85; }
-        .sw-icon .drops { left: .2em; bottom: -.35em; font-size: .42em; color: #7dd3fc; }
-        .sw-icon .bolt { left: .45em; bottom: -.35em; font-size: .45em; color: #fde047; }
-        .sw-icon .big { left: 50%; top: 50%; transform: translate(-50%, -50%); }
-        .sw-ic-wind { color: #e0f2fe; }
-        .sw-ic-rain { color: #bae6fd; }
-        .sw-ic-hum { color: #7dd3fc; }
+        /* mặt trời / mặt trăng tròn mềm ở góc */
+        .sw-orb {
+            width: 46px; height: 46px; border-radius: 9999px; flex-shrink: 0;
+            background: radial-gradient(circle at 35% 35%, #ffd9dc 0%, #f4a7b0 55%, #e58c99 100%);
+            box-shadow: 0 0 22px rgba(255, 170, 180, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+        .sw-card[data-sky="night"] .sw-orb { background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ddd6fe 60%, #b9b0e6 100%); box-shadow: 0 0 22px rgba(221, 214, 254, 0.55); }
+        .sw-card:is([data-sky="cloudy"], [data-sky="rain"], [data-sky="storm"]) .sw-orb { background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 60%, #b8c0cf 100%); opacity: .85; box-shadow: 0 0 18px rgba(226, 232, 240, 0.5); }
+        .sw-label { font-size: 10.5px; font-weight: 400; color: rgba(255, 255, 255, 0.85); line-height: 1.2; }
+        .sw-val { font-size: 12px; font-weight: 500; line-height: 1.3; margin-top: 2px; white-space: nowrap; }
+        .sw-val i { font-size: 10px; opacity: .85; margin-right: 5px; }
+        .sw-big { font-weight: 200; letter-spacing: -0.03em; line-height: .9; font-variant-numeric: tabular-nums; }
+        .sw-big sup { font-size: .36em; font-weight: 300; top: -1.25em; margin-left: 2px; letter-spacing: 0; }
 
         /* ===== Ô tìm kiếm, ô chọn, ô nhập: kính lỏng cho đồng bộ với nút ===== */
         :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]):not([type=hidden]), select, textarea) {
@@ -269,6 +262,29 @@
         main :is(input:not([type=checkbox]):not([type=radio]):not([type=file]), select) { border-radius: 9999px !important; }
         textarea { border-radius: 16px !important; }
         .fixed.inset-0 :is(input, select) { border-radius: 14px !important; }
+
+        /* ===== Nút chuyển 2 ô kiểu kính lỏng (Máy Đã Bán / Khách Hàng) ===== */
+        .seg {
+            position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 9999px;
+            background: linear-gradient(180deg, rgba(226, 232, 240, 0.75), rgba(241, 245, 249, 0.9));
+            box-shadow: inset 0 1.5px 3px rgba(15, 23, 42, 0.10), inset 0 -1px 0 rgba(255, 255, 255, 0.9), 0 0 0 1px rgba(148, 163, 184, 0.22);
+        }
+        .seg-thumb {
+            position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 9999px; z-index: 0;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(248, 250, 255, 0.92) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: inset 0 1.5px 1px #fff, inset 0 -1.5px 3px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(148, 163, 184, 0.25), 0 6px 14px -6px rgba(15, 23, 42, 0.3);
+            transition: transform .28s cubic-bezier(.3, 1.4, .5, 1);
+        }
+        .seg[data-active="customers"] .seg-thumb { transform: translateX(100%); }
+        .seg .seg-btn {
+            position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 8px 16px; border-radius: 9999px; white-space: nowrap; min-height: 36px;
+            font-size: 12px; font-weight: 600; color: #64748b; background: transparent !important;
+            border: 0 !important; box-shadow: none !important; transition: color .2s;
+        }
+        .seg .seg-btn.active { color: #0f172a; font-weight: 800; }
+        .seg .seg-btn::after { display: none !important; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -291,28 +307,33 @@
                 </div>
             </div>
 
-            <!-- 2. Ngày giờ + thời tiết Hòa Bình (kính lỏng) -->
+            <!-- 2. Ngày giờ + thời tiết Hòa Bình -->
             <div class="sw-card shrink-0" data-sky="day" title="Thời tiết hiện tại ở TP. Hòa Bình">
-                <div class="sw-scene"><i></i><i></i><i></i><i></i></div>
-                <div class="sw-glass px-3.5 pt-3 pb-3">
-                    <div class="flex items-end justify-between gap-2">
-                        <div data-sw="time" class="text-[30px] font-black leading-none tracking-tight tabular-nums">--:--</div>
-                        <div class="text-right leading-tight">
-                            <div data-sw="weekday" class="text-[11px] font-bold">&nbsp;</div>
-                            <div data-sw="date" class="text-[11px] font-semibold opacity-90">&nbsp;</div>
+                <div class="sw-panel px-3.5 pt-3 pb-3.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="text-[14px] font-semibold leading-tight">Hòa Bình</div>
+                            <div class="text-[10.5px] opacity-90 mt-0.5 truncate"><span data-sw="desc">Đang tải…</span></div>
                         </div>
+                        <div class="sw-orb"></div>
                     </div>
-                    <div class="flex items-center justify-center gap-3 mt-3">
-                        <div data-sw="icon" class="sw-icon text-[44px]"></div>
-                        <div data-sw="temp" class="text-[38px] font-black leading-none tabular-nums">--°</div>
+                    <div class="flex items-end justify-between mt-1">
+                        <div data-sw="temp" class="sw-big text-[50px]">--</div>
+                        <div data-sw="hilo" class="text-[10.5px] opacity-80 pb-1 text-right"></div>
                     </div>
-                    <div class="text-center mt-1.5 text-[12px] font-bold"><span data-sw="desc">Đang tải…</span></div>
-                    <div class="text-center text-[10.5px] font-semibold opacity-90"><i class="fa-solid fa-location-dot mr-1"></i>Hòa Bình <span data-sw="hilo"></span></div>
-                    <div class="grid grid-cols-3 gap-1 mt-2.5 pt-2.5 border-t border-white/25 text-center">
-                        <div><i class="fa-solid fa-wind text-[15px] sw-ic-wind"></i><div data-sw="wind" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
-                        <div><i class="fa-solid fa-cloud-rain text-[15px] sw-ic-rain"></i><div data-sw="rain" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
-                        <div><i class="fa-solid fa-droplet text-[15px] sw-ic-hum"></i><div data-sw="hum" class="text-[11px] font-bold mt-0.5 tabular-nums">--</div></div>
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-2.5 mt-3">
+                            <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
+                            <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
+                            <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
+                            <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
                     </div>
+                </div>
+                <div class="sw-panel px-3.5 py-2.5 flex items-center justify-between">
+                    <div class="min-w-0">
+                        <div data-sw="weekday" class="text-[13px] font-semibold leading-tight">&nbsp;</div>
+                        <div data-sw="date" class="text-[10.5px] opacity-80 mt-0.5">&nbsp;</div>
+                    </div>
+                    <div data-sw="time" class="sw-big text-[34px]">--:--</div>
                 </div>
             </div>
 
@@ -429,30 +450,34 @@
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
             <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại) -->
             <div class="sw-card md:hidden mb-4" data-sky="day">
-                <div class="sw-scene"><i></i><i></i><i></i><i></i></div>
-                <div class="sw-glass px-4 py-3">
-                    <div class="flex items-center justify-between gap-3">
+                <div class="sw-panel px-4 pt-3.5 pb-4">
+                    <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                            <div data-sw="time" class="text-[32px] font-black leading-none tracking-tight tabular-nums">--:--</div>
-                            <div class="text-[11px] font-bold mt-1 truncate"><span data-sw="weekday"></span>, <span data-sw="date"></span></div>
-                            <div class="text-[11px] font-semibold opacity-90 truncate"><i class="fa-solid fa-location-dot mr-1"></i>Hòa Bình · <span data-sw="desc">Đang tải…</span></div>
+                            <div class="text-[16px] font-semibold leading-tight">Hòa Bình</div>
+                            <div class="text-[11.5px] opacity-90 mt-0.5 truncate"><span data-sw="desc">Đang tải…</span></div>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <div data-sw="icon" class="sw-icon text-[40px]"></div>
-                            <div class="text-right">
-                                <div data-sw="temp" class="text-[34px] font-black leading-none tabular-nums">--°</div>
-                                <div data-sw="hilo" class="text-[10.5px] font-semibold opacity-90 mt-0.5"></div>
-                            </div>
-                        </div>
+                        <div class="sw-orb" style="width:54px;height:54px"></div>
                     </div>
-                    <div class="flex items-center justify-around mt-2.5 pt-2 border-t border-white/25 text-[11px] font-bold tabular-nums">
-                        <span><i class="fa-solid fa-wind mr-1.5 sw-ic-wind"></i><span data-sw="wind">--</span></span>
-                        <span><i class="fa-solid fa-cloud-rain mr-1.5 sw-ic-rain"></i><span data-sw="rain">--</span></span>
-                        <span><i class="fa-solid fa-droplet mr-1.5 sw-ic-hum"></i><span data-sw="hum">--</span></span>
+                    <div class="flex items-end justify-between gap-3 mt-3">
+                        <div class="grid grid-cols-2 gap-x-5 gap-y-3">
+                            <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
+                            <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
+                            <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
+                            <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div data-sw="temp" class="sw-big text-[58px]">--</div>
+                        </div>
                     </div>
                 </div>
+                <div class="sw-panel px-4 py-3 flex items-center justify-between">
+                    <div class="min-w-0">
+                        <div class="text-[15px] font-semibold leading-tight"><span data-sw="weekday">&nbsp;</span></div>
+                        <div class="text-[11.5px] opacity-80 mt-0.5"><span data-sw="date"></span> · <span data-sw="hilo"></span></div>
+                    </div>
+                    <div data-sw="time" class="sw-big text-[42px]">--:--</div>
+                </div>
             </div>
-
 
             <!-- VIEW 1: TỔNG QUAN KHO -->
             <div id="view-inventory" class="space-y-4">
@@ -709,12 +734,14 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center bg-slate-100 p-1 rounded-xl w-full md:w-auto">
-                        <button id="subtab-btn-sold-items" onclick="switchSalesSubTab('items')" class="flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition">
-                            <i class="fa-solid fa-mobile-screen mr-1.5 text-rose-500"></i> Máy Đã Bán
+                    <!-- Nút chuyển kiểu kính lỏng: 2 ô bằng nhau, viên kính trắng trượt sang ô đang chọn -->
+                    <div id="sales-seg" class="seg w-full md:w-auto" data-active="items">
+                        <span class="seg-thumb" aria-hidden="true"></span>
+                        <button type="button" id="subtab-btn-sold-items" onclick="switchSalesSubTab('items')" class="seg-btn active">
+                            <i class="fa-solid fa-mobile-screen text-rose-500"></i><span>Máy Đã Bán</span>
                         </button>
-                        <button id="subtab-btn-customers" onclick="switchSalesSubTab('customers')" class="flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
-                            <i class="fa-solid fa-users mr-1.5 text-purple-600"></i> Danh Sách Khách Hàng
+                        <button type="button" id="subtab-btn-customers" onclick="switchSalesSubTab('customers')" class="seg-btn">
+                            <i class="fa-solid fa-users text-purple-600"></i><span><span class="hidden sm:inline">Danh Sách </span>Khách Hàng</span>
                         </button>
                     </div>
                 </div>
@@ -3087,15 +3114,15 @@
             const secItems = document.getElementById('sales-section-items');
             const secCust = document.getElementById('sales-section-customers');
 
+            const seg = document.getElementById('sales-seg');
+            if (seg) seg.dataset.active = subTab;
+            if (btnItems) btnItems.classList.toggle('active', subTab === 'items');
+            if (btnCust) btnCust.classList.toggle('active', subTab !== 'items');
             if (subTab === 'items') {
-                if (btnItems) btnItems.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
-                if (btnCust) btnCust.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
                 if (secItems) secItems.classList.remove('hidden');
                 if (secCust) secCust.classList.add('hidden');
                 window.renderSoldItemsTable();
             } else {
-                if (btnCust) btnCust.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
-                if (btnItems) btnItems.className = 'flex-1 sm:flex-initial px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
                 if (secCust) secCust.classList.remove('hidden');
                 if (secItems) secItems.classList.add('hidden');
                 window.renderCustomersView();
@@ -6169,7 +6196,7 @@
     (function () {
         const TZ = 'Asia/Ho_Chi_Minh';
         const LAT = 20.8172, LON = 105.3376;
-        const KEY = 'aistore-weather-hb2';
+        const KEY = 'aistore-weather-hb3';
         const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
         const setAll = (k, v, html) => document.querySelectorAll('[data-sw="' + k + '"]').forEach(el => { if (html) el.innerHTML = v; else el.textContent = v; });
         const setSky = sky => document.querySelectorAll('.sw-card').forEach(el => el.dataset.sky = sky);
@@ -6189,7 +6216,7 @@
             setAll('time', hm);
             setAll('weekday', WEEKDAYS[['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday)] || '');
             setAll('date', p.day + '/' + p.month + '/' + p.year);
-            if (!current) { const h = +p.hour; setSky(h >= 6 && h < 18 ? 'day' : 'night'); setAll('icon', icon(1, h >= 6 && h < 18), true); }
+            if (!current) { const h = +p.hour; setSky(h >= 6 && h < 18 ? 'day' : 'night'); }
         }
 
         // Mã thời tiết WMO -> [chữ, kiểu trời, nhóm biểu tượng]
@@ -6229,10 +6256,10 @@
         function show(w) {
             if (!w) return;
             current = w;
-            setAll('temp', Math.round(w.temp) + '°');
+            setAll('temp', Math.round(w.temp) + '<sup>°C</sup>', true);
             setAll('desc', classify(w.code)[0]);
-            setAll('icon', icon(w.code, w.isDay), true);
-            setAll('hilo', (w.max != null && w.min != null) ? 'C:' + Math.round(w.max) + '° T:' + Math.round(w.min) + '°' : '');
+                        setAll('hilo', (w.max != null && w.min != null) ? '↑' + Math.round(w.max) + '°  ↓' + Math.round(w.min) + '°' : '');
+            setAll('feel', w.feel != null ? Math.round(w.feel) + '°' : '--');
             setAll('wind', w.wind != null ? Math.round(w.wind) + ' km/h' : '--');
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
             setAll('hum', w.hum != null ? Math.round(w.hum) + '%' : '--');
@@ -6245,7 +6272,7 @@
             if (cached && Date.now() - cached.at < 15 * 60 * 1000) return;
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
-                    '&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day' +
+                    '&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day' +
                     '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
                     '&forecast_days=1&timezone=' + encodeURIComponent(TZ);
                 const r = await fetch(url, { cache: 'no-store' });
@@ -6255,7 +6282,7 @@
                 const first = a => (Array.isArray(a) && a.length) ? a[0] : null;
                 const w = {
                     temp: c.temperature_2m, code: c.weather_code, isDay: c.is_day === 1,
-                    hum: c.relative_humidity_2m, wind: c.wind_speed_10m,
+                    hum: c.relative_humidity_2m, wind: c.wind_speed_10m, feel: c.apparent_temperature,
                     max: first(dy.temperature_2m_max), min: first(dy.temperature_2m_min),
                     rain: first(dy.precipitation_probability_max), at: Date.now()
                 };
