@@ -314,6 +314,31 @@
         }
         .seg .seg-btn.active { color: #0f172a; font-weight: 800; }
         .seg .seg-btn::after { display: none !important; }
+
+        /* ===== Viên kính tím trượt theo tab đang chọn (menu trái + thanh dưới điện thoại) ===== */
+        .nav-thumb {
+            position: absolute; left: 0; top: 0; margin: 0 !important; width: 0; height: 0; z-index: 0; pointer-events: none; opacity: 0;
+            border-radius: 9999px;
+            background:
+                radial-gradient(120% 90% at 18% 0%, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.10) 100%),
+                linear-gradient(135deg, #9333ea 0%, #7c3aed 60%, #6366f1 100%);
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 6px rgba(255, 255, 255, 0.18), 0 8px 18px -8px rgba(124, 58, 237, 0.6);
+            transition: transform .38s cubic-bezier(.3, 1.35, .5, 1), width .38s cubic-bezier(.3, 1.35, .5, 1), height .38s cubic-bezier(.3, 1.35, .5, 1), opacity .2s;
+        }
+        #mobile-nav .nav-thumb { border-radius: 18px; }
+        .nav-thumb.no-anim { transition: none; }
+        .nav-thumb.on { opacity: 1; }
+        /* khi đã có viên trượt: nút đang chọn trong suốt, chỉ còn chữ trắng nằm trên viên kính */
+        #side-nav.has-thumb > button, #mobile-nav.has-thumb > button { z-index: 1; transition: color .25s, background-color .15s; }
+        #side-nav.has-thumb > button.pill-tab-active,
+        #mobile-nav.has-thumb > button.mnav-btn.active {
+            background: transparent !important; background-image: none !important;
+            box-shadow: none !important; border-color: transparent !important;
+        }
+        #side-nav.has-thumb > button.pill-tab-active::after,
+        #mobile-nav.has-thumb > button.mnav-btn.active::after { display: none !important; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -397,8 +422,9 @@
             </div>
 
             <!-- 4. Điều hướng Tab chức năng chính -->
-            <div class="space-y-1 flex-1">
+            <div id="side-nav" class="space-y-1 flex-1 relative">
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-0.5">Chức Năng</p>
+                <span class="nav-thumb" aria-hidden="true"></span>
                 
                 <button id="tab-inventory-btn" onclick="switchTab('inventory')" class="w-full px-3 py-2.5 rounded-xl text-[13px] font-bold pill-tab-active transition-all flex items-center gap-3 text-left">
                     <i class="fa-solid fa-boxes-stacked w-4 text-center text-sm text-white"></i>
@@ -452,6 +478,7 @@
 
     <!-- THANH ĐIỀU HƯỚNG DƯỚI (điện thoại) -->
     <nav id="mobile-nav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200/80 px-2 pt-1.5 safe-bottom flex gap-1 shadow-[0_-8px_24px_-12px_rgba(15,23,42,0.18)]">
+        <span class="nav-thumb" aria-hidden="true"></span>
         <button id="mnav-inventory" onclick="switchTab('inventory')" class="mnav-btn active"><i class="fa-solid fa-boxes-stacked"></i><span>Kho</span></button>
         <button id="mnav-partner-inventory" onclick="switchTab('partner-inventory')" class="mnav-btn"><i class="fa-solid fa-handshake-angle"></i><span>Liên kết</span></button>
         <button id="mnav-sales-history" onclick="switchTab('sales-history')" class="mnav-btn"><i class="fa-solid fa-clock-rotate-left"></i><span>Đã bán</span></button>
@@ -2854,6 +2881,7 @@
 
             const importHeaders = document.querySelectorAll('.col-import-price');
             importHeaders.forEach(el => { el.style.display = perm.canViewCosts ? '' : 'none'; });
+            if (window.resetNavThumbs) requestAnimationFrame(window.resetNavThumbs); // tab ẩn/hiện -> đặt lại viên trượt
         }
 
         window.showAuthModal = function(show) {
@@ -3114,6 +3142,7 @@
                 if (mbtn) mbtn.classList.toggle('active', t === tabName);
             });
             window.scrollTo({ top: 0 });
+            window.moveNavThumbs();
 
             if (tabName === 'management') window.loadProfilesList();
             window.renderApp(); // renderApp đã vẽ tab Lịch sử bán hàng, không vẽ lặp 2 lần
@@ -6323,6 +6352,41 @@
         }
         lockPortrait();
         document.addEventListener('visibilitychange', () => { if (!document.hidden) lockPortrait(); });
+    })();
+    </script>
+    <script>
+    // Viên kính tím trượt tới tab đang chọn (giống nút chuyển Máy Đã Bán / Khách Hàng)
+    (function () {
+        let first = true;
+        function place(navId, activeSel) {
+            const nav = document.getElementById(navId);
+            if (!nav) return;
+            const thumb = nav.querySelector('.nav-thumb');
+            const btn = nav.querySelector(activeSel);
+            if (!thumb) return;
+            if (!btn || btn.offsetParent === null || !nav.offsetWidth) { thumb.classList.remove('on'); nav.classList.remove('has-thumb'); return; }
+            if (first) thumb.classList.add('no-anim');
+            const nr = nav.getBoundingClientRect(), br = btn.getBoundingClientRect();
+            thumb.style.width = br.width + 'px';
+            thumb.style.height = br.height + 'px';
+            thumb.style.transform = 'translate(' + (br.left - nr.left - nav.clientLeft) + 'px,' + (br.top - nr.top - nav.clientTop + nav.scrollTop) + 'px)';
+            thumb.classList.add('on');
+            nav.classList.add('has-thumb');
+            if (first) { void thumb.offsetWidth; thumb.classList.remove('no-anim'); }
+        }
+        window.moveNavThumbs = function () {
+            place('side-nav', 'button.pill-tab-active');
+            place('mobile-nav', 'button.mnav-btn.active');
+            first = false;
+        };
+        const again = () => { first = true; window.moveNavThumbs(); };
+        window.addEventListener('resize', again);
+        window.addEventListener('load', again);
+        // khi quyền tài khoản ẩn/hiện tab (vd. Báo Cáo chỉ chủ thấy), vị trí các nút đổi -> gọi resetNavThumbs()
+        window.resetNavThumbs = again;
+        document.addEventListener('DOMContentLoaded', () => { again(); });
+        setTimeout(again, 300); setTimeout(again, 1500);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(again);
     })();
     </script>
 </body>
