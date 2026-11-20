@@ -188,7 +188,7 @@
            Bên trong là các tấm kính (sw-panel) xếp chồng. Màu khung cảnh đổi theo thời tiết, ngày/đêm. */
         .sw-card {
             position: relative; isolation: isolate; overflow: hidden;
-            border-radius: 28px; padding: 6px; display: flex; flex-direction: column; gap: 6px;
+            border-radius: 22px; padding: 4px; display: flex; flex-direction: column; gap: 4px;
             color: #fff; font-weight: 400;
             background: linear-gradient(180deg, #a99bb8 0%, #c98f9b 50%, #9c6a76 100%);
             box-shadow: 0 18px 36px -20px rgba(68, 44, 60, 0.7), 0 2px 6px rgba(15, 23, 42, 0.06);
@@ -207,7 +207,7 @@
 
         /* tấm kính */
         .sw-panel {
-            position: relative; border-radius: 22px;
+            position: relative; border-radius: 18px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.10) 100%);
             -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.16);
@@ -225,7 +225,36 @@
         .sw-val { font-size: 12px; font-weight: 500; line-height: 1.3; margin-top: 2px; white-space: nowrap; }
         .sw-val i { font-size: 10px; opacity: .85; margin-right: 5px; }
         .sw-big { font-weight: 200; letter-spacing: -0.03em; line-height: .9; font-variant-numeric: tabular-nums; }
-        .sw-big sup { font-size: .36em; font-weight: 300; top: -1.25em; margin-left: 2px; letter-spacing: 0; }
+        .sw-big { position: relative; }
+        /* °C nằm lệch ra ngoài bên phải, để dòng thấp - cao căn giữa đúng con số */
+        .sw-big sup { position: absolute; left: 100%; top: .12em; font-size: .36em; font-weight: 300; margin-left: 2px; letter-spacing: 0; line-height: 1; }
+
+        /* --- Bản sáng: nền trắng, chữ đen (ghi đè các màu ở trên) --- */
+        .sw-card {
+            color: #0f172a;
+            background: linear-gradient(180deg, #ffffff 0%, #fbf3f5 100%);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 14px 30px -20px rgba(15, 23, 42, 0.35), 0 2px 6px rgba(15, 23, 42, 0.05);
+        }
+        .sw-card[data-sky="cloudy"] { background: linear-gradient(180deg, #ffffff 0%, #f1f3f8 100%); }
+        .sw-card[data-sky="rain"]   { background: linear-gradient(180deg, #ffffff 0%, #eef3fa 100%); }
+        .sw-card[data-sky="storm"]  { background: linear-gradient(180deg, #ffffff 0%, #eceef6 100%); }
+        .sw-card[data-sky="night"]  { background: linear-gradient(180deg, #ffffff 0%, #f1effc 100%); }
+        .sw-card::before { opacity: .35; }
+        .sw-card::after { display: none; }
+        .sw-panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.72) 100%);
+            box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(148, 163, 184, 0.22), 0 4px 12px -8px rgba(15, 23, 42, 0.18);
+            text-shadow: none;
+        }
+        .sw-card .opacity-80, .sw-card .opacity-90 { opacity: 1; color: #64748b; }
+        .sw-label { color: #64748b; }
+        .sw-val { color: #0f172a; }
+        .sw-val i { color: #8b5cf6; opacity: 1; }
+        .sw-big { font-weight: 300; color: #0f172a; }
+        .sw-big sup { color: #64748b; }
+        .sw-orb { box-shadow: 0 0 18px rgba(244, 167, 176, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7); }
+        .sw-card:is([data-sky="cloudy"], [data-sky="rain"], [data-sky="storm"]) .sw-orb { background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cbd5e1 60%, #94a3b8 100%); opacity: 1; }
 
         /* ===== Ô tìm kiếm, ô chọn, ô nhập: kính lỏng cho đồng bộ với nút ===== */
         :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]):not([type=hidden]), select, textarea) {
@@ -307,33 +336,28 @@
                 </div>
             </div>
 
-            <!-- 2. Ngày giờ + thời tiết Hòa Bình -->
+            <!-- 2. Ngày giờ + thời tiết Hòa Bình (gọn) -->
             <div class="sw-card shrink-0" data-sky="day" title="Thời tiết hiện tại ở TP. Hòa Bình">
-                <div class="sw-panel px-3.5 pt-3 pb-3.5">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <div class="text-[14px] font-semibold leading-tight">Hòa Bình</div>
-                            <div class="text-[10.5px] opacity-90 mt-0.5 truncate"><span data-sw="desc">Đang tải…</span></div>
+                <div class="sw-panel px-3 py-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <div data-sw="time" class="sw-big text-[30px]">--:--</div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="sw-orb" style="width:24px;height:24px"></div>
+                            <div class="text-center leading-none mr-4">
+                                <div data-sw="temp" class="sw-big inline-block text-[28px]">--</div>
+                                <div data-sw="hilo" class="text-[9.5px] font-medium opacity-80 mt-0.5 tabular-nums whitespace-nowrap"></div>
+                            </div>
                         </div>
-                        <div class="sw-orb"></div>
                     </div>
-                    <div class="flex items-end justify-between mt-1">
-                        <div data-sw="temp" class="sw-big text-[50px]">--</div>
-                        <div data-sw="hilo" class="text-[10.5px] opacity-80 pb-1 text-right"></div>
+                    <div class="flex items-center justify-between gap-2 mt-1 text-[10.5px] opacity-80">
+                        <span class="truncate"><span data-sw="weekday"></span>, <span data-sw="date"></span></span>
+                        <span data-sw="desc" class="truncate text-right">Đang tải…</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-x-2 gap-y-2.5 mt-3">
-                            <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
-                            <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
-                            <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
-                            <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
+                    <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-200/70 sw-val" style="font-size:10.5px">
+                        <span><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
+                        <span><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
+                        <span><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
                     </div>
-                </div>
-                <div class="sw-panel px-3.5 py-2.5 flex items-center justify-between">
-                    <div class="min-w-0">
-                        <div data-sw="weekday" class="text-[13px] font-semibold leading-tight">&nbsp;</div>
-                        <div data-sw="date" class="text-[10.5px] opacity-80 mt-0.5">&nbsp;</div>
-                    </div>
-                    <div data-sw="time" class="sw-big text-[34px]">--:--</div>
                 </div>
             </div>
 
@@ -448,34 +472,31 @@
     <!-- MAIN WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
-            <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại) -->
+            <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại, gọn) -->
             <div class="sw-card md:hidden mb-4" data-sky="day">
-                <div class="sw-panel px-4 pt-3.5 pb-4">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <div class="text-[16px] font-semibold leading-tight">Hòa Bình</div>
-                            <div class="text-[11.5px] opacity-90 mt-0.5 truncate"><span data-sw="desc">Đang tải…</span></div>
+                <div class="sw-panel px-4 py-2.5">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div data-sw="time" class="sw-big text-[34px]">--:--</div>
+                            <div class="leading-tight min-w-0">
+                                <div data-sw="weekday" class="text-[12px] font-semibold truncate">&nbsp;</div>
+                                <div data-sw="date" class="text-[11px] opacity-80">&nbsp;</div>
+                            </div>
                         </div>
-                        <div class="sw-orb" style="width:54px;height:54px"></div>
-                    </div>
-                    <div class="flex items-end justify-between gap-3 mt-3">
-                        <div class="grid grid-cols-2 gap-x-5 gap-y-3">
-                            <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
-                            <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
-                            <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
-                            <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <div data-sw="temp" class="sw-big text-[58px]">--</div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div class="sw-orb" style="width:28px;height:28px"></div>
+                            <div class="text-center leading-none mr-4">
+                                <div data-sw="temp" class="sw-big inline-block text-[34px]">--</div>
+                                <div data-sw="hilo" class="text-[10.5px] font-medium opacity-80 mt-0.5 tabular-nums whitespace-nowrap"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="sw-panel px-4 py-3 flex items-center justify-between">
-                    <div class="min-w-0">
-                        <div class="text-[15px] font-semibold leading-tight"><span data-sw="weekday">&nbsp;</span></div>
-                        <div class="text-[11.5px] opacity-80 mt-0.5"><span data-sw="date"></span> · <span data-sw="hilo"></span></div>
+                    <div class="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-200/70 sw-val" style="font-size:11px">
+                        <span class="truncate opacity-80"><i class="fa-solid fa-location-dot"></i>Hòa Bình · <span data-sw="desc">Đang tải…</span></span>
+                        <span class="shrink-0"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
+                        <span class="shrink-0"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
+                        <span class="shrink-0"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
                     </div>
-                    <div data-sw="time" class="sw-big text-[42px]">--:--</div>
                 </div>
             </div>
 
@@ -6258,7 +6279,7 @@
             current = w;
             setAll('temp', Math.round(w.temp) + '<sup>°C</sup>', true);
             setAll('desc', classify(w.code)[0]);
-                        setAll('hilo', (w.max != null && w.min != null) ? '↑' + Math.round(w.max) + '°  ↓' + Math.round(w.min) + '°' : '');
+                        setAll('hilo', (w.max != null && w.min != null) ? Math.round(w.min) + '° - ' + Math.round(w.max) + '°' : '');
             setAll('feel', w.feel != null ? Math.round(w.feel) + '°' : '--');
             setAll('wind', w.wind != null ? Math.round(w.wind) + ' km/h' : '--');
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
