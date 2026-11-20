@@ -6309,5 +6309,21 @@
         document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); loadWeather(); } });
     })();
     </script>
+    <script>
+    // Khóa màn hình dọc khi dùng app đã cài trên điện thoại (máy tính bảng, máy tính vẫn xoay tự do)
+    (function () {
+        function lockPortrait() {
+            try {
+                const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                const isPhone = Math.min(screen.width, screen.height) < 600;
+                if (!screen.orientation || !screen.orientation.lock) return;
+                if (standalone && isPhone) screen.orientation.lock('portrait').catch(() => {});
+                else if (standalone && screen.orientation.unlock) screen.orientation.unlock();
+            } catch (e) {}
+        }
+        lockPortrait();
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) lockPortrait(); });
+    })();
+    </script>
 </body>
 </html>
