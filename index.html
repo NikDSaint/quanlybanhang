@@ -89,15 +89,15 @@
         /* Thanh điều hướng dưới (điện thoại) */
         .mnav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 2px 6px; border-radius: 14px; color: #64748b; font-size: 10px; font-weight: 700; transition: all .15s; }
         .mnav-btn i { font-size: 16px; }
-        .mnav-btn.active { color: #fff; background-image: linear-gradient(135deg, #9333ea, #6366f1); box-shadow: 0 8px 18px -10px rgba(124, 58, 237, 0.9); }
+        .mnav-btn.active { color: #111827; background-image: linear-gradient(180deg, #e4e2df, #d6d4d1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); }
         .safe-bottom { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
         /* Điện thoại: bảng còn lại giữ đủ độ rộng và vuốt ngang, không bị bóp chữ */
         @media (max-width: 767px) { main table.text-sm, main table.text-xs { min-width: 680px; } }
 
         .pill-tab-active {
-            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 60%, #6366f1 100%) !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 14px -2px rgba(147, 51, 234, 0.4) !important;
+            background: linear-gradient(180deg, #e4e2df 0%, #d6d4d1 100%) !important;
+            color: #111827 !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.06) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
 
@@ -320,12 +320,10 @@
         .nav-thumb {
             position: absolute; left: 0; top: 0; margin: 0 !important; width: 0; height: 0; z-index: 0; pointer-events: none; opacity: 0;
             border-radius: 9999px;
-            background:
-                radial-gradient(120% 90% at 18% 0%, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0) 55%),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.10) 100%),
-                linear-gradient(135deg, #9333ea 0%, #7c3aed 60%, #6366f1 100%);
-            border: 1px solid rgba(255, 255, 255, 0.38);
-            box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.55), inset 0 -2px 6px rgba(255, 255, 255, 0.18), 0 8px 18px -8px rgba(124, 58, 237, 0.6);
+            /* xám nhạt mờ kiểu kính, chữ vẫn đen (giống thanh Gần đây / Liên hệ trên Android) */
+            background: linear-gradient(180deg, rgba(228, 226, 223, 0.92) 0%, rgba(214, 212, 209, 0.88) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.06);
             transition: transform .38s cubic-bezier(.3, 1.35, .5, 1), width .38s cubic-bezier(.3, 1.35, .5, 1), height .38s cubic-bezier(.3, 1.35, .5, 1), opacity .2s;
         }
         #mobile-nav .nav-thumb { border-radius: 18px; }
@@ -335,6 +333,7 @@
         #side-nav.has-thumb > button, #mobile-nav.has-thumb > button { z-index: 1; transition: color .25s, background-color .15s; }
         #side-nav.has-thumb > button.pill-tab-active,
         #mobile-nav.has-thumb > button.mnav-btn.active {
+            color: #111827 !important;
             background: transparent !important; background-image: none !important;
             box-shadow: none !important; border-color: transparent !important;
         }
@@ -3235,12 +3234,12 @@
 
             currentTab = tabName;
             const tabIconColors = {
-                'inventory': { active: 'text-white', inactive: 'text-orange-500' },
-                'partner-inventory': { active: 'text-white', inactive: 'text-sky-500' },
-                'sales-history': { active: 'text-white', inactive: 'text-rose-500' },
-                'commission': { active: 'text-white', inactive: 'text-emerald-500' },
-                'profit': { active: 'text-white', inactive: 'text-purple-600' },
-                'management': { active: 'text-white', inactive: 'text-amber-500' }
+                'inventory': { active: 'text-orange-500', inactive: 'text-orange-500' },
+                'partner-inventory': { active: 'text-sky-500', inactive: 'text-sky-500' },
+                'sales-history': { active: 'text-rose-500', inactive: 'text-rose-500' },
+                'commission': { active: 'text-emerald-500', inactive: 'text-emerald-500' },
+                'profit': { active: 'text-purple-600', inactive: 'text-purple-600' },
+                'management': { active: 'text-amber-500', inactive: 'text-amber-500' }
             };
 
             ['inventory', 'partner-inventory', 'sales-history', 'commission', 'profit', 'management'].forEach(t => {
