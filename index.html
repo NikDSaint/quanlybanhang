@@ -182,7 +182,6 @@
         button:not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) { position: relative; }
         /* Bấm vào: lún nhẹ ngay lập tức */
         button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        button:active:not(:disabled) { transform: scale(0.96); transition: transform 60ms; }
 
         /* ===== Thẻ ngày giờ + thời tiết: kính mờ tông hoàng hôn, chữ mảnh =====
            Lớp ngoài (sw-card) là khung cảnh: nền chuyển màu dịu + quầng mặt trời mờ.
@@ -459,6 +458,40 @@
         /* Máy bật "giảm trong suốt": dùng nền trắng đặc cho dễ đọc */
         @media (prefers-reduced-transparency: reduce) {
             html body main .bg-white:not(.absolute):not(.fixed), html body aside, html body header, html body #mobile-nav { background-color: rgba(255, 255, 255, 0.96) !important; }
+        }
+
+        /* ======================================================================
+           CHUYỂN ĐỘNG KIỂU LIQUID GLASS (Apple)
+           - Chỉ dùng transform + opacity -> card đồ họa tự xử lý, không làm nặng máy.
+           - Mỗi chuyển động có mục đích: cho biết đang ở đâu, cái gì vừa mở ra.
+           ====================================================================== */
+        @keyframes lgRise   { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+        @keyframes lgFade   { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes lgPop    { 0% { opacity: 0; transform: translateY(18px) scale(.92); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+        @keyframes lgStretchX { 0% { scale: 1 1; } 35% { scale: 1.14 .9; } 70% { scale: .97 1.03; } 100% { scale: 1 1; } }
+        @keyframes lgStretchY { 0% { scale: 1 1; } 35% { scale: .96 1.16; } 70% { scale: 1.02 .97; } 100% { scale: 1 1; } }
+
+        /* 1. Đổi tab: các khối trồi lên lần lượt (cách nhau 45ms) */
+        main > [id^="view-"]:not(.hidden) > * { animation: lgRise .5s cubic-bezier(.2, .9, .25, 1) backwards; }
+        main > [id^="view-"]:not(.hidden) > *:nth-child(2) { animation-delay: .045s; }
+        main > [id^="view-"]:not(.hidden) > *:nth-child(3) { animation-delay: .09s; }
+        main > [id^="view-"]:not(.hidden) > *:nth-child(4) { animation-delay: .135s; }
+        main > [id^="view-"]:not(.hidden) > *:nth-child(n+5) { animation-delay: .18s; }
+        /* 2. Popup: nền mờ dần, khung kính bật lên mềm có độ nảy */
+        .fixed.inset-0.z-50:not(.hidden), .fixed.inset-0.z-\[60\]:not(.hidden) { animation: lgFade .22s ease-out backwards; }
+        .fixed.inset-0.z-50:not(.hidden) > div, .fixed.inset-0.z-\[60\]:not(.hidden) > div { animation: lgPop .46s cubic-bezier(.2, 1.25, .35, 1) backwards; }
+        /* 3. Nút bấm: lún xuống khi chạm, bật lại có độ nảy khi thả */
+        /* dùng thuộc tính scale riêng để không phá các nút đang dùng transform để căn vị trí */
+        button { transition: scale .34s cubic-bezier(.2, 1.6, .4, 1), transform .2s, background-color .2s, color .2s, box-shadow .2s, border-color .2s, opacity .2s; }
+        button:active:not(:disabled) { scale: .95; transition-duration: 70ms; }
+        /* 4. Viên kính tab: giãn ra như giọt nước khi trượt */
+        .nav-thumb.stretch-x { animation: lgStretchX .5s cubic-bezier(.3, .9, .3, 1); }
+        .nav-thumb.stretch-y { animation: lgStretchY .5s cubic-bezier(.3, .9, .3, 1); }
+        .seg-thumb { transition: transform .38s cubic-bezier(.3, 1.35, .5, 1); }
+        .seg.moving .seg-thumb { animation: lgStretchX .5s cubic-bezier(.3, .9, .3, 1); }
+        /* Máy bật "giảm chuyển động": tắt hết hiệu ứng */
+        @media (prefers-reduced-motion: reduce) {
+            main > [id^="view-"] > *, .fixed.inset-0 > div, .fixed.inset-0, .nav-thumb, .seg-thumb { animation: none !important; transition: none !important; }
         }
 </style>
 </head>
@@ -3277,6 +3310,10 @@
             const secCust = document.getElementById('sales-section-customers');
 
             const seg = document.getElementById('sales-seg');
+            if (seg && seg.dataset.active !== subTab) {
+                seg.classList.remove('moving'); void seg.offsetWidth; seg.classList.add('moving');
+                clearTimeout(seg._t); seg._t = setTimeout(() => seg.classList.remove('moving'), 520);
+            }
             if (seg) seg.dataset.active = subTab;
             if (btnItems) btnItems.classList.toggle('active', subTab === 'items');
             if (btnCust) btnCust.classList.toggle('active', subTab !== 'items');
@@ -6520,6 +6557,13 @@
             if (!btn || btn.offsetParent === null || !nav.offsetWidth) { thumb.classList.remove('on'); nav.classList.remove('has-thumb'); return; }
             if (first) thumb.classList.add('no-anim');
             const nr = nav.getBoundingClientRect(), br = btn.getBoundingClientRect();
+            const prevBtn = thumb.dataset.btn;
+            if (!first && prevBtn && prevBtn !== btn.id) {
+                const cls = navId === 'mobile-nav' ? 'stretch-x' : 'stretch-y';
+                thumb.classList.remove('stretch-x', 'stretch-y'); void thumb.offsetWidth; thumb.classList.add(cls);
+                clearTimeout(thumb._t); thumb._t = setTimeout(() => thumb.classList.remove(cls), 520);
+            }
+            thumb.dataset.btn = btn.id || '';
             thumb.style.width = br.width + 'px';
             thumb.style.height = br.height + 'px';
             thumb.style.transform = 'translate(' + (br.left - nr.left - nav.clientLeft) + 'px,' + (br.top - nr.top - nav.clientTop + nav.scrollTop) + 'px)';
