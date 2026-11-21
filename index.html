@@ -461,14 +461,19 @@
             -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
         }
         html body .fixed.inset-0.z-50 > div.bg-white, html body .fixed.inset-0.z-\[60\] > div.bg-white {
-            background-color: rgba(248, 250, 255, 0.86) !important;
-            -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
-            border: 1px solid rgba(255, 255, 255, 0.9) !important;
-            box-shadow: inset 0 1.5px 0 #fff, 0 30px 60px -20px rgba(30, 27, 75, 0.55) !important;
+            background-color: #fdf7e8 !important;
+            background-image: linear-gradient(150deg, #fffdf8 0%, #fdf6e3 55%, #fbf0d6 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.95) !important;
+            border-radius: 26px !important;
+            box-shadow:
+                inset 0 1.5px 0 #ffffff,
+                inset 1.5px 0 0 rgba(255, 255, 255, 0.75),
+                0 0 0 1px rgba(120, 113, 108, 0.10),
+                0 30px 60px -22px rgba(60, 50, 42, 0.55) !important;
         }
         @media (max-width: 767px) {
             html body .fixed.inset-0.z-50 > div.bg-white, html body .fixed.inset-0.z-\[60\] > div.bg-white {
-                -webkit-backdrop-filter: none; backdrop-filter: none; background-color: rgba(250, 251, 255, 0.97) !important;
+                -webkit-backdrop-filter: none; backdrop-filter: none; background-color: #fdf7e8 !important;
             }
         }
 
@@ -517,6 +522,40 @@
         @media (prefers-reduced-motion: reduce) {
             main > [id^="view-"] > *, .fixed.inset-0 > div, .fixed.inset-0, .nav-thumb, .seg-thumb { animation: none !important; transition: none !important; }
         }
+
+        /* ===== Popup đồng bộ với các khối trong trang: kem ánh vàng, đầu popup sáng chữ đen ===== */
+        html body .fixed.inset-0 > div.bg-white > [class*="bg-gradient-to-"]:first-child,
+        html body .fixed.inset-0 > div.bg-white > .mh-grad:first-child {
+            background: transparent !important; background-image: none !important;
+            color: #0f172a !important;
+            border-bottom: 1px solid rgba(120, 113, 108, 0.14) !important;
+        }
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child :is(h2, h3, h4) { color: #0f172a !important; }
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child :is(.text-white, [class*="text-white/"]):not([class*="bg-"]) { color: #0f172a !important; }
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child :is(p, [class*="text-slate-"], [class*="text-emerald-1"], [class*="text-indigo-1"], [class*="text-rose-1"]):not(h2):not(h3):not(h4) { color: #64748b !important; }
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child [class*="bg-white/"] {
+            background: rgba(120, 113, 108, 0.10) !important; color: #57534e !important;
+        }
+        /* ô biểu tượng ở đầu popup */
+        html body .fixed.inset-0 > div.bg-white > .mh-grad:first-child > div:first-child > div:first-child {
+            background: rgba(255, 255, 255, 0.85) !important; color: #57534e !important;
+            box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120, 113, 108, 0.12), 0 4px 10px -6px rgba(60, 50, 42, 0.35) !important;
+        }
+        html body .fixed.inset-0 > div.bg-white > .mh-grad:first-child > div:first-child > div:first-child i { color: #57534e !important; }
+        /* nút đóng (X) và nút trên đầu popup */
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child button:not([class*="bg-rose"]):not([class*="bg-emerald"]) {
+            color: #57534e !important; background: rgba(255, 255, 255, 0.7) !important;
+            box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120, 113, 108, 0.14) !important; border-color: transparent !important;
+        }
+        html body .fixed.inset-0 > div.bg-white > :is([class*="bg-gradient-to-"], .mh-grad):first-child button:hover { color: #0f172a !important; }
+        /* các ô thông tin bên trong popup: kính kem viền trắng */
+        html body .fixed.inset-0 > div.bg-white :is(.bg-slate-50, .bg-white, .bg-slate-100, [class*="bg-slate-100/"], [class*="bg-slate-50/"]):not(button):not(input):not(select):not(textarea):not(.absolute) {
+            background-color: rgba(255, 255, 255, 0.55) !important;
+            background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1)) !important;
+            border-color: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120, 113, 108, 0.08), 0 4px 12px -10px rgba(60, 50, 42, 0.35) !important;
+        }
+        html body .fixed.inset-0 > div.bg-white [class*="border-slate-1"], html body .fixed.inset-0 > div.bg-white [class*="border-t"] { border-color: rgba(120, 113, 108, 0.14) !important; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
