@@ -474,7 +474,13 @@
 
         /* Máy bật "giảm trong suốt": dùng nền trắng đặc cho dễ đọc */
         @media (prefers-reduced-transparency: reduce) {
-            html body main .bg-white:not(.absolute):not(.fixed), html body aside, html body header, html body #mobile-nav { background-color: rgba(255, 255, 255, 0.96) !important; }
+            /* Windows tắt "Hiệu ứng trong suốt" (Transparency effects) thì trình duyệt báo chế độ này:
+               dùng màu đặc nhưng vẫn là kem ánh vàng như bản kính, để máy tính và điện thoại nhìn giống nhau */
+            html body main .bg-white:not(.absolute):not(.fixed), html body main .section-head { background-color: #fef9ee !important; background-image: linear-gradient(150deg, #fffdf7 0%, #fdf6e6 60%, #fdf8ec 100%) !important; background-size: 100% 100% !important; }
+            html body main .bg-white .bg-white:not(.absolute):not(.fixed), html body main .bg-white .section-head { background: transparent !important; }
+            html body aside { background-color: #fdf6e4 !important; background-image: linear-gradient(180deg, #fffaf0 0%, #fcf3dc 100%) !important; }
+            html body header, html body #mobile-nav { background-color: #fdf5dd !important; background-image: none !important; }
+            .sw-card { background: linear-gradient(150deg, #fffdf6 0%, #fdf6e5 50%, #fcf3dd 100%) !important; }
         }
 
         /* ======================================================================
