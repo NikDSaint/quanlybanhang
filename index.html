@@ -89,13 +89,13 @@
         /* Thanh điều hướng dưới (điện thoại) */
         .mnav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 2px 6px; border-radius: 14px; color: #64748b; font-size: 10px; font-weight: 700; transition: all .15s; }
         .mnav-btn i { font-size: 16px; }
-        .mnav-btn.active { color: #111827; background-image: linear-gradient(180deg, #e4e2df, #d6d4d1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); }
+        .mnav-btn.active { color: #111827; background-image: linear-gradient(180deg, #f0eeeb, #e6e4e0); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); }
         .safe-bottom { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
         /* Điện thoại: bảng còn lại giữ đủ độ rộng và vuốt ngang, không bị bóp chữ */
         @media (max-width: 767px) { main table.text-sm, main table.text-xs { min-width: 680px; } }
 
         .pill-tab-active {
-            background: linear-gradient(180deg, #e4e2df 0%, #d6d4d1 100%) !important;
+            background: linear-gradient(180deg, #f0eeeb 0%, #e6e4e0 100%) !important;
             color: #111827 !important;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.06) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -335,7 +335,7 @@
             position: absolute; left: 0; top: 0; margin: 0 !important; width: 0; height: 0; z-index: 0; pointer-events: none; opacity: 0;
             border-radius: 9999px;
             /* xám nhạt mờ kiểu kính, chữ vẫn đen (giống thanh Gần đây / Liên hệ trên Android) */
-            background: linear-gradient(180deg, rgba(228, 226, 223, 0.92) 0%, rgba(214, 212, 209, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(240, 238, 235, 0.92) 0%, rgba(230, 228, 224, 0.88) 100%);
             border: 1px solid rgba(255, 255, 255, 0.85);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.06);
             transition: transform .38s cubic-bezier(.3, 1.35, .5, 1), width .38s cubic-bezier(.3, 1.35, .5, 1), height .38s cubic-bezier(.3, 1.35, .5, 1), opacity .2s;
@@ -434,7 +434,7 @@
             box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 1.5px 0 0 rgba(255, 255, 255, 0.5), 0 14px 36px -18px rgba(60, 50, 42, 0.5) !important;
         }
         html body aside .border-slate-100 { border-color: rgba(255, 255, 255, 0.6) !important; }
-        html body aside .bg-slate-50 { background-color: rgba(255, 255, 255, 0.45) !important; border-color: rgba(255, 255, 255, 0.85) !important; }
+        html body aside .bg-slate-50 { background-color: rgba(255, 249, 232, 0.55) !important; background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.05)) !important; border-color: rgba(255, 255, 255, 0.85) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9) !important; }
         html body .pill-tab-inactive:hover { background: rgba(255, 255, 255, 0.5) !important; }
         /* Thanh dưới điện thoại: viên kính nổi, cách mép */
         @media (max-width: 767px) {
@@ -479,6 +479,7 @@
             html body main .bg-white:not(.absolute):not(.fixed), html body main .section-head { background-color: #fef9ee !important; background-image: linear-gradient(150deg, #fffdf7 0%, #fdf6e6 60%, #fdf8ec 100%) !important; background-size: 100% 100% !important; }
             html body main .bg-white .bg-white:not(.absolute):not(.fixed), html body main .bg-white .section-head { background: transparent !important; }
             html body aside { background-color: #fdf6e4 !important; background-image: linear-gradient(180deg, #fffaf0 0%, #fcf3dc 100%) !important; }
+            html body aside .bg-slate-50 { background-color: #fdf4dd !important; background-image: linear-gradient(150deg, #fffaf0, #fcf1d6) !important; }
             html body header, html body #mobile-nav { background-color: #fdf5dd !important; background-image: none !important; }
             .sw-card { background: linear-gradient(150deg, #fffdf6 0%, #fdf6e5 50%, #fcf3dd 100%) !important; }
         }
