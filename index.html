@@ -556,6 +556,12 @@
             box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120, 113, 108, 0.08), 0 4px 12px -10px rgba(60, 50, 42, 0.35) !important;
         }
         html body .fixed.inset-0 > div.bg-white [class*="border-slate-1"], html body .fixed.inset-0 > div.bg-white [class*="border-t"] { border-color: rgba(120, 113, 108, 0.14) !important; }
+        /* hàng nút cuối popup (Sửa / Xóa / Đóng…) và các dải nằm sát khung: trong suốt, chỉ giữ đường kẻ mảnh */
+        html body .fixed.inset-0 > div.bg-white :is(.bg-slate-50, .bg-white, .bg-slate-100, [class*="bg-slate-100/"], [class*="bg-slate-50/"]):not(button):not(input):not(select):not(textarea):not(.absolute)[class*="border-t"],
+        html body .fixed.inset-0 > div.bg-white > :is(.bg-slate-50, .bg-white, .bg-slate-100, [class*="bg-slate-100/"], [class*="bg-slate-50/"]):not(button):not(input):not(select):not(textarea):not(.absolute),
+        html body .fixed.inset-0 > div.bg-white > form > :is(.bg-slate-50, .bg-white, .bg-slate-100, [class*="bg-slate-100/"], [class*="bg-slate-50/"]):not(button):not(input):not(select):not(textarea):not(.absolute) {
+            background: transparent !important; background-image: none !important; box-shadow: none !important;
+        }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
