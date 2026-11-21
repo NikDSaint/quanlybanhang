@@ -256,6 +256,20 @@
         .sw-orb { box-shadow: 0 0 18px rgba(244, 167, 176, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7); }
         .sw-card:is([data-sky="cloudy"], [data-sky="rain"], [data-sky="storm"]) .sw-orb { background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cbd5e1 60%, #94a3b8 100%); opacity: 1; }
 
+        /* --- Viền widget: cùng kiểu kính lỏng với ô tìm kiếm / ô chọn (1 lớp viền, không khung đôi) --- */
+        .sw-card {
+            padding: 0; gap: 0; border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 255, 0.75) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255, 255, 255, 1),
+                inset 0 -1.5px 3px rgba(15, 23, 42, 0.05),
+                0 0 0 1px rgba(148, 163, 184, 0.28),
+                0 6px 16px -10px rgba(30, 41, 59, 0.28);
+        }
+        .sw-card::before { display: none; }
+        .sw-card .sw-panel { background: transparent; box-shadow: none; border-radius: inherit; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
         /* ===== Ô tìm kiếm, ô chọn, ô nhập: kính lỏng cho đồng bộ với nút ===== */
         :where(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]):not([type=hidden]), select, textarea) {
             background-color: transparent !important;
