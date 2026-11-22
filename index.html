@@ -3451,7 +3451,7 @@
 
             let soldList = products.filter(p => {
                 if (p.status !== 'SOLD') return false;
-                if (!isOrderInUserScope(p)) return false;
+                // Lịch sử bán hàng: mọi tài khoản đều xem được toàn bộ đơn của cửa hàng
                 if (monthFilter && !String(p.soldAt || '').startsWith(monthFilter)) return false;
 
                 const matchSearch = (p.name || '').toLowerCase().includes(searchVal) || 
@@ -3566,7 +3566,7 @@
                             <td class="py-3 px-4 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5 justify-end">
                                     <span class="font-black text-rose-600">${formatVND(p.sellingPrice)}</span>
-                                    ${perm.canAddEditProduct ? `
+                                    ${perm.canAddEditProduct && isOrderInUserScope(p) ? `
                                         <button onclick="openEditSoldPriceModal('${p.id}')" class="w-6 h-6 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition" title="Sửa lại giá bán này">
                                             <i class="fa-solid fa-pen text-[10px]"></i>
                                         </button>
@@ -3621,7 +3621,7 @@
             const emptyState = document.getElementById('customers-empty-state');
             const searchVal = document.getElementById('customer-search-input')?.value.toLowerCase().trim() || '';
 
-            const soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
+            const soldItems = products.filter(p => p.status === 'SOLD'); // toàn bộ đơn của cửa hàng
 
             const customersMap = {};
             soldItems.forEach(p => {
@@ -3723,7 +3723,7 @@
         // Đơn đã bán của một khách (khóa = số điện thoại, hoặc "name_<tên>" nếu không có số)
         function getCustomerOrders(customerKey) {
             return products.filter(p => {
-                if (p.status !== 'SOLD' || !isOrderInUserScope(p)) return false;
+                if (p.status !== 'SOLD') return false;
                 const phone = (p.customerPhone || '').trim();
                 const name = (p.customerName || 'Khách Lẻ').trim();
                 return (phone ? phone : `name_${name.toLowerCase()}`) === customerKey;
@@ -3823,7 +3823,7 @@
 
         window.openCustomerHistoryModal = function(encodedKey) {
             const customerKey = decodeURIComponent(encodedKey);
-            const soldItems = products.filter(p => p.status === 'SOLD' && isOrderInUserScope(p));
+            const soldItems = products.filter(p => p.status === 'SOLD'); // toàn bộ đơn của cửa hàng
             const matchingItems = soldItems.filter(p => {
                 const phone = (p.customerPhone || '').trim();
                 const name = (p.customerName || 'Khách Lẻ').trim();
@@ -3901,6 +3901,8 @@
         window.openEditCustomerModal = function(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
+            // Ai cũng xem được toàn bộ lịch sử, nhưng chỉ sửa khách của đơn mình (hoặc nhân viên mình) bán
+            if (!isOrderInUserScope(p)) { showToast('Bạn chỉ sửa được thông tin khách ở đơn do bạn hoặc nhân viên của bạn bán.', 'error'); return; }
             const inputId = document.getElementById('edit-cust-prod-id');
             if (inputId) inputId.value = p.id;
             const titleEl = document.getElementById('edit-cust-prod-title');
@@ -4488,7 +4490,7 @@
             const statusContainer = document.getElementById('dt-status-container');
             if (statusContainer) {
                 // Máy đã bán: Chủ / Quản lý thấy nút "Hủy đơn" ở góc trên; nhân viên vẫn thấy nhãn "Đã bán"
-                if (isSold && perm.canAddEditProduct) {
+                if (isSold && perm.canAddEditProduct && isOrderInUserScope(p)) {
                     statusContainer.innerHTML = `
                         <button onclick="closeDetailModal(); requestCancelOrder('${p.id}');" class="px-3 py-1.5 bg-white hover:bg-amber-50 text-amber-700 rounded-full font-bold text-xs shadow-sm transition flex items-center gap-1.5" title="Hủy đơn bán và trả máy về kho">
                             <i class="fa-solid fa-rotate-left"></i> Hủy đơn
@@ -4682,7 +4684,7 @@
 
             if (savedCustKey) {
                 const remainingItems = products.filter(item => {
-                    if (item.status !== 'SOLD' || !isOrderInUserScope(item)) return false;
+                    if (item.status !== 'SOLD') return false;
                     const phone = (item.customerPhone || '').trim();
                     const name = (item.customerName || 'Khách Lẻ').trim();
                     const key = phone ? phone : `name_${name.toLowerCase()}`;
