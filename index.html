@@ -563,6 +563,15 @@
             background: transparent !important; background-image: none !important; box-shadow: none !important;
             border-color: rgba(0, 0, 0, 0.10) !important;
         }
+
+        /* Thanh dưới điện thoại: biểu tượng tab đang chọn mang đúng màu như menu trên máy tính, các tab khác giữ màu xám */
+        #mobile-nav .mnav-btn i { transition: color .25s; }
+        #mobile-nav #mnav-inventory.active i { color: #f97316 !important; }          /* cam - Kho */
+        #mobile-nav #mnav-partner-inventory.active i { color: #0ea5e9 !important; }  /* xanh trời - Liên kết */
+        #mobile-nav #mnav-sales-history.active i { color: #f43f5e !important; }     /* đỏ hồng - Đã bán */
+        #mobile-nav #mnav-commission.active i { color: #10b981 !important; }         /* xanh lá - Hoa hồng */
+        #mobile-nav #mnav-profit.active i { color: #9333ea !important; }             /* tím - Báo cáo */
+        #mobile-nav #mnav-management.active i { color: #f59e0b !important; }         /* vàng cam - Nhân sự */
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
