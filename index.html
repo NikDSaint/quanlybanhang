@@ -775,13 +775,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-x-2 gap-y-1.5 mt-2 pt-2 border-t border-slate-200/70">
-                        <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
-                        <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
-                        <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
-                        <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
-                        <div><div class="sw-label">Chỉ số UV</div><div class="sw-val"><i class="fa-solid fa-sun"></i><span data-sw="uv">--</span></div></div>
-                        <div><div class="sw-label">Mọc · Lặn</div><div class="sw-val"><i class="fa-solid fa-cloud-sun"></i><span data-sw="sun">--</span></div></div>
+                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/70 sw-val" style="font-size:13px">
+                        <span title="Khả năng mưa"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
+                        <span title="Độ ẩm"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
+                        <span title="Gió"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
+                        <span title="Chỉ số UV"><i class="fa-solid fa-sun"></i><span data-sw="uv">--</span></span>
                     </div>
                 </div>
             </div>
@@ -6694,7 +6692,7 @@
             setAll('sun', hm(w.sunrise) + ' · ' + hm(w.sunset));
             if (w.uv != null) {
                 const u = Math.round(w.uv);
-                setAll('uv', u + (u <= 2 ? ' Thấp' : u <= 5 ? ' TB' : u <= 7 ? ' Cao' : ' Rất cao'));
+                setAll('uv', 'UV ' + u);
             } else setAll('uv', '--');
             setAll('wind', w.wind != null ? Math.round(w.wind) + ' km/h' : '--');
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
