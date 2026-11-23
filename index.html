@@ -577,6 +577,14 @@
         .sw-card .sw-big { font-weight: 700 !important; letter-spacing: -0.02em; }
         .sw-card .sw-big sup { font-weight: 600 !important; }
         .sw-card [data-sw="weekday"], .sw-card [data-sw="date"] { font-weight: 700 !important; color: #334155 !important; }
+
+        /* Dòng âm lịch dưới ngày dương */
+        .sw-card .sw-lunar { font-weight: 700; color: #b45309; }
+        .sw-card .sw-lunar i { font-size: .9em; margin-right: 2px; opacity: .85; }
+
+        /* các dòng nhỏ 2 cột của widget: cùng cỡ, cùng màu -> thẳng hàng ngang */
+        .sw-card .sw-line { color: #64748b; font-weight: 500; }
+        .sw-card .sw-line[data-sw="weekday"], .sw-card .sw-line[data-sw="date"] { color: #334155; font-weight: 700; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -607,22 +615,30 @@
             <!-- 2. Ngày giờ + thời tiết Hòa Bình (gọn) -->
             <div class="sw-card shrink-0" data-sky="day" title="Thời tiết hiện tại ở TP. Hòa Bình">
                 <div class="sw-panel px-3 py-2.5">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0 shrink-0">
-                            <div data-sw="time" class="sw-big text-[28px]">--:--</div>
-                            <div class="text-[10.5px] opacity-80 mt-1.5 leading-tight"><span data-sw="weekday"></span><br><span data-sw="date"></span></div>
+                    <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-2.5">
+                        <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
+                        <div class="min-w-0">
+                            <div data-sw="time" class="sw-big text-[28px] leading-none">--:--</div>
+                            <div class="mt-1.5">
+                                <div data-sw="weekday" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="date" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="lunar" class="sw-lunar text-[10.5px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                            </div>
                         </div>
-                        <div class="flex items-start gap-1.5 min-w-0">
-                            <div class="sw-orb mt-1 shrink-0" style="width:20px;height:20px"></div>
-                            <!-- nhiệt độ, thấp - cao, tình trạng trời: cùng bám lề trái -->
-                            <div class="text-left leading-none min-w-0">
-                                <div data-sw="temp" class="sw-big inline-block text-[28px]">--</div>
-                                <div data-sw="hilo" class="text-[10.5px] font-normal opacity-80 mt-1 tabular-nums whitespace-nowrap"></div>
-                                <div data-sw="desc" class="text-[10.5px] opacity-80 mt-1 truncate" style="max-width:76px">Đang tải…</div>
+                        <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
+                        <div class="min-w-0 pl-2.5 border-l border-slate-200/70">
+                            <div class="flex items-center justify-between gap-1">
+                                <div data-sw="temp" class="sw-big inline-block text-[28px] leading-none">--</div>
+                                <div class="sw-orb shrink-0" style="width:18px;height:18px"></div>
+                            </div>
+                            <div class="mt-1.5">
+                                <div data-sw="hilo" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
+                                <div data-sw="desc" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap truncate">Đang tải…</div>
+                                <div class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-200/70 sw-val" style="font-size:10.5px">
+                    <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-200/70 sw-val" style="font-size:10.5px">
                         <span><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
                         <span><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
                         <span><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
@@ -730,28 +746,34 @@
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
             <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại, gọn) -->
             <div class="sw-card md:hidden mb-4" data-sky="day">
-                <div class="sw-panel px-4 py-2.5">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div data-sw="time" class="sw-big text-[34px]">--:--</div>
-                            <div class="leading-tight min-w-0">
-                                <div data-sw="weekday" class="text-[12px] font-semibold truncate">&nbsp;</div>
-                                <div data-sw="date" class="text-[11px] opacity-80">&nbsp;</div>
+                <div class="sw-panel px-4 py-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
+                        <div class="min-w-0">
+                            <div data-sw="time" class="sw-big text-[40px] leading-none">--:--</div>
+                            <div class="mt-2">
+                                <div data-sw="weekday" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="date" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="lunar" class="sw-lunar text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <div class="sw-orb" style="width:28px;height:28px"></div>
-                            <div class="text-left leading-none">
-                                <div data-sw="temp" class="sw-big inline-block text-[34px]">--</div>
-                                <div data-sw="hilo" class="text-[11px] font-normal opacity-80 mt-1 tabular-nums whitespace-nowrap"></div>
+                        <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
+                        <div class="min-w-0 pl-3 border-l border-slate-200/70">
+                            <div class="flex items-center justify-between gap-1">
+                                <div data-sw="temp" class="sw-big inline-block text-[40px] leading-none">--</div>
+                                <div class="sw-orb shrink-0" style="width:28px;height:28px"></div>
+                            </div>
+                            <div class="mt-2">
+                                <div data-sw="hilo" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
+                                <div data-sw="desc" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap truncate">Đang tải…</div>
+                                <div class="sw-line text-[12px] leading-[1.45] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-200/70 sw-val" style="font-size:11px">
-                        <span class="truncate opacity-80"><i class="fa-solid fa-location-dot"></i>Hòa Bình · <span data-sw="desc">Đang tải…</span></span>
-                        <span class="shrink-0"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
-                        <span class="shrink-0"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
-                        <span class="shrink-0"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
+                    <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-200/70 sw-val" style="font-size:12px">
+                        <span><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
+                        <span><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
+                        <span><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
                     </div>
                 </div>
             </div>
@@ -6517,7 +6539,82 @@
         const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
         const setAll = (k, v, html) => document.querySelectorAll('[data-sw="' + k + '"]').forEach(el => { if (html) el.innerHTML = v; else el.textContent = v; });
         const setSky = sky => document.querySelectorAll('.sw-card').forEach(el => el.dataset.sky = sky);
-        let lastMin = '', current = null;
+        let lastMin = '', lastDay = '', current = null;
+        // Âm lịch Việt Nam (thuật toán Hồ Ngọc Đức, múi giờ +7)
+        function amLich(dd, mm, yy) {
+            const INT = Math.floor, PI = Math.PI, TZ = 7;
+            function jdFromDate(d, m, y) {
+                const a = INT((14 - m) / 12), yy2 = y + 4800 - a, m2 = m + 12 * a - 3;
+                let jd = d + INT((153 * m2 + 2) / 5) + 365 * yy2 + INT(yy2 / 4) - INT(yy2 / 100) + INT(yy2 / 400) - 32045;
+                if (jd < 2299161) jd = d + INT((153 * m2 + 2) / 5) + 365 * yy2 + INT(yy2 / 4) - 32083;
+                return jd;
+            }
+            function newMoon(k) {
+                const T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = PI / 180;
+                let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+                Jd1 += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+                const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+                const Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+                const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+                let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+                C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+                C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr);
+                C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
+                C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+                C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr));
+                C1 = C1 + 0.0010 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+                let deltat;
+                if (T < -11) deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
+                else deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
+                return Jd1 + C1 - deltat;
+            }
+            function sunLong(jdn) {
+                const T = (jdn - 2451545.0) / 36525, T2 = T * T, dr = PI / 180;
+                const M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+                const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+                let DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+                DL += (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+                let L = (L0 + DL) * dr;
+                L = L - PI * 2 * INT(L / (PI * 2));
+                return L;
+            }
+            const getNewMoonDay = k => INT(newMoon(k) + 0.5 + TZ / 24);
+            const getSunLongitude = jdn => INT(sunLong(jdn - 0.5 - TZ / 24) / PI * 6);
+            function getLunarMonth11(yy) {
+                const off = jdFromDate(31, 12, yy) - 2415021;
+                const k = INT(off / 29.530588853);
+                let nm = getNewMoonDay(k);
+                if (getSunLongitude(nm) >= 9) nm = getNewMoonDay(k - 1);
+                return nm;
+            }
+            function getLeapMonthOffset(a11) {
+                const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+                let last, i = 1, arc = getSunLongitude(getNewMoonDay(k + i));
+                do { last = arc; i++; arc = getSunLongitude(getNewMoonDay(k + i)); } while (arc != last && i < 14);
+                return i - 1;
+            }
+            const dayNumber = jdFromDate(dd, mm, yy);
+            const k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+            let monthStart = getNewMoonDay(k + 1);
+            if (monthStart > dayNumber) monthStart = getNewMoonDay(k);
+            let a11 = getLunarMonth11(yy), b11 = a11, lunarYear;
+            if (a11 >= monthStart) { lunarYear = yy; a11 = getLunarMonth11(yy - 1); }
+            else { lunarYear = yy + 1; b11 = getLunarMonth11(yy + 1); }
+            const lunarDay = dayNumber - monthStart + 1;
+            const diff = INT((monthStart - a11) / 29);
+            let lunarLeap = false, lunarMonth = diff + 11;
+            if (b11 - a11 > 365) {
+                const leapMonthDiff = getLeapMonthOffset(a11);
+                if (diff >= leapMonthDiff) { lunarMonth = diff + 10; if (diff == leapMonthDiff) lunarLeap = true; }
+            }
+            if (lunarMonth > 12) lunarMonth -= 12;
+            if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+            const CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+            const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+            return { day: lunarDay, month: lunarMonth, year: lunarYear, leap: lunarLeap,
+                     canChi: CAN[(lunarYear + 6) % 10] + ' ' + CHI[(lunarYear + 8) % 12] };
+        }
+
 
         function nowParts() {
             return Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
@@ -6533,6 +6630,14 @@
             setAll('time', hm);
             setAll('weekday', WEEKDAYS[['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday)] || '');
             setAll('date', p.day + '/' + p.month + '/' + p.year);
+            const dayKey = p.day + '/' + p.month + '/' + p.year;
+            if (dayKey !== lastDay) {   // ngày đổi thì tính lại âm lịch
+                lastDay = dayKey;
+                try {
+                    const al = amLich(+p.day, +p.month, +p.year);
+                    setAll('lunar', '(' + al.day + '/' + al.month + (al.leap ? ' nhuận' : '') + ' ' + al.canChi + ')');
+                } catch (e) {}
+            }
             if (!current) { const h = +p.hour; setSky(h >= 6 && h < 18 ? 'day' : 'night'); }
         }
 
