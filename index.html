@@ -587,9 +587,9 @@
         .sw-card .sw-line[data-sw="weekday"], .sw-card .sw-line[data-sw="date"] { color: #334155; font-weight: 700; }
 
         /* Widget trên điện thoại: số giờ / nhiệt độ to theo bề ngang máy để lấp chỗ trống */
-        .sw-card .sw-mbig { font-size: clamp(38px, 12.6vw, 58px); }
-        .sw-card .sw-label { font-size: 11px; }
-        .sw-card .sw-val { font-size: 13px; font-weight: 600; }
+        .sw-card .sw-mbig { font-size: clamp(36px, 11.6vw, 52px); }
+        .sw-card .sw-label { font-size: 10.5px; line-height: 1.25; }
+        .sw-card .sw-val { font-size: 12.5px; font-weight: 600; line-height: 1.3; margin-top: 1px; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -751,31 +751,31 @@
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
             <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại, gọn) -->
             <div class="sw-card md:hidden mb-4" data-sky="day">
-                <div class="sw-panel px-4 py-3">
+                <div class="sw-panel px-4 py-2.5">
                     <div class="grid grid-cols-2 gap-3">
                         <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
                         <div class="min-w-0">
                             <div data-sw="time" class="sw-big sw-mbig leading-none">--:--</div>
-                            <div class="mt-2">
-                                <div data-sw="weekday" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
-                                <div data-sw="date" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
-                                <div data-sw="lunar" class="sw-lunar text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
+                            <div class="mt-1.5">
+                                <div data-sw="weekday" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="date" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="lunar" class="sw-lunar text-[13px] leading-[1.35] whitespace-nowrap">&nbsp;</div>
                             </div>
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
                         <div class="min-w-0 pl-3 border-l border-slate-200/70">
                             <div class="flex items-center justify-between gap-1">
                                 <div data-sw="temp" class="sw-big sw-mbig inline-block leading-none">--</div>
-                                <div class="sw-orb shrink-0" style="width:40px;height:40px"></div>
+                                <div class="sw-orb shrink-0" style="width:36px;height:36px"></div>
                             </div>
-                            <div class="mt-2">
-                                <div data-sw="hilo" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap tabular-nums">&nbsp;</div>
-                                <div data-sw="desc" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap truncate">Đang tải…</div>
-                                <div class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
+                            <div class="mt-1.5">
+                                <div data-sw="hilo" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap tabular-nums">&nbsp;</div>
+                                <div data-sw="desc" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap truncate">Đang tải…</div>
+                                <div class="sw-line text-[13px] leading-[1.35] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-x-2 gap-y-2.5 mt-3 pt-2.5 border-t border-slate-200/70">
+                    <div class="grid grid-cols-3 gap-x-2 gap-y-1.5 mt-2 pt-2 border-t border-slate-200/70">
                         <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
                         <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
                         <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
