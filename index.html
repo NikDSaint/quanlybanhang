@@ -587,7 +587,7 @@
         .sw-card .sw-line[data-sw="weekday"], .sw-card .sw-line[data-sw="date"] { color: #334155; font-weight: 700; }
 
         /* Widget trên điện thoại: số giờ / nhiệt độ to theo bề ngang máy để lấp chỗ trống */
-        .sw-card .sw-mbig { font-size: clamp(36px, 11.6vw, 52px); }
+        .sw-card .sw-mbig { font-size: clamp(32px, 10vw, 44px); }
         .sw-card .sw-label { font-size: 10.5px; line-height: 1.25; }
         .sw-card .sw-val { font-size: 12.5px; font-weight: 600; line-height: 1.3; margin-top: 1px; }
 
@@ -670,7 +670,7 @@
                     <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-2.5">
                         <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
                         <div class="min-w-0">
-                            <div data-sw="time" class="sw-big text-[28px] leading-none">--:--</div>
+                            <div data-sw="time" class="sw-big text-[24px] leading-none">--:--</div>
                             <div class="mt-1.5">
                                 <div data-sw="weekday" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
                                 <div data-sw="date" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
@@ -680,8 +680,8 @@
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
                         <div class="min-w-0 pl-2.5 border-l border-slate-200/70">
                             <div class="flex items-center justify-between gap-1">
-                                <div data-sw="temp" class="sw-big inline-block text-[28px] leading-none">--</div>
-                                <div class="sw-orb shrink-0" style="width:18px;height:18px"></div>
+                                <div data-sw="temp" class="sw-big inline-block text-[24px] leading-none">--</div>
+                                <div class="sw-orb shrink-0" style="width:16px;height:16px"></div>
                             </div>
                             <div class="mt-1.5">
                                 <div data-sw="hilo" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
