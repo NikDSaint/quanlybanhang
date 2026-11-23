@@ -585,6 +585,11 @@
         /* các dòng nhỏ 2 cột của widget: cùng cỡ, cùng màu -> thẳng hàng ngang */
         .sw-card .sw-line { color: #64748b; font-weight: 500; }
         .sw-card .sw-line[data-sw="weekday"], .sw-card .sw-line[data-sw="date"] { color: #334155; font-weight: 700; }
+
+        /* Widget trên điện thoại: số giờ / nhiệt độ to theo bề ngang máy để lấp chỗ trống */
+        .sw-card .sw-mbig { font-size: clamp(38px, 12.6vw, 58px); }
+        .sw-card .sw-label { font-size: 11px; }
+        .sw-card .sw-val { font-size: 13px; font-weight: 600; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -750,30 +755,33 @@
                     <div class="grid grid-cols-2 gap-3">
                         <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
                         <div class="min-w-0">
-                            <div data-sw="time" class="sw-big text-[40px] leading-none">--:--</div>
+                            <div data-sw="time" class="sw-big sw-mbig leading-none">--:--</div>
                             <div class="mt-2">
-                                <div data-sw="weekday" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
-                                <div data-sw="date" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
-                                <div data-sw="lunar" class="sw-lunar text-[12px] leading-[1.45] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="weekday" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="date" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
+                                <div data-sw="lunar" class="sw-lunar text-[13.5px] leading-[1.5] whitespace-nowrap">&nbsp;</div>
                             </div>
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
                         <div class="min-w-0 pl-3 border-l border-slate-200/70">
                             <div class="flex items-center justify-between gap-1">
-                                <div data-sw="temp" class="sw-big inline-block text-[40px] leading-none">--</div>
-                                <div class="sw-orb shrink-0" style="width:28px;height:28px"></div>
+                                <div data-sw="temp" class="sw-big sw-mbig inline-block leading-none">--</div>
+                                <div class="sw-orb shrink-0" style="width:40px;height:40px"></div>
                             </div>
                             <div class="mt-2">
-                                <div data-sw="hilo" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
-                                <div data-sw="desc" class="sw-line text-[12px] leading-[1.45] whitespace-nowrap truncate">Đang tải…</div>
-                                <div class="sw-line text-[12px] leading-[1.45] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
+                                <div data-sw="hilo" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap tabular-nums">&nbsp;</div>
+                                <div data-sw="desc" class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap truncate">Đang tải…</div>
+                                <div class="sw-line text-[13.5px] leading-[1.5] whitespace-nowrap truncate"><i class="fa-solid fa-location-dot text-[0.85em] mr-1 text-violet-500"></i>Hòa Bình</div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-200/70 sw-val" style="font-size:12px">
-                        <span><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></span>
-                        <span><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></span>
-                        <span><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></span>
+                    <div class="grid grid-cols-3 gap-x-2 gap-y-2.5 mt-3 pt-2.5 border-t border-slate-200/70">
+                        <div><div class="sw-label">Cảm giác như</div><div class="sw-val"><i class="fa-solid fa-temperature-half"></i><span data-sw="feel">--</span></div></div>
+                        <div><div class="sw-label">Khả năng mưa</div><div class="sw-val"><i class="fa-solid fa-umbrella"></i><span data-sw="rain">--</span></div></div>
+                        <div><div class="sw-label">Độ ẩm</div><div class="sw-val"><i class="fa-solid fa-droplet"></i><span data-sw="hum">--</span></div></div>
+                        <div><div class="sw-label">Gió</div><div class="sw-val"><i class="fa-solid fa-wind"></i><span data-sw="wind">--</span></div></div>
+                        <div><div class="sw-label">Chỉ số UV</div><div class="sw-val"><i class="fa-solid fa-sun"></i><span data-sw="uv">--</span></div></div>
+                        <div><div class="sw-label">Mọc · Lặn</div><div class="sw-val"><i class="fa-solid fa-cloud-sun"></i><span data-sw="sun">--</span></div></div>
                     </div>
                 </div>
             </div>
@@ -6535,7 +6543,7 @@
     (function () {
         const TZ = 'Asia/Ho_Chi_Minh';
         const LAT = 20.8172, LON = 105.3376;
-        const KEY = 'aistore-weather-hb3';
+        const KEY = 'aistore-weather-hb4';
         const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
         const setAll = (k, v, html) => document.querySelectorAll('[data-sw="' + k + '"]').forEach(el => { if (html) el.innerHTML = v; else el.textContent = v; });
         const setSky = sky => document.querySelectorAll('.sw-card').forEach(el => el.dataset.sky = sky);
@@ -6682,6 +6690,12 @@
             setAll('desc', classify(w.code)[0]);
                         setAll('hilo', (w.max != null && w.min != null) ? Math.round(w.min) + '° - ' + Math.round(w.max) + '°' : '');
             setAll('feel', w.feel != null ? Math.round(w.feel) + '°' : '--');
+            const hm = t => (typeof t === 'string' && t.length >= 16) ? t.slice(11, 16) : '--';
+            setAll('sun', hm(w.sunrise) + ' · ' + hm(w.sunset));
+            if (w.uv != null) {
+                const u = Math.round(w.uv);
+                setAll('uv', u + (u <= 2 ? ' Thấp' : u <= 5 ? ' TB' : u <= 7 ? ' Cao' : ' Rất cao'));
+            } else setAll('uv', '--');
             setAll('wind', w.wind != null ? Math.round(w.wind) + ' km/h' : '--');
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
             setAll('hum', w.hum != null ? Math.round(w.hum) + '%' : '--');
@@ -6695,7 +6709,7 @@
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
                     '&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day' +
-                    '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
+                    '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset' +
                     '&forecast_days=1&timezone=' + encodeURIComponent(TZ);
                 const r = await fetch(url, { cache: 'no-store' });
                 if (!r.ok) throw new Error(r.status);
@@ -6706,7 +6720,8 @@
                     temp: c.temperature_2m, code: c.weather_code, isDay: c.is_day === 1,
                     hum: c.relative_humidity_2m, wind: c.wind_speed_10m, feel: c.apparent_temperature,
                     max: first(dy.temperature_2m_max), min: first(dy.temperature_2m_min),
-                    rain: first(dy.precipitation_probability_max), at: Date.now()
+                    rain: first(dy.precipitation_probability_max), uv: first(dy.uv_index_max),
+                    sunrise: first(dy.sunrise), sunset: first(dy.sunset), at: Date.now()
                 };
                 show(w);
                 try { localStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {}
