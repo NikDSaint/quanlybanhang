@@ -838,11 +838,14 @@
                         <div class="page-icon bg-gradient-to-br from-orange-500 to-pink-500"><i class="fa-solid fa-boxes-stacked"></i></div>
                         <div class="min-w-0">
                             <h2 class="page-title">Kho Cửa Hàng</h2>
-                            <p class="page-sub">Máy đang bán tại cửa hàng</p>
+                            <p class="page-sub">Máy đang bán tại cửa hàng · <span id="badge-available-count" class="font-bold text-emerald-600">(0 máy)</span></p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap md:justify-end">
                         <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+                        <button type="button" onclick="copyStockList('STORE', this)" title="Copy danh sách tên máy và giá bán" class="px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i><span>Copy list</span>
+                        </button>
                         
                         <button id="btn-import-csv" onclick="document.getElementById('csv-file-input').click()" title="Nhập danh sách từ file CSV" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
                             <i class="fa-solid fa-file-arrow-up text-indigo-600"></i>
@@ -897,16 +900,7 @@
 
                 <!-- Bảng sản phẩm còn trong kho -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="section-head">
-                        <div class="flex items-center gap-2 min-w-0 flex-wrap">
-                            <span class="section-dot bg-emerald-500 animate-pulse"></span>
-                            <h3 class="section-title">Sản Phẩm Còn Trong Kho <span id="badge-available-count" class="normal-case text-emerald-600">(0 máy)</span></h3>
-                            <button type="button" onclick="copyStockList('STORE', this)" title="Copy danh sách tên máy và giá bán" class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition flex items-center gap-1.5">
-                                <i class="fa-regular fa-copy"></i><span>Copy list</span>
-                            </button>
-                        </div>
-                    </div>
-
+                    
                     <div class="hidden md:block overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left text-sm border-collapse">
                             <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
@@ -966,10 +960,13 @@
                         <div class="page-icon bg-gradient-to-br from-sky-500 to-cyan-500"><i class="fa-solid fa-handshake-angle"></i></div>
                         <div class="min-w-0">
                             <h2 class="page-title">Kho Liên Kết</h2>
-                            <p class="page-sub">Máy của đối tác gửi bán qua cửa hàng</p>
+                            <p class="page-sub">Máy của đối tác gửi bán qua cửa hàng · <span id="badge-partner-available-count" class="font-bold text-sky-600">(0 máy)</span></p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap md:justify-end">
+                        <button type="button" onclick="copyStockList('PARTNER', this)" title="Copy danh sách tên máy và giá bán" class="px-3 py-2 bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i><span>Copy list</span>
+                        </button>
                         <button id="btn-add-partner-product" onclick="openAddModal('PARTNER')" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:brightness-110 text-white font-bold rounded-xl shadow-[0_8px_18px_-10px_rgba(14,165,233,0.9)] transition flex items-center gap-2 text-xs sm:text-sm">
                             <i class="fa-solid fa-plus"></i>
                             <span>Thêm Máy Liên Kết</span>
@@ -1013,16 +1010,7 @@
 
                 <!-- Bảng sản phẩm còn trong Kho Liên Kết -->
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="section-head">
-                        <div class="flex items-center gap-2 min-w-0 flex-wrap">
-                            <span class="section-dot bg-sky-500 animate-pulse"></span>
-                            <h3 class="section-title">Sản Phẩm Trong Kho Liên Kết <span id="badge-partner-available-count" class="normal-case text-sky-600">(0 máy)</span></h3>
-                            <button type="button" onclick="copyStockList('PARTNER', this)" title="Copy danh sách tên máy và giá bán" class="px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 text-xs font-bold transition flex items-center gap-1.5">
-                                <i class="fa-regular fa-copy"></i><span>Copy list</span>
-                            </button>
-                        </div>
-                    </div>
-
+                    
                     <div class="hidden md:block overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left text-sm border-collapse">
                             <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-bold tracking-wider select-none">
@@ -1118,12 +1106,6 @@
                     </div>
 
                     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div class="section-head">
-                            <div class="flex items-center gap-2">
-                                <span class="section-dot bg-rose-500"></span>
-                                <h3 class="section-title">Máy Đã Bán</h3>
-                            </div>
-                        </div>
 
                         <div class="hidden md:block overflow-x-auto custom-scrollbar">
                             <table class="w-full text-left text-sm border-collapse">
@@ -1308,7 +1290,6 @@
                             <div class="page-icon bg-gradient-to-br from-purple-500 to-fuchsia-500"><i class="fa-solid fa-chart-pie"></i></div>
                             <div class="min-w-0">
                                 <h2 class="page-title">Báo Cáo Doanh Thu</h2>
-                                <p class="page-sub">Còn lại = Doanh thu − Giá nhập − Chi phí nhân viên − Chi phí cửa hàng</p>
                             </div>
                         </div>
 
