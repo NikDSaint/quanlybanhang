@@ -591,21 +591,21 @@
         .sw-card .sw-label { font-size: 10.5px; line-height: 1.25; }
         .sw-card .sw-val { font-size: 12.5px; font-weight: 600; line-height: 1.3; margin-top: 1px; }
 
-        /* ===== Popup Lịch & Thời tiết ===== */
+        /* ===== Popup Lịch & Thời tiết (gọn) ===== */
         .wx-head { border-bottom: 1px solid rgba(0,0,0,.10); }
-        .wx-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: #475569; margin-bottom: 8px; }
-        .wx-box { border-radius: 18px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.95);
+        .wx-title { font-size: 10.5px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: #475569; margin-bottom: 5px; }
+        .wx-box { border-radius: 14px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.95);
                   box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120,113,108,.08), 0 4px 12px -10px rgba(60,50,42,.35); }
-        .wx-stat { border-radius: 14px; padding: 8px 10px; background: rgba(255,255,255,.7); box-shadow: 0 0 0 1px rgba(120,113,108,.10); }
-        .wx-stat .k { font-size: 11px; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .wx-stat .k i { color: #8b5cf6; width: 14px; text-align: center; }
-        .wx-stat .v { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 2px; }
-        .wx-stat .n { font-size: 11px; color: #64748b; line-height: 1.3; margin-top: 1px; }
-        .wx-day { display: grid; grid-template-columns: 74px 28px 1fr auto; align-items: center; gap: 8px; padding: 9px 12px; }
-        .wx-day .ic { font-size: 18px; text-align: center; }
-        .wx-cell { border-radius: 10px; padding: 4px 0 3px; text-align: center; line-height: 1.1; min-height: 42px; }
-        .wx-cell .d { font-size: 15px; font-weight: 800; color: #0f172a; }
-        .wx-cell .l { font-size: 10px; font-weight: 600; color: #b45309; margin-top: 2px; }
+        .wx-stat { border-radius: 10px; padding: 5px 7px; background: rgba(255,255,255,.7); box-shadow: 0 0 0 1px rgba(120,113,108,.10); }
+        .wx-stat .k { font-size: 10px; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+        .wx-stat .k i { color: #8b5cf6; width: 11px; text-align: center; }
+        .wx-stat .v { font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 1px; line-height: 1.2; }
+        .wx-stat .n { font-size: 10px; color: #64748b; line-height: 1.25; margin-top: 1px; }
+        .wx-day { display: grid; grid-template-columns: 64px 22px 1fr auto; align-items: center; gap: 6px; padding: 5px 10px; }
+        .wx-day .ic { font-size: 15px; text-align: center; }
+        .wx-cell { border-radius: 8px; padding: 2px 0 1px; text-align: center; line-height: 1.05; min-height: 32px; }
+        .wx-cell .d { font-size: 13px; font-weight: 800; color: #0f172a; }
+        .wx-cell .l { font-size: 9px; font-weight: 600; color: #b45309; margin-top: 1px; }
         .wx-cell.sun .d { color: #e11d48; }
         .wx-cell.other { opacity: .35; }
         .wx-cell.lstart .l, .wx-cell.lfull .l { font-weight: 900; }
@@ -1700,31 +1700,31 @@
 
     <!-- POPUP: LỊCH ÂM DƯƠNG + THỜI TIẾT CHI TIẾT (xem thông tin, bấm ra ngoài / Esc để đóng) -->
     <div id="weather-modal" onclick="if(event.target === this) closeWeatherModal()" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center hidden p-3 sm:p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
-            <div class="wx-head px-5 py-3.5 flex items-center justify-between gap-3">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="wx-head px-4 py-2.5 flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                    <h2 class="text-lg font-black leading-tight">Lịch & Thời Tiết</h2>
-                    <p class="text-[12px] text-slate-500 font-medium"><i class="fa-solid fa-location-dot text-violet-500 mr-1"></i>TP. Hòa Bình · <span id="wx-updated">đang tải…</span></p>
+                    <h2 class="text-[15px] font-black leading-tight">Lịch & Thời Tiết</h2>
+                    <p class="text-[11px] text-slate-500 font-medium"><i class="fa-solid fa-location-dot text-violet-500 mr-1"></i>TP. Hòa Bình · <span id="wx-updated">đang tải…</span></p>
                 </div>
-                <button type="button" onclick="closeWeatherModal()" class="w-9 h-9 shrink-0 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeWeatherModal()" class="w-8 h-8 shrink-0 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="overflow-y-auto custom-scrollbar p-4 sm:p-5 space-y-4">
+            <div class="overflow-y-auto custom-scrollbar p-3 space-y-3">
                 <!-- Hôm nay -->
                 <section>
                     <h3 class="wx-title">Hôm nay</h3>
-                    <div class="wx-box p-3.5">
+                    <div class="wx-box p-2.5">
                         <div class="flex items-center justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="text-[13px] font-bold text-slate-700" id="wx-today-date">&nbsp;</div>
-                                <div class="text-[12px] font-bold text-amber-700" id="wx-today-lunar">&nbsp;</div>
-                                <div class="text-[13px] text-slate-500 mt-1" id="wx-today-desc">&nbsp;</div>
+                                <div class="text-[12px] font-bold text-slate-700" id="wx-today-date">&nbsp;</div>
+                                <div class="text-[11px] font-bold text-amber-700" id="wx-today-lunar">&nbsp;</div>
+                                <div class="text-[12px] text-slate-500 mt-0.5" id="wx-today-desc">&nbsp;</div>
                             </div>
                             <div class="text-right shrink-0">
-                                <div class="text-[40px] font-black leading-none text-slate-900" id="wx-today-temp">--</div>
-                                <div class="text-[12px] text-slate-500 mt-1" id="wx-today-hilo">&nbsp;</div>
+                                <div class="text-[30px] font-black leading-none text-slate-900" id="wx-today-temp">--</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5" id="wx-today-hilo">&nbsp;</div>
                             </div>
                         </div>
-                        <div id="wx-today-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3"></div>
+                        <div id="wx-today-grid" class="grid grid-cols-3 gap-1.5 mt-2"></div>
                     </div>
                 </section>
                 <!-- 7 ngày tới -->
@@ -1734,20 +1734,19 @@
                 </section>
                 <!-- Lịch tháng -->
                 <section>
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center justify-between mb-1.5">
                         <h3 class="wx-title !mb-0 whitespace-nowrap">Lịch âm dương</h3>
                         <div class="flex items-center gap-1.5">
-                            <button type="button" onclick="wxMonth(-1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng trước"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
-                            <button type="button" onclick="wxMonth(0)" class="px-3 h-8 rounded-full bg-white border border-slate-200 text-[12px] font-bold text-slate-700 whitespace-nowrap" id="wx-cal-label">Tháng</button>
-                            <button type="button" onclick="wxMonth(1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng sau"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>
+                            <button type="button" onclick="wxMonth(-1)" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng trước"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
+                            <button type="button" onclick="wxMonth(0)" class="px-2.5 h-7 rounded-full bg-white border border-slate-200 text-[11px] font-bold text-slate-700 whitespace-nowrap" id="wx-cal-label">Tháng</button>
+                            <button type="button" onclick="wxMonth(1)" class="w-7 h-7 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng sau"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>
                         </div>
                     </div>
-                    <div class="wx-box p-2 sm:p-3">
-                        <div class="grid grid-cols-7 text-center text-[11px] font-black text-slate-500 pb-1.5">
+                    <div class="wx-box p-1.5">
+                        <div class="grid grid-cols-7 text-center text-[10px] font-black text-slate-500 pb-1">
                             <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div class="text-rose-500">CN</div>
                         </div>
-                        <div id="wx-cal" class="grid grid-cols-7 gap-1"></div>
-                        <p class="text-[11px] text-slate-500 mt-2 px-1">Số to là ngày dương, số nhỏ màu nâu là ngày âm. Mùng 1 và rằm được tô đậm.</p>
+                        <div id="wx-cal" class="grid grid-cols-7 gap-0.5"></div>
                     </div>
                 </section>
             </div>
@@ -6872,7 +6871,7 @@
             if (w.hum != null) g.push(stat('fa-droplet', 'Độ ẩm', Math.round(w.hum) + '%', humText(w.hum)));
             if (w.wind != null) g.push(stat('fa-wind', 'Gió', Math.round(w.wind) + ' km/h', windText(w.wind)));
             if (w.uv != null) g.push(stat('fa-sun', 'Chỉ số UV', Math.round(w.uv), uvText(Math.round(w.uv))));
-            if (w.sunrise) g.push(stat('fa-cloud-sun', 'Mặt trời mọc · lặn', hm(w.sunrise) + ' · ' + hm(w.sunset), 'Giờ sáng – tối trong ngày'));
+            if (w.sunrise) g.push(stat('fa-cloud-sun', 'Mặt trời mọc · lặn', hm(w.sunrise) + ' · ' + hm(w.sunset), 'Thời gian có nắng'));
             $('wx-today-grid').innerHTML = g.join('');
         }
         function renderWeek() {
@@ -6885,11 +6884,11 @@
                 const name = k === 0 ? 'Hôm nay' : k === 1 ? 'Ngày mai' : WEEKDAYS[wd];
                 const al = amLich(dd, mm, yy);
                 return `<div class="wx-day">
-                    <div class="leading-tight"><div class="text-[13px] font-bold text-slate-800">${name}</div><div class="text-[11px] text-slate-500">${dd}/${mm} <span class="text-amber-700">(${al.day}/${al.month})</span></div></div>
+                    <div class="leading-tight"><div class="text-[12px] font-bold text-slate-800">${name}</div><div class="text-[10px] text-slate-500">${dd}/${mm} <span class="text-amber-700">(${al.day}/${al.month})</span></div></div>
                     <div class="ic">${wxIcon(x.code, true)}</div>
-                    <div class="min-w-0 leading-tight"><div class="text-[13px] font-semibold text-slate-700 truncate">${classify(x.code)[0]}</div>
-                        <div class="text-[11px] text-slate-500 truncate"><i class="fa-solid fa-umbrella text-violet-500"></i> ${x.rain != null ? Math.round(x.rain) + '%' : '--'} · <i class="fa-solid fa-wind text-violet-500"></i> ${x.wind != null ? Math.round(x.wind) + ' km/h' : '--'}</div></div>
-                    <div class="text-right whitespace-nowrap"><span class="text-[13px] text-slate-500">${Math.round(x.min)}°</span> <span class="text-[15px] font-black text-slate-900">${Math.round(x.max)}°</span></div>
+                    <div class="min-w-0 leading-tight"><div class="text-[12px] font-semibold text-slate-700 truncate">${classify(x.code)[0]}</div>
+                        <div class="text-[10px] text-slate-500 truncate"><i class="fa-solid fa-umbrella text-violet-500"></i> ${x.rain != null ? Math.round(x.rain) + '%' : '--'} · <i class="fa-solid fa-wind text-violet-500"></i> ${x.wind != null ? Math.round(x.wind) + ' km/h' : '--'}</div></div>
+                    <div class="text-right whitespace-nowrap"><span class="text-[11px] text-slate-500">${Math.round(x.min)}°</span> <span class="text-[13px] font-black text-slate-900">${Math.round(x.max)}°</span></div>
                 </div>`;
             }).join('');
         }
