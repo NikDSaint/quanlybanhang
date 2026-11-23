@@ -590,6 +590,53 @@
         .sw-card .sw-mbig { font-size: clamp(36px, 11.6vw, 52px); }
         .sw-card .sw-label { font-size: 10.5px; line-height: 1.25; }
         .sw-card .sw-val { font-size: 12.5px; font-weight: 600; line-height: 1.3; margin-top: 1px; }
+
+        /* ===== Popup Lịch & Thời tiết ===== */
+        .wx-head { border-bottom: 1px solid rgba(0,0,0,.10); }
+        .wx-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: #475569; margin-bottom: 8px; }
+        .wx-box { border-radius: 18px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.95);
+                  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(120,113,108,.08), 0 4px 12px -10px rgba(60,50,42,.35); }
+        .wx-stat { border-radius: 14px; padding: 8px 10px; background: rgba(255,255,255,.7); box-shadow: 0 0 0 1px rgba(120,113,108,.10); }
+        .wx-stat .k { font-size: 11px; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .wx-stat .k i { color: #8b5cf6; width: 14px; text-align: center; }
+        .wx-stat .v { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 2px; }
+        .wx-stat .n { font-size: 11px; color: #64748b; line-height: 1.3; margin-top: 1px; }
+        .wx-day { display: grid; grid-template-columns: 74px 28px 1fr auto; align-items: center; gap: 8px; padding: 9px 12px; }
+        .wx-day .ic { font-size: 18px; text-align: center; }
+        .wx-cell { border-radius: 10px; padding: 4px 0 3px; text-align: center; line-height: 1.1; min-height: 42px; }
+        .wx-cell .d { font-size: 15px; font-weight: 800; color: #0f172a; }
+        .wx-cell .l { font-size: 10px; font-weight: 600; color: #b45309; margin-top: 2px; }
+        .wx-cell.sun .d { color: #e11d48; }
+        .wx-cell.other { opacity: .35; }
+        .wx-cell.lstart .l, .wx-cell.lfull .l { font-weight: 900; }
+        .wx-cell.today { background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 6px 14px -8px rgba(124,58,237,.8); }
+        .wx-cell.today .d, .wx-cell.today .l { color: #fff !important; }
+
+        /* ===== Danh sách tùy chọn của ô chọn: kiểu kính kem, thay bảng chọn mặc định của trình duyệt ===== */
+        .gsel-menu {
+            position: fixed; z-index: 9999; min-width: 160px; max-height: 320px; overflow-y: auto; padding: 6px;
+            border-radius: 18px; background: rgba(255, 251, 240, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: inset 0 1.5px 0 #fff, 0 0 0 1px rgba(120, 113, 108, 0.12), 0 18px 40px -14px rgba(60, 50, 42, 0.45);
+            -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+            animation: gselIn .18s cubic-bezier(.2, 1.2, .35, 1);
+            transform-origin: top center; overscroll-behavior: contain;
+        }
+        .gsel-menu.up { transform-origin: bottom center; }
+        @keyframes gselIn { from { opacity: 0; transform: translateY(-4px) scale(.97); } to { opacity: 1; transform: none; } }
+        .gsel-opt {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+            padding: 9px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; color: #1e293b; text-align: left;
+            background: transparent; border: 0; cursor: pointer; white-space: nowrap;
+        }
+        .gsel-opt:hover, .gsel-opt.kb { background: rgba(120, 113, 108, 0.09); }
+        .gsel-opt.sel { background: linear-gradient(180deg, #f0eeeb, #e6e4e0); font-weight: 800; color: #0f172a;
+                        box-shadow: inset 0 1px 0 rgba(255,255,255,.9); }
+        .gsel-opt.sel::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 11px; color: #7c3aed; }
+        .gsel-opt[disabled] { opacity: .4; cursor: default; }
+        .gsel-group { padding: 8px 12px 4px; font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+        .gsel-menu .gsel-opt::after { flex-shrink: 0; }
+        .gsel-menu button.gsel-opt:active { scale: 1; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -618,7 +665,7 @@
             </div>
 
             <!-- 2. Ngày giờ + thời tiết Hòa Bình (gọn) -->
-            <div class="sw-card shrink-0" data-sky="day" title="Thời tiết hiện tại ở TP. Hòa Bình">
+            <div class="sw-card shrink-0 cursor-pointer" data-sky="day" title="Bấm để xem lịch và thời tiết chi tiết" onclick="openWeatherModal()">
                 <div class="sw-panel px-3 py-2.5">
                     <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-2.5">
                         <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
@@ -750,7 +797,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <main class="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-7 pt-4 pb-28 md:py-6">
             <!-- Ngày giờ + thời tiết Hòa Bình (điện thoại, gọn) -->
-            <div class="sw-card md:hidden mb-4" data-sky="day">
+            <div class="sw-card md:hidden mb-4 cursor-pointer" data-sky="day" onclick="openWeatherModal()">
                 <div class="sw-panel px-4 py-2.5">
                     <div class="grid grid-cols-2 gap-3">
                         <!-- cột trái: giờ + thứ, ngày dương, ngày âm -->
@@ -1650,6 +1697,62 @@
     </div>
 
     <!-- MODAL: XEM CHI TIẾT SẢN PHẨM -->
+
+    <!-- POPUP: LỊCH ÂM DƯƠNG + THỜI TIẾT CHI TIẾT (xem thông tin, bấm ra ngoài / Esc để đóng) -->
+    <div id="weather-modal" onclick="if(event.target === this) closeWeatherModal()" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center hidden p-3 sm:p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="wx-head px-5 py-3.5 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <h2 class="text-lg font-black leading-tight">Lịch & Thời Tiết</h2>
+                    <p class="text-[12px] text-slate-500 font-medium"><i class="fa-solid fa-location-dot text-violet-500 mr-1"></i>TP. Hòa Bình · <span id="wx-updated">đang tải…</span></p>
+                </div>
+                <button type="button" onclick="closeWeatherModal()" class="w-9 h-9 shrink-0 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="overflow-y-auto custom-scrollbar p-4 sm:p-5 space-y-4">
+                <!-- Hôm nay -->
+                <section>
+                    <h3 class="wx-title">Hôm nay</h3>
+                    <div class="wx-box p-3.5">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-[13px] font-bold text-slate-700" id="wx-today-date">&nbsp;</div>
+                                <div class="text-[12px] font-bold text-amber-700" id="wx-today-lunar">&nbsp;</div>
+                                <div class="text-[13px] text-slate-500 mt-1" id="wx-today-desc">&nbsp;</div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <div class="text-[40px] font-black leading-none text-slate-900" id="wx-today-temp">--</div>
+                                <div class="text-[12px] text-slate-500 mt-1" id="wx-today-hilo">&nbsp;</div>
+                            </div>
+                        </div>
+                        <div id="wx-today-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3"></div>
+                    </div>
+                </section>
+                <!-- 7 ngày tới -->
+                <section>
+                    <h3 class="wx-title">Thời tiết 7 ngày tới</h3>
+                    <div id="wx-week" class="wx-box divide-y divide-slate-200/70"></div>
+                </section>
+                <!-- Lịch tháng -->
+                <section>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="wx-title !mb-0 whitespace-nowrap">Lịch âm dương</h3>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="wxMonth(-1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng trước"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
+                            <button type="button" onclick="wxMonth(0)" class="px-3 h-8 rounded-full bg-white border border-slate-200 text-[12px] font-bold text-slate-700 whitespace-nowrap" id="wx-cal-label">Tháng</button>
+                            <button type="button" onclick="wxMonth(1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center" aria-label="Tháng sau"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>
+                        </div>
+                    </div>
+                    <div class="wx-box p-2 sm:p-3">
+                        <div class="grid grid-cols-7 text-center text-[11px] font-black text-slate-500 pb-1.5">
+                            <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div class="text-rose-500">CN</div>
+                        </div>
+                        <div id="wx-cal" class="grid grid-cols-7 gap-1"></div>
+                        <p class="text-[11px] text-slate-500 mt-2 px-1">Số to là ngày dương, số nhỏ màu nâu là ngày âm. Mùng 1 và rằm được tô đậm.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
     <div id="detail-modal" onclick="if(event.target === this) closeDetailModal()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <!-- Đầu popup: tên máy, kho, tình trạng nằm trên dải màu -->
@@ -6531,6 +6634,7 @@
                     window.closeConfirmDeleteModal();
                     window.closeCancelOrderModal();
                     window.closeNotificationsModal();
+                    if (window.closeWeatherModal) window.closeWeatherModal();
                 }
             });
         };
@@ -6541,7 +6645,7 @@
     (function () {
         const TZ = 'Asia/Ho_Chi_Minh';
         const LAT = 20.8172, LON = 105.3376;
-        const KEY = 'aistore-weather-hb4';
+        const KEY = 'aistore-weather-hb5';
         const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
         const setAll = (k, v, html) => document.querySelectorAll('[data-sw="' + k + '"]').forEach(el => { if (html) el.innerHTML = v; else el.textContent = v; });
         const setSky = sky => document.querySelectorAll('.sw-card').forEach(el => el.dataset.sky = sky);
@@ -6707,8 +6811,8 @@
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
                     '&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day' +
-                    '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset' +
-                    '&forecast_days=1&timezone=' + encodeURIComponent(TZ);
+                    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,wind_speed_10m_max,sunrise,sunset' +
+                    '&forecast_days=7&timezone=' + encodeURIComponent(TZ);
                 const r = await fetch(url, { cache: 'no-store' });
                 if (!r.ok) throw new Error(r.status);
                 const d = await r.json();
@@ -6719,7 +6823,8 @@
                     hum: c.relative_humidity_2m, wind: c.wind_speed_10m, feel: c.apparent_temperature,
                     max: first(dy.temperature_2m_max), min: first(dy.temperature_2m_min),
                     rain: first(dy.precipitation_probability_max), uv: first(dy.uv_index_max),
-                    sunrise: first(dy.sunrise), sunset: first(dy.sunset), at: Date.now()
+                    sunrise: first(dy.sunrise), sunset: first(dy.sunset), at: Date.now(),
+                    week: (dy.time || []).map((t, k) => ({ date: t, code: (dy.weather_code || [])[k], max: (dy.temperature_2m_max || [])[k], min: (dy.temperature_2m_min || [])[k], rain: (dy.precipitation_probability_max || [])[k], wind: (dy.wind_speed_10m_max || [])[k] }))
                 };
                 show(w);
                 try { localStorage.setItem(KEY, JSON.stringify(w)); } catch (e) {}
@@ -6727,6 +6832,103 @@
                 if (!cached) setAll('desc', 'Chưa tải được thời tiết');
             }
         }
+
+        // ===== Popup Lịch & Thời tiết =====
+        const WD_SHORT = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        let calY = 0, calM = 0;
+        function todayVN() { const p = nowParts(); return { d: +p.day, m: +p.month, y: +p.year }; }
+        function wxIcon(code, isDay) {
+            const kind = classify(code)[1];
+            if (kind === 'clear') return isDay === false ? '<i class="fa-solid fa-moon" style="color:#a5b4fc"></i>' : '<i class="fa-solid fa-sun" style="color:#f59e0b"></i>';
+            if (kind === 'partly') return '<i class="fa-solid fa-cloud-sun" style="color:#f59e0b"></i>';
+            if (kind === 'cloudy') return '<i class="fa-solid fa-cloud" style="color:#94a3b8"></i>';
+            if (kind === 'fog') return '<i class="fa-solid fa-smog" style="color:#94a3b8"></i>';
+            if (kind === 'rain') return '<i class="fa-solid fa-cloud-showers-heavy" style="color:#3b82f6"></i>';
+            return '<i class="fa-solid fa-cloud-bolt" style="color:#6366f1"></i>';
+        }
+        function uvText(u) { return u <= 2 ? 'Thấp – an toàn ra ngoài' : u <= 5 ? 'Trung bình – nên đội mũ' : u <= 7 ? 'Cao – hạn chế nắng trưa' : u <= 10 ? 'Rất cao – che chắn kỹ' : 'Nguy hiểm – tránh ra nắng'; }
+        function rainText(r) { return r < 20 ? 'Gần như không mưa' : r < 50 ? 'Có thể mưa nhẹ' : r < 80 ? 'Nhiều khả năng mưa' : 'Mưa gần như chắc chắn'; }
+        function humText(h) { return h < 40 ? 'Khô hanh' : h < 70 ? 'Dễ chịu' : h < 85 ? 'Hơi ẩm' : 'Rất ẩm, nồm'; }
+        function windText(v) { return v < 6 ? 'Lặng gió' : v < 12 ? 'Gió nhẹ' : v < 20 ? 'Gió vừa' : v < 39 ? 'Gió khá mạnh' : 'Gió mạnh'; }
+        function feelText(f, t) { const d = f - t; return Math.abs(d) < 1.5 ? 'Đúng như nhiệt độ thực' : d > 0 ? 'Oi hơn nhiệt độ thực' : 'Lạnh hơn nhiệt độ thực'; }
+        function stat(icon, k, v, n) { return `<div class="wx-stat"><div class="k"><i class="fa-solid ${icon}"></i>${k}</div><div class="v">${v}</div><div class="n">${n}</div></div>`; }
+        function renderToday() {
+            const t = todayVN(), wd = new Date(t.y, t.m - 1, t.d).getDay();
+            const al = amLich(t.d, t.m, t.y);
+            const $ = id => document.getElementById(id);
+            $('wx-today-date').textContent = WEEKDAYS[wd] + ', ' + t.d + '/' + t.m + '/' + t.y;
+            $('wx-today-lunar').textContent = 'Âm lịch: ' + al.day + '/' + al.month + (al.leap ? ' nhuận' : '') + ' năm ' + al.canChi;
+            const w = current;
+            if (!w) { $('wx-updated').textContent = 'chưa tải được thời tiết'; $('wx-today-grid').innerHTML = ''; return; }
+            const at = new Date(w.at);
+            $('wx-updated').textContent = 'cập nhật ' + String(at.getHours()).padStart(2, '0') + ':' + String(at.getMinutes()).padStart(2, '0');
+            $('wx-today-desc').innerHTML = wxIcon(w.code, w.isDay) + ' ' + classify(w.code)[0];
+            $('wx-today-temp').textContent = Math.round(w.temp) + '°C';
+            $('wx-today-hilo').textContent = (w.min != null ? 'Thấp ' + Math.round(w.min) + '°' : '') + (w.max != null ? ' · Cao ' + Math.round(w.max) + '°' : '');
+            const hm = x => (typeof x === 'string' && x.length >= 16) ? x.slice(11, 16) : '--';
+            const g = [];
+            if (w.feel != null) g.push(stat('fa-temperature-half', 'Cảm giác như', Math.round(w.feel) + '°C', feelText(w.feel, w.temp)));
+            if (w.rain != null) g.push(stat('fa-umbrella', 'Khả năng mưa', Math.round(w.rain) + '%', rainText(w.rain)));
+            if (w.hum != null) g.push(stat('fa-droplet', 'Độ ẩm', Math.round(w.hum) + '%', humText(w.hum)));
+            if (w.wind != null) g.push(stat('fa-wind', 'Gió', Math.round(w.wind) + ' km/h', windText(w.wind)));
+            if (w.uv != null) g.push(stat('fa-sun', 'Chỉ số UV', Math.round(w.uv), uvText(Math.round(w.uv))));
+            if (w.sunrise) g.push(stat('fa-cloud-sun', 'Mặt trời mọc · lặn', hm(w.sunrise) + ' · ' + hm(w.sunset), 'Giờ sáng – tối trong ngày'));
+            $('wx-today-grid').innerHTML = g.join('');
+        }
+        function renderWeek() {
+            const box = document.getElementById('wx-week');
+            const wk = current && current.week;
+            if (!wk || !wk.length) { box.innerHTML = '<div class="p-4 text-[13px] text-slate-500 text-center">Chưa có dữ liệu dự báo. Kiểm tra kết nối mạng rồi mở lại.</div>'; return; }
+            box.innerHTML = wk.map((x, k) => {
+                const [yy, mm, dd] = x.date.split('-').map(Number);
+                const wd = new Date(yy, mm - 1, dd).getDay();
+                const name = k === 0 ? 'Hôm nay' : k === 1 ? 'Ngày mai' : WEEKDAYS[wd];
+                const al = amLich(dd, mm, yy);
+                return `<div class="wx-day">
+                    <div class="leading-tight"><div class="text-[13px] font-bold text-slate-800">${name}</div><div class="text-[11px] text-slate-500">${dd}/${mm} <span class="text-amber-700">(${al.day}/${al.month})</span></div></div>
+                    <div class="ic">${wxIcon(x.code, true)}</div>
+                    <div class="min-w-0 leading-tight"><div class="text-[13px] font-semibold text-slate-700 truncate">${classify(x.code)[0]}</div>
+                        <div class="text-[11px] text-slate-500 truncate"><i class="fa-solid fa-umbrella text-violet-500"></i> ${x.rain != null ? Math.round(x.rain) + '%' : '--'} · <i class="fa-solid fa-wind text-violet-500"></i> ${x.wind != null ? Math.round(x.wind) + ' km/h' : '--'}</div></div>
+                    <div class="text-right whitespace-nowrap"><span class="text-[13px] text-slate-500">${Math.round(x.min)}°</span> <span class="text-[15px] font-black text-slate-900">${Math.round(x.max)}°</span></div>
+                </div>`;
+            }).join('');
+        }
+        function renderCal() {
+            const t = todayVN();
+            const first = new Date(calY, calM - 1, 1);
+            const start = (first.getDay() + 6) % 7; // thứ Hai đầu tuần
+            const daysIn = new Date(calY, calM, 0).getDate();
+            const cells = [];
+            const total = Math.ceil((start + daysIn) / 7) * 7;
+            for (let k = 0; k < total; k++) {
+                const dt = new Date(calY, calM - 1, 1 - start + k);
+                const d = dt.getDate(), m = dt.getMonth() + 1, y = dt.getFullYear();
+                const al = amLich(d, m, y);
+                const cls = ['wx-cell'];
+                if (m !== calM) cls.push('other');
+                if (dt.getDay() === 0) cls.push('sun');
+                if (d === t.d && m === t.m && y === t.y) cls.push('today');
+                if (al.day === 1) cls.push('lstart');
+                if (al.day === 15) cls.push('lfull');
+                const lt = al.day === 1 ? al.day + '/' + al.month + (al.leap ? 'N' : '') : al.day === 15 ? 'Rằm' : al.day;
+                cells.push(`<div class="${cls.join(' ')}"><div class="d">${d}</div><div class="l">${lt}</div></div>`);
+            }
+            document.getElementById('wx-cal').innerHTML = cells.join('');
+            const al1 = amLich(15, calM, calY);
+            document.getElementById('wx-cal-label').textContent = calM + '/' + calY + ' · ' + al1.canChi;
+        }
+        window.wxMonth = function (step) {
+            if (step === 0) { const t = todayVN(); calY = t.y; calM = t.m; }
+            else { calM += step; if (calM < 1) { calM = 12; calY--; } if (calM > 12) { calM = 1; calY++; } }
+            renderCal();
+        };
+        window.openWeatherModal = function () {
+            const t = todayVN(); calY = t.y; calM = t.m;
+            renderToday(); renderWeek(); renderCal();
+            document.getElementById('weather-modal').classList.remove('hidden');
+            loadWeather().then(() => { if (!document.getElementById('weather-modal').classList.contains('hidden')) { renderToday(); renderWeek(); } });
+        };
+        window.closeWeatherModal = function () { const m = document.getElementById('weather-modal'); if (m) m.classList.add('hidden'); };
         tick(); setInterval(tick, 1000);
         loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); loadWeather(); } });
@@ -6788,6 +6990,110 @@
         document.addEventListener('DOMContentLoaded', () => { again(); });
         setTimeout(again, 300); setTimeout(again, 1500);
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(again);
+    })();
+    </script>
+    <script>
+    // Thay bảng chọn mặc định của trình duyệt (ô chọn hãng, sắp xếp, tháng, nhân viên...) bằng danh sách kiểu kính kem.
+    // Ô <select> gốc vẫn giữ nguyên giá trị và sự kiện, nên mọi chức năng lọc / lưu chạy như cũ.
+    (function () {
+        let menu = null, owner = null, kbIndex = -1;
+        const eligible = el => el && el.tagName === 'SELECT' && !el.multiple && !(el.size > 1) && !el.disabled && !el.classList.contains('native-select');
+        function close() {
+            if (menu) { menu.remove(); menu = null; }
+            if (owner) { owner.removeAttribute('aria-expanded'); owner = null; }
+            kbIndex = -1;
+        }
+        function choose(sel, idx) {
+            if (sel.selectedIndex !== idx) {
+                sel.selectedIndex = idx;
+                sel.dispatchEvent(new Event('input', { bubbles: true }));
+                sel.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            close(); sel.focus({ preventScroll: true });
+        }
+        function place(sel) {
+            const r = sel.getBoundingClientRect(), vh = window.innerHeight, vw = window.innerWidth;
+            menu.style.minWidth = Math.max(160, r.width) + 'px';
+            const h = Math.min(menu.scrollHeight, 320), below = vh - r.bottom - 8, above = r.top - 8;
+            const up = below < Math.min(h, 220) && above > below;
+            menu.classList.toggle('up', up);
+            menu.style.maxHeight = Math.max(140, Math.min(320, (up ? above : below) - 6)) + 'px';
+            menu.style.top = up ? '' : (r.bottom + 6) + 'px';
+            menu.style.bottom = up ? (vh - r.top + 6) + 'px' : '';
+            const w = menu.offsetWidth;
+            menu.style.left = Math.max(8, Math.min(r.left, vw - w - 8)) + 'px';
+        }
+        function open(sel) {
+            close();
+            owner = sel; sel.setAttribute('aria-expanded', 'true');
+            menu = document.createElement('div');
+            menu.className = 'gsel-menu custom-scrollbar'; menu.setAttribute('role', 'listbox');
+            [...sel.children].forEach(ch => {
+                if (ch.tagName === 'OPTGROUP') {
+                    const g = document.createElement('div'); g.className = 'gsel-group'; g.textContent = ch.label; menu.appendChild(g);
+                    [...ch.children].forEach(o => addOpt(sel, o));
+                } else if (ch.tagName === 'OPTION') addOpt(sel, ch);
+            });
+            document.body.appendChild(menu);
+            place(sel);
+            const cur = menu.querySelector('.gsel-opt.sel');
+            if (cur) { cur.scrollIntoView({ block: 'nearest' }); kbIndex = optButtons().indexOf(cur); }
+        }
+        function addOpt(sel, o) {
+            if (o.hidden) return;
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'gsel-opt' + (o.selected ? ' sel' : '');
+            b.textContent = o.textContent; b.setAttribute('role', 'option');
+            if (o.disabled) b.disabled = true;
+            const idx = [...sel.options].indexOf(o);
+            b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (!o.disabled) choose(sel, idx); });
+            b.dataset.idx = idx;
+            menu.appendChild(b);
+        }
+        const optButtons = () => menu ? [...menu.querySelectorAll('.gsel-opt:not([disabled])')] : [];
+        function markKb() { optButtons().forEach((b, k) => b.classList.toggle('kb', k === kbIndex)); const b = optButtons()[kbIndex]; if (b) b.scrollIntoView({ block: 'nearest' }); }
+
+        // Chuột: chặn bảng mặc định, mở bảng kính
+        document.addEventListener('mousedown', e => {
+            const sel = e.target.closest && e.target.closest('select');
+            if (eligible(sel) && e.button === 0) {
+                e.preventDefault();
+                if (owner === sel) close(); else { sel.focus({ preventScroll: true }); open(sel); }
+                return;
+            }
+            if (menu && !menu.contains(e.target)) close();
+        }, true);
+        // Cảm ứng: chạm (không phải vuốt) mới mở
+        let tStart = null;
+        document.addEventListener('touchstart', e => {
+            const sel = e.target.closest && e.target.closest('select');
+            if (eligible(sel)) { const t = e.touches[0]; tStart = { x: t.clientX, y: t.clientY, sel }; }
+            else { tStart = null; if (menu && !menu.contains(e.target)) close(); }
+        }, { capture: true, passive: true });
+        document.addEventListener('touchend', e => {
+            if (!tStart) return;
+            const t = e.changedTouches[0], st = tStart; tStart = null;
+            if (Math.abs(t.clientX - st.x) > 10 || Math.abs(t.clientY - st.y) > 10) return;
+            e.preventDefault();
+            if (owner === st.sel) close(); else open(st.sel);
+        }, { capture: true, passive: false });
+        // Bàn phím
+        document.addEventListener('keydown', e => {
+            if (menu) {
+                const n = optButtons().length;
+                if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); const s = owner; close(); s && s.focus(); }
+                else if (e.key === 'ArrowDown') { e.preventDefault(); kbIndex = (kbIndex + 1) % n; markKb(); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); kbIndex = (kbIndex - 1 + n) % n; markKb(); }
+                else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const b = optButtons()[kbIndex]; if (b) choose(owner, +b.dataset.idx); }
+                else if (e.key === 'Tab') close();
+                return;
+            }
+            const sel = document.activeElement;
+            if (eligible(sel) && (e.key === 'Enter' || e.key === ' ' || (e.altKey && e.key === 'ArrowDown'))) { e.preventDefault(); e.stopPropagation(); open(sel); }
+        }, true);
+        // Cuộn trang / đổi cỡ cửa sổ: đóng bảng (trừ khi đang cuộn trong bảng)
+        window.addEventListener('scroll', e => { if (menu && !menu.contains(e.target)) close(); }, true);
+        window.addEventListener('resize', close);
     })();
     </script>
 </body>
