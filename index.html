@@ -583,8 +583,8 @@
         .sw-card .sw-lunar i { font-size: .9em; margin-right: 2px; opacity: .85; }
 
         /* các dòng nhỏ 2 cột của widget: cùng cỡ, cùng màu -> thẳng hàng ngang */
-        .sw-card .sw-line { color: #64748b; font-weight: 500; }
-        .sw-card .sw-line[data-sw="weekday"], .sw-card .sw-line[data-sw="date"] { color: #334155; font-weight: 700; }
+        /* các dòng nhỏ 2 cột: chữ đen đậm như nhau (trừ dòng âm lịch màu tím) */
+        .sw-card .sw-line { color: #1e293b !important; font-weight: 700 !important; opacity: 1 !important; }
 
         /* Widget trên điện thoại: số giờ / nhiệt độ to theo bề ngang máy để lấp chỗ trống */
         .sw-card .sw-mbig { font-size: clamp(32px, 10vw, 44px); }
@@ -637,6 +637,28 @@
         .gsel-group { padding: 8px 12px 4px; font-size: 10.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
         .gsel-menu .gsel-opt::after { flex-shrink: 0; }
         .gsel-menu button.gsel-opt:active { scale: 1; }
+
+        /* ===== Hình thời tiết động, nằm chìm dưới chữ ở cột nhiệt độ ===== */
+        .sw-rcol { position: relative; isolation: isolate; }
+        .sw-rcol > :not(.sw-fx) { position: relative; z-index: 1; }
+        .sw-fx { position: absolute; z-index: 0; pointer-events: none; opacity: .9; }
+        .sw-fx svg { width: 100%; height: 100%; overflow: visible; }
+        .fx-rays { transform-origin: 50px 50px; animation: fxSpin 18s linear infinite; }
+        .fx-glow { transform-origin: 50px 50px; animation: fxPulse 3.2s ease-in-out infinite; }
+        .fx-drift  { animation: fxDrift 7s ease-in-out infinite; }
+        .fx-drift2 { animation: fxDrift 9s ease-in-out -3s infinite reverse; }
+        .fx-drift3 { animation: fxDrift 11s ease-in-out -6s infinite; }
+        .fx-drop { animation: fxDrop 1.1s linear infinite; }
+        .fx-star { animation: fxTwinkle 2.4s ease-in-out infinite; }
+        .fx-bolt { animation: fxFlash 3.4s ease-in-out infinite; }
+        .fx-fog { animation: fxDrift 6s ease-in-out infinite; }
+        @keyframes fxSpin { to { transform: rotate(360deg); } }
+        @keyframes fxPulse { 0%,100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.08); opacity: 1; } }
+        @keyframes fxDrift { 0%,100% { transform: translateX(-7px); } 50% { transform: translateX(7px); } }
+        @keyframes fxDrop { 0% { transform: translateY(-6px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(16px); opacity: 0; } }
+        @keyframes fxTwinkle { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+        @keyframes fxFlash { 0%,86%,100% { opacity: 0; } 88%,92% { opacity: 1; } 90% { opacity: .3; } }
+        @media (prefers-reduced-motion: reduce) { .sw-fx * { animation: none !important; } }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -678,10 +700,10 @@
                             </div>
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
-                        <div class="min-w-0 pl-2.5 border-l border-slate-200/70">
+                        <div class="sw-rcol min-w-0 pl-2.5 border-l border-slate-200/70">
+                            <div data-sw="fx" class="sw-fx" style="width:62px;height:62px;right:-14px;top:-14px" aria-hidden="true"></div>
                             <div class="flex items-center justify-between gap-1">
                                 <div data-sw="temp" class="sw-big inline-block text-[24px] leading-none">--</div>
-                                <div class="sw-orb shrink-0" style="width:16px;height:16px"></div>
                             </div>
                             <div class="mt-1.5">
                                 <div data-sw="hilo" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
@@ -810,10 +832,10 @@
                             </div>
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
-                        <div class="min-w-0 pl-3 border-l border-slate-200/70">
+                        <div class="sw-rcol min-w-0 pl-3 border-l border-slate-200/70">
+                            <div data-sw="fx" class="sw-fx" style="width:108px;height:108px;right:-18px;top:-22px" aria-hidden="true"></div>
                             <div class="flex items-center justify-between gap-1">
                                 <div data-sw="temp" class="sw-big sw-mbig inline-block leading-none">--</div>
-                                <div class="sw-orb shrink-0" style="width:36px;height:36px"></div>
                             </div>
                             <div class="mt-1.5">
                                 <div data-sw="hilo" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap tabular-nums">&nbsp;</div>
@@ -6728,7 +6750,7 @@
                     setAll('lunar', '(' + al.day + '/' + al.month + (al.leap ? ' nhuận' : '') + ' ' + al.canChi + ')');
                 } catch (e) {}
             }
-            if (!current) { const h = +p.hour; setSky(h >= 6 && h < 18 ? 'day' : 'night'); }
+            if (!current) { const h = +p.hour, day = h >= 6 && h < 18; setSky(day ? 'day' : 'night'); setFx(1, day); }
         }
 
         // Mã thời tiết WMO -> [chữ, kiểu trời, nhóm biểu tượng]
@@ -6765,6 +6787,51 @@
             if (kind === 'cloudy' || kind === 'fog') return 'cloudy';
             return 'day';
         }
+
+        // ===== Hình thời tiết động (SVG) =====
+        const FX_DEFS = '<defs>' +
+            '<radialGradient id="fxSun" cx="40%" cy="38%"><stop offset="0" stop-color="#fff7c2"/><stop offset=".55" stop-color="#fcd34d"/><stop offset="1" stop-color="#f59e0b"/></radialGradient>' +
+            '<radialGradient id="fxMoon" cx="35%" cy="35%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c7d2fe"/></radialGradient>' +
+            '<linearGradient id="fxCloud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d4dbe6"/></linearGradient>' +
+            '<linearGradient id="fxCloudD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>' +
+            '<filter id="fxSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#475569" flood-opacity=".22"/></filter>' +
+            '</defs>';
+        const cloudPath = (x, y, k, fill, cls) => `<g class="${cls || ''}"><path filter="url(#fxSh)" fill="${fill}" transform="translate(${x} ${y}) scale(${k})" d="M8 30 h44 a12 12 0 0 0 0-24 a17 17 0 0 0-32-5 a12 12 0 0 0-12 29z"/></g>`;
+        function sunSvg(x, y, r) {
+            let rays = '';
+            for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; rays += `<line x1="${50 + Math.cos(a) * (r + 6)}" y1="${50 + Math.sin(a) * (r + 6)}" x2="${50 + Math.cos(a) * (r + 13)}" y2="${50 + Math.sin(a) * (r + 13)}" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>`; }
+            return `<g transform="translate(${x - 50} ${y - 50})"><g class="fx-rays">${rays}</g><circle class="fx-glow" cx="50" cy="50" r="${r}" fill="url(#fxSun)"/></g>`;
+        }
+        function moonSvg(x, y, r) {
+            return `<g transform="translate(${x} ${y})"><path fill="url(#fxMoon)" filter="url(#fxSh)" d="M${r * 0.35} ${-r} a${r} ${r} 0 1 0 ${r * 0.65} ${r * 1.55} a${r * 0.8} ${r * 0.8} 0 1 1 ${-r * 0.65} ${-r * 1.55}z"/></g>` +
+                `<circle class="fx-star" cx="${x - r - 10}" cy="${y - r + 2}" r="1.8" fill="#a5b4fc"/><circle class="fx-star" style="animation-delay:-1.2s" cx="${x + r + 4}" cy="${y + r - 2}" r="1.4" fill="#a5b4fc"/><circle class="fx-star" style="animation-delay:-.6s" cx="${x - r + 2}" cy="${y + r + 6}" r="1.2" fill="#c4b5fd"/>`;
+        }
+        function fxSvg(code, isDay) {
+            const kind = classify(code)[1];
+            const orb = (x, y, r) => isDay === false ? moonSvg(x, y, r * 0.95) : sunSvg(x, y, r);
+            let g = '';
+            if (kind === 'clear') g = orb(55, 42, 19);
+            else if (kind === 'partly') g = orb(60, 36, 16) + cloudPath(18, 46, .9, 'url(#fxCloud)', 'fx-drift');
+            else if (kind === 'cloudy') g = cloudPath(34, 20, .8, 'url(#fxCloudD)', 'fx-drift2') + cloudPath(10, 44, 1, 'url(#fxCloud)', 'fx-drift') + cloudPath(46, 58, .6, 'url(#fxCloud)', 'fx-drift3');
+            else if (kind === 'fog') g = cloudPath(22, 22, .85, 'url(#fxCloud)', 'fx-drift') +
+                [62, 72, 82].map((y, i) => `<rect class="fx-fog" style="animation-delay:${-i * 2}s" x="${16 + i * 6}" y="${y}" width="${58 - i * 8}" height="4" rx="2" fill="#cbd5e1"/>`).join('');
+            else if (kind === 'rain') g = cloudPath(14, 22, 1.05, 'url(#fxCloudD)', 'fx-drift') +
+                [26, 40, 54, 68].map((x, i) => `<line class="fx-drop" style="animation-delay:${-i * .27}s" x1="${x}" y1="66" x2="${x - 3}" y2="76" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>`).join('');
+            else g = cloudPath(14, 20, 1.05, 'url(#fxCloudD)', 'fx-drift') +
+                '<polygon class="fx-bolt" points="48,60 38,80 47,80 42,96 60,72 50,72 56,60" fill="#facc15" stroke="#f59e0b" stroke-width="1"/>' +
+                [28, 66].map((x, i) => `<line class="fx-drop" style="animation-delay:${-i * .5}s" x1="${x}" y1="66" x2="${x - 3}" y2="76" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>`).join('');
+            return `<svg viewBox="0 0 100 100">${FX_DEFS}${g}</svg>`;
+        }
+        let lastFx = '';
+        function setFx(code, isDay) {
+            const key = classify(code)[1] + (isDay === false ? 'n' : 'd');
+            if (key === lastFx) return; lastFx = key;
+            // mỗi widget một bộ id riêng (widget bị ẩn trên máy này không làm mất màu của widget đang hiện)
+            const html = fxSvg(code, isDay);
+            document.querySelectorAll('[data-sw="fx"]').forEach((el, k) => {
+                el.innerHTML = html.replace(/id="(fx\w+)"/g, 'id="$1_' + k + '"').replace(/url\(#(fx\w+)\)/g, 'url(#$1_' + k + ')');
+            });
+        }
         function show(w) {
             if (!w) return;
             current = w;
@@ -6782,6 +6849,7 @@
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
             setAll('hum', w.hum != null ? Math.round(w.hum) + '%' : '--');
             setSky(skyOf(w.code, w.isDay));
+            setFx(w.code, w.isDay);
         }
         async function loadWeather() {
             let cached = null;
