@@ -601,7 +601,7 @@
         .wx-stat .k i { color: #8b5cf6; width: 11px; text-align: center; }
         .wx-stat .v { font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 1px; line-height: 1.2; }
         .wx-stat .n { font-size: 10px; color: #64748b; line-height: 1.25; margin-top: 1px; }
-        .wx-day { display: grid; grid-template-columns: 64px 22px 1fr auto; align-items: center; gap: 6px; padding: 5px 10px; }
+        .wx-day { display: grid; grid-template-columns: 64px 32px 1fr auto; align-items: center; gap: 6px; padding: 5px 10px; }
         .wx-day .ic { font-size: 15px; text-align: center; }
         .wx-cell { border-radius: 8px; padding: 2px 0 1px; text-align: center; line-height: 1.05; min-height: 32px; }
         .wx-cell .d { font-size: 13px; font-weight: 800; color: #0f172a; }
@@ -664,6 +664,18 @@
         .sw-card .sw-line, .sw-card .sw-lunar,
         .sw-card [data-sw="weekday"], .sw-card [data-sw="date"],
         .sw-card .sw-val, .sw-card .sw-val span { font-weight: 400 !important; }
+
+        /* Hình thời tiết nằm cùng hàng, cao bằng con số nhiệt độ */
+        .sw-fx-in { height: .74em; display: flex; align-items: center; flex-shrink: 0; line-height: 1; }
+        .sw-fx-in svg { height: 100%; width: auto; overflow: visible; display: block; }
+        .sw-fx-in * { animation: none !important; }
+
+        /* Hình thời tiết trong popup Lịch & Thời tiết */
+        .wx-fx { display: inline-flex; vertical-align: -0.2em; height: 1.25em; }
+        .wx-fx svg { height: 100%; width: auto; display: block; overflow: visible; }
+        .wx-day .ic { display: flex; justify-content: center; }
+        .wx-day .ic .wx-fx { height: 22px; max-width: 32px; }
+        .wx-day .ic .wx-fx svg { max-width: 32px; }
 </style>
 </head>
 <body class="app-bg text-slate-800 min-h-screen flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
@@ -706,9 +718,9 @@
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
                         <div class="sw-rcol min-w-0 pl-2.5 border-l border-slate-200/70">
-                            <div data-sw="fx" class="sw-fx" style="width:34px;height:34px;right:-4px;top:4px" aria-hidden="true"></div>
                             <div class="flex items-center justify-between gap-1">
                                 <div data-sw="temp" class="sw-big inline-block text-[24px] leading-none">--</div>
+                                <div data-sw="fx" class="sw-fx-in text-[24px]" aria-hidden="true"></div>
                             </div>
                             <div class="mt-1.5">
                                 <div data-sw="hilo" class="sw-line text-[10.5px] leading-[1.45] whitespace-nowrap tabular-nums">&nbsp;</div>
@@ -838,9 +850,9 @@
                         </div>
                         <!-- cột phải: nhiệt độ + thấp-cao, trời, nơi chốn (cùng cỡ chữ, cùng hàng với cột trái) -->
                         <div class="sw-rcol min-w-0 pl-3 border-l border-slate-200/70">
-                            <div data-sw="fx" class="sw-fx" style="width:64px;height:64px;right:-4px;top:6px" aria-hidden="true"></div>
                             <div class="flex items-center justify-between gap-1">
                                 <div data-sw="temp" class="sw-big sw-mbig inline-block leading-none">--</div>
+                                <div data-sw="fx" class="sw-fx-in sw-mbig" aria-hidden="true"></div>
                             </div>
                             <div class="mt-1.5">
                                 <div data-sw="hilo" class="sw-line text-[13px] leading-[1.35] whitespace-nowrap tabular-nums">&nbsp;</div>
@@ -6760,16 +6772,31 @@
 
         // Mã thời tiết WMO -> [chữ, kiểu trời, nhóm biểu tượng]
         function classify(code) {
-            if (code === 0) return ['Trời quang', 'clear'];
-            if (code === 1) return ['Nắng nhẹ', 'partly'];
-            if (code === 2) return ['Ít mây', 'partly'];
-            if (code === 3) return ['Nhiều mây', 'cloudy'];
-            if (code === 45 || code === 48) return ['Sương mù', 'fog'];
-            if (code >= 51 && code <= 57) return ['Mưa phùn', 'rain'];
-            if (code >= 61 && code <= 67) return [code >= 65 ? 'Mưa to' : (code === 61 ? 'Mưa nhỏ' : 'Mưa'), 'rain'];
-            if (code >= 71 && code <= 77) return ['Tuyết', 'cloudy'];
-            if (code >= 80 && code <= 82) return [code === 82 ? 'Mưa rào to' : 'Mưa rào', 'rain'];
-            if (code >= 95) return ['Dông', 'storm'];
+            const c = Number(code);
+            if (c === 0) return ['Trời quang', 'clear'];
+            if (c === 1) return ['Nắng nhẹ', 'partly'];
+            if (c === 2) return ['Ít mây', 'partly'];
+            if (c === 3) return ['Nhiều mây', 'cloudy'];
+            if (c === 45) return ['Sương mù', 'fog'];
+            if (c === 48) return ['Sương muối', 'fog'];
+            if (c === 51) return ['Mưa phùn nhẹ', 'rain'];
+            if (c === 53) return ['Mưa phùn', 'rain'];
+            if (c === 55) return ['Mưa phùn dày', 'rain'];
+            if (c === 56 || c === 57) return ['Mưa phùn lạnh', 'rain'];
+            if (c === 61) return ['Mưa nhỏ', 'rain'];
+            if (c === 63) return ['Mưa vừa', 'rain'];
+            if (c === 65) return ['Mưa to', 'rain'];
+            if (c === 66 || c === 67) return ['Mưa lạnh, băng giá', 'rain'];
+            if (c === 71) return ['Tuyết nhẹ', 'cloudy'];
+            if (c === 73) return ['Tuyết', 'cloudy'];
+            if (c === 75) return ['Tuyết dày', 'cloudy'];
+            if (c === 77) return ['Hạt tuyết', 'cloudy'];
+            if (c === 80) return ['Mưa rào nhẹ', 'rain'];
+            if (c === 81) return ['Mưa rào', 'rain'];
+            if (c === 82) return ['Mưa rào rất to', 'rain'];
+            if (c === 85 || c === 86) return ['Mưa tuyết', 'cloudy'];
+            if (c === 95) return ['Dông', 'storm'];
+            if (c === 96 || c === 99) return ['Dông kèm mưa đá', 'storm'];
             return ['', 'partly'];
         }
         function icon(code, isDay) {
@@ -6793,49 +6820,129 @@
             return 'day';
         }
 
-        // ===== Hình thời tiết động (SVG) =====
+        // ===== Bộ biểu tượng thời tiết kiểu kính mờ (mây trong mờ, mặt trời cam viền vàng, trăng xanh có sao) =====
+        // Vẽ bằng SVG trong khung 100x100, rồi cắt khít phần vẽ để luôn cao bằng con số nhiệt độ.
         const FX_DEFS = '<defs>' +
-            '<radialGradient id="fxSun" cx="40%" cy="38%"><stop offset="0" stop-color="#fff7c2"/><stop offset=".55" stop-color="#fcd34d"/><stop offset="1" stop-color="#f59e0b"/></radialGradient>' +
-            '<radialGradient id="fxMoon" cx="35%" cy="35%"><stop offset="0" stop-color="#fef9c3"/><stop offset=".6" stop-color="#fde68a"/><stop offset="1" stop-color="#a5b4fc"/></radialGradient>' +
-            '<linearGradient id="fxCloud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d4dbe6"/></linearGradient>' +
-            '<linearGradient id="fxCloudD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>' +
-            '<filter id="fxSh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#475569" flood-opacity=".22"/></filter>' +
+            '<radialGradient id="fxSun" cx="40%" cy="38%"><stop offset="0" stop-color="#fed7aa"/><stop offset=".55" stop-color="#fb923c"/><stop offset="1" stop-color="#f97316"/></radialGradient>' +
+            '<linearGradient id="fxRay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde047"/><stop offset="1" stop-color="#facc15"/></linearGradient>' +
+            '<linearGradient id="fxMoon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#2563eb"/></linearGradient>' +
+            '<linearGradient id="fxCl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".97"/><stop offset="1" stop-color="#dbe7f3" stop-opacity=".9"/></linearGradient>' +
+            '<linearGradient id="fxClB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0f2fe" stop-opacity=".9"/><stop offset="1" stop-color="#bae6fd" stop-opacity=".75"/></linearGradient>' +
+            '<linearGradient id="fxClG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cbd5e1"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>' +
+            '<linearGradient id="fxClD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ca3af"/><stop offset="1" stop-color="#6b7280"/></linearGradient>' +
+            '<linearGradient id="fxFog" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e9d5ff"/><stop offset="1" stop-color="#c084fc"/></linearGradient>' +
+            '<linearGradient id="fxWind" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></linearGradient>' +
+            '<filter id="fxSh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.2" flood-color="#64748b" flood-opacity=".28"/></filter>' +
+            '<filter id="fxGl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>' +
             '</defs>';
-        const cloudPath = (x, y, k, fill, cls) => `<g class="${cls || ''}"><path filter="url(#fxSh)" fill="${fill}" transform="translate(${x} ${y}) scale(${k})" d="M8 30 h44 a12 12 0 0 0 0-24 a17 17 0 0 0-32-5 a12 12 0 0 0-12 29z"/></g>`;
-        function sunSvg(x, y, r) {
-            let rays = '';
-            for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; rays += `<line x1="${50 + Math.cos(a) * (r + 6)}" y1="${50 + Math.sin(a) * (r + 6)}" x2="${50 + Math.cos(a) * (r + 13)}" y2="${50 + Math.sin(a) * (r + 13)}" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>`; }
-            return `<g transform="translate(${x - 50} ${y - 50})"><g class="fx-rays">${rays}</g><circle class="fx-glow" cx="50" cy="50" r="${r}" fill="url(#fxSun)"/></g>`;
+        const CLOUD_D = 'M8 30 h44 a12 12 0 0 0 0-24 a17 17 0 0 0-32-5 a12 12 0 0 0-12 29z';
+        // Mây: thêm một lớp xanh nhạt phía sau lệch nhẹ để trông như kính mờ
+        function fxCloud(x, y, k, tone) {
+            const fill = tone === 'dark' ? 'url(#fxClD)' : tone === 'grey' ? 'url(#fxClG)' : 'url(#fxCl)';
+            const back = tone === 'dark' || tone === 'grey' ? '' :
+                `<path fill="url(#fxClB)" filter="url(#fxGl)" transform="translate(${x + 6 * k} ${y + 2 * k}) scale(${k})" d="${CLOUD_D}"/>`;
+            return back + `<path fill="${fill}" filter="url(#fxSh)" transform="translate(${x} ${y}) scale(${k})" d="${CLOUD_D}"/>`;
         }
-        function moonSvg(x, y, r) {
-            return `<g transform="translate(${x} ${y})"><path fill="url(#fxMoon)" filter="url(#fxSh)" d="M${r * 0.35} ${-r} a${r} ${r} 0 1 0 ${r * 0.65} ${r * 1.55} a${r * 0.8} ${r * 0.8} 0 1 1 ${-r * 0.65} ${-r * 1.55}z"/></g>` +
-                `<circle class="fx-star" cx="${x - r - 10}" cy="${y - r + 2}" r="1.8" fill="#a5b4fc"/><circle class="fx-star" style="animation-delay:-1.2s" cx="${x + r + 4}" cy="${y + r - 2}" r="1.4" fill="#a5b4fc"/><circle class="fx-star" style="animation-delay:-.6s" cx="${x - r + 2}" cy="${y + r + 6}" r="1.2" fill="#c4b5fd"/>`;
+        function fxSun(cx, cy, r) {
+            let pts = '';
+            for (let i = 0; i < 24; i++) {
+                const a = i * Math.PI / 12, rr = i % 2 ? r * 1.12 : r * 1.42;
+                pts += (cx + Math.cos(a) * rr).toFixed(1) + ',' + (cy + Math.sin(a) * rr).toFixed(1) + ' ';
+            }
+            return `<polygon points="${pts}" fill="url(#fxRay)" stroke="#fde047" stroke-width="1.5" stroke-linejoin="round"/>` +
+                `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#fxSun)"/>`;
         }
-        function fxSvg(code, isDay) {
-            const kind = classify(code)[1];
-            const orb = (x, y, r) => isDay === false ? moonSvg(x, y, r * 0.95) : sunSvg(x, y, r);
-            let g = '';
-            if (kind === 'clear') g = orb(55, 42, 19);
-            else if (kind === 'partly') g = orb(60, 36, 16) + cloudPath(18, 46, .9, 'url(#fxCloud)', 'fx-drift');
-            else if (kind === 'cloudy') g = cloudPath(34, 20, .8, 'url(#fxCloudD)', 'fx-drift2') + cloudPath(10, 44, 1, 'url(#fxCloud)', 'fx-drift') + cloudPath(46, 58, .6, 'url(#fxCloud)', 'fx-drift3');
-            else if (kind === 'fog') g = cloudPath(22, 22, .85, 'url(#fxCloud)', 'fx-drift') +
-                [62, 72, 82].map((y, i) => `<rect class="fx-fog" style="animation-delay:${-i * 2}s" x="${16 + i * 6}" y="${y}" width="${58 - i * 8}" height="4" rx="2" fill="#cbd5e1"/>`).join('');
-            else if (kind === 'rain') g = cloudPath(14, 22, 1.05, 'url(#fxCloudD)', 'fx-drift') +
-                [26, 40, 54, 68].map((x, i) => `<line class="fx-drop" style="animation-delay:${-i * .27}s" x1="${x}" y1="66" x2="${x - 3}" y2="76" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>`).join('');
-            else g = cloudPath(14, 20, 1.05, 'url(#fxCloudD)', 'fx-drift') +
-                '<polygon class="fx-bolt" points="48,60 38,80 47,80 42,96 60,72 50,72 56,60" fill="#facc15" stroke="#f59e0b" stroke-width="1"/>' +
-                [28, 66].map((x, i) => `<line class="fx-drop" style="animation-delay:${-i * .5}s" x1="${x}" y1="66" x2="${x - 3}" y2="76" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>`).join('');
+        function fxStar(cx, cy, r) {
+            let pts = '';
+            for (let i = 0; i < 10; i++) {
+                const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r;
+                pts += (cx + Math.cos(a) * rr).toFixed(1) + ',' + (cy + Math.sin(a) * rr).toFixed(1) + ' ';
+            }
+            return `<polygon points="${pts}" fill="#facc15" stroke="#fde047" stroke-width=".8" stroke-linejoin="round"/>`;
+        }
+        function fxMoon(cx, cy, r, stars) {
+            const moon = `<path fill="url(#fxMoon)" d="M${cx + r * .25} ${cy - r} A${r} ${r} 0 1 0 ${cx + r} ${cy + r * .45} A${r * .82} ${r * .82} 0 0 1 ${cx + r * .25} ${cy - r}z"/>`;
+            return moon + (stars === false ? '' : fxStar(cx - r * .55, cy - r * .55, r * .32) + fxStar(cx - r * .95, cy + r * .2, r * .2));
+        }
+        function fxDrops(xs, y0, len, color) {
+            return xs.map((x, i) => `<line x1="${x}" y1="${y0 + (i % 2) * 4}" x2="${x - len * .35}" y2="${y0 + (i % 2) * 4 + len}" stroke="${color || '#bfdbfe'}" stroke-width="4.2" stroke-linecap="round" opacity=".95"/>`).join('');
+        }
+        function fxFlake(cx, cy, r) {
+            let l = '';
+            for (let i = 0; i < 3; i++) {
+                const a = i * Math.PI / 3, dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+                l += `<line x1="${(cx - dx).toFixed(1)}" y1="${(cy - dy).toFixed(1)}" x2="${(cx + dx).toFixed(1)}" y2="${(cy + dy).toFixed(1)}"/>`;
+            }
+            return `<g stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round">${l}</g>`;
+        }
+        const fxFlakes = (pts, r) => pts.map(([x, y]) => fxFlake(x, y, r || 4)).join('');
+        const fxHail = pts => pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2" fill="#f0f9ff" stroke="#93c5fd" stroke-width="1.4"/>`).join('');
+        const fxBolt = (x, y, k) => `<polygon transform="translate(${x} ${y}) scale(${k || 1})" points="10,0 0,18 8,18 3,34 20,12 11,12 16,0" fill="#facc15" stroke="#f59e0b" stroke-width="1.2" stroke-linejoin="round"/>`;
+        const fxFogBars = (y0) => [0, 1, 2].map(i => `<rect x="${10 + (i % 2) * 8}" y="${y0 + i * 11}" width="${70 - (i % 2) * 14}" height="7" rx="3.5" fill="url(#fxFog)" opacity="${.95 - i * .12}"/>`).join('');
+        function fxWind(y0) {
+            const c = (y, w, curl) => `<path d="M10 ${y} H${10 + w} a${curl} ${curl} 0 1 0 -${curl} -${curl}" fill="none" stroke="url(#fxWind)" stroke-width="5" stroke-linecap="round"/>`;
+            return c(y0, 58, 7) + c(y0 + 14, 70, 8) + `<path d="M18 ${y0 + 28} H62 a7 7 0 1 1 -7 7" fill="none" stroke="url(#fxWind)" stroke-width="5" stroke-linecap="round"/>`;
+        }
+        // Mã thời tiết WMO -> hình vẽ (ngày/đêm, có gió mạnh thì thêm hình gió)
+        function fxSvg(code, isDay, wind) {
+            const night = isDay === false;
+            const orbBehind = (x, y, r) => night ? fxMoon(x, y, r, true) : fxSun(x, y, r);
+            let g;
+            const c = Number(code);
+            // mây chính: đáy mây ở y≈50, hạt mưa/tuyết bắt đầu ngay dưới đáy mây
+            const cl = (tone) => fxCloud(8, 18, 1.05, tone || 'light');
+            if (c === 0) g = night ? fxMoon(52, 50, 22) : fxSun(50, 50, 22);
+            else if (c === 1) g = orbBehind(58, 38, 17) + fxCloud(8, 48, .78, 'light');
+            else if (c === 2) g = orbBehind(62, 34, 16) + fxCloud(6, 42, 1, 'light');
+            else if (c === 3) g = fxCloud(30, 22, .85, 'grey') + fxCloud(4, 40, 1.05, 'light');
+            else if (c === 45 || c === 48) g = (night ? fxMoon(66, 30, 14, true) : fxSun(66, 30, 13)) + fxFogBars(48);
+            else if (c >= 51 && c <= 55) g = cl() + fxDrops([30, 50, 70], 55, 9);
+            else if (c === 56 || c === 57) g = cl() + fxDrops([28, 56], 55, 10) + fxFlakes([[44, 63], [74, 61]]);
+            else if (c === 61) g = cl() + fxDrops([28, 46, 64], 55, 13);
+            else if (c === 63) g = cl() + fxDrops([22, 36, 50, 64, 78], 55, 15);
+            else if (c === 65) g = cl('grey') + fxDrops([20, 32, 44, 56, 68, 80], 55, 19, '#93c5fd');
+            else if (c === 66 || c === 67) g = cl() + fxDrops([24, 52, 78], 55, 13) + fxFlakes([[38, 64], [66, 66]]);
+            else if (c === 71 || c === 73 || c === 77) g = cl() + fxFlakes([[26, 60], [48, 67], [70, 60]], 4.5);
+            else if (c === 75) g = cl('grey') + fxFlakes([[20, 58], [38, 67], [56, 58], [74, 67], [47, 78]], 4.5);
+            else if (c >= 80 && c <= 82) g = orbBehind(64, 26, 14) + fxCloud(6, 30, 1, 'light') + fxDrops(c === 82 ? [18, 32, 46, 60, 74] : [24, 42, 60], 65, c === 80 ? 12 : 16);
+            else if (c === 85 || c === 86) g = orbBehind(64, 26, 14) + fxCloud(6, 30, 1, 'light') + fxFlakes([[24, 70], [46, 76], [68, 70]], 4.5);
+            else if (c === 95) g = fxCloud(8, 16, 1.05, 'dark') + fxBolt(40, 47, 1.1) + fxDrops([20, 72], 53, 14);
+            else if (c === 96 || c === 99) g = fxCloud(8, 16, 1.05, 'dark') + fxBolt(40, 47, 1.1) + fxHail([[22, 58], [72, 56], [28, 74], [66, 74]]);
+            else g = orbBehind(62, 34, 16) + fxCloud(6, 42, 1, 'light');
+            // Gió mạnh (từ 30 km/h) khi trời không mưa: hình gió kèm mặt trời / trăng nhỏ
+            if (wind != null && wind >= 30 && c <= 3) g = (night ? fxMoon(62, 24, 14, false) : fxSun(62, 24, 13)) + fxWind(46);
             return `<svg viewBox="0 0 100 100">${FX_DEFS}${g}</svg>`;
         }
+        // Hình đã cắt khít, mỗi chỗ hiện một bộ id riêng (để hình bị ẩn ở chỗ này không làm mất màu ở chỗ khác)
+        const fxCache = {};
+        let fxUid = 0;
+        function fxHtml(code, isDay, wind) {
+            const key = code + (isDay === false ? 'n' : 'd') + (wind != null && wind >= 30 ? 'w' : '');
+            let html = fxCache[key];
+            if (!html) {
+                html = fxSvg(code, isDay, wind);
+                try {
+                    const probe = document.createElement('div');
+                    probe.style.cssText = 'position:absolute;left:-9999px;top:0;width:100px;height:100px;visibility:hidden';
+                    probe.innerHTML = html.replace(/id="(fx\w+)"/g, 'id="$1_p"').replace(/url\(#(fx\w+)\)/g, 'url(#$1_p)');
+                    document.body.appendChild(probe);
+                    const bb = probe.querySelector('svg').getBBox();
+                    probe.remove();
+                    if (bb.width > 0) {
+                        const p = 1.5;
+                        html = html.replace('viewBox="0 0 100 100"', `viewBox="${(bb.x - p).toFixed(1)} ${(bb.y - p).toFixed(1)} ${(bb.width + 2 * p).toFixed(1)} ${(bb.height + 2 * p).toFixed(1)}"`);
+                    }
+                } catch (e) {}
+                fxCache[key] = html;
+            }
+            const u = '_' + (++fxUid);
+            return html.replace(/id="(fx\w+)"/g, 'id="$1' + u + '"').replace(/url\(#(fx\w+)\)/g, 'url(#$1' + u + ')');
+        }
         let lastFx = '';
-        function setFx(code, isDay) {
-            const key = classify(code)[1] + (isDay === false ? 'n' : 'd');
+        function setFx(code, isDay, wind) {
+            const key = code + (isDay === false ? 'n' : 'd') + (wind != null && wind >= 30 ? 'w' : '');
             if (key === lastFx) return; lastFx = key;
-            // mỗi widget một bộ id riêng (widget bị ẩn trên máy này không làm mất màu của widget đang hiện)
-            const html = fxSvg(code, isDay);
-            document.querySelectorAll('[data-sw="fx"]').forEach((el, k) => {
-                el.innerHTML = html.replace(/id="(fx\w+)"/g, 'id="$1_' + k + '"').replace(/url\(#(fx\w+)\)/g, 'url(#$1_' + k + ')');
-            });
+            document.querySelectorAll('[data-sw="fx"]').forEach(el => { el.innerHTML = fxHtml(code, isDay, wind); });
         }
         function show(w) {
             if (!w) return;
@@ -6854,7 +6961,7 @@
             setAll('rain', w.rain != null ? Math.round(w.rain) + '%' : '--');
             setAll('hum', w.hum != null ? Math.round(w.hum) + '%' : '--');
             setSky(skyOf(w.code, w.isDay));
-            setFx(w.code, w.isDay);
+            setFx(w.code, w.isDay, w.wind);
         }
         async function loadWeather() {
             let cached = null;
@@ -6890,15 +6997,7 @@
         const WD_SHORT = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
         let calY = 0, calM = 0;
         function todayVN() { const p = nowParts(); return { d: +p.day, m: +p.month, y: +p.year }; }
-        function wxIcon(code, isDay) {
-            const kind = classify(code)[1];
-            if (kind === 'clear') return isDay === false ? '<i class="fa-solid fa-moon" style="color:#a5b4fc"></i>' : '<i class="fa-solid fa-sun" style="color:#f59e0b"></i>';
-            if (kind === 'partly') return '<i class="fa-solid fa-cloud-sun" style="color:#f59e0b"></i>';
-            if (kind === 'cloudy') return '<i class="fa-solid fa-cloud" style="color:#94a3b8"></i>';
-            if (kind === 'fog') return '<i class="fa-solid fa-smog" style="color:#94a3b8"></i>';
-            if (kind === 'rain') return '<i class="fa-solid fa-cloud-showers-heavy" style="color:#3b82f6"></i>';
-            return '<i class="fa-solid fa-cloud-bolt" style="color:#6366f1"></i>';
-        }
+        function wxIcon(code, isDay, wind) { return '<span class="wx-fx">' + fxHtml(code, isDay, wind) + '</span>'; }
         function uvText(u) { return u <= 2 ? 'Thấp – an toàn ra ngoài' : u <= 5 ? 'Trung bình – nên đội mũ' : u <= 7 ? 'Cao – hạn chế nắng trưa' : u <= 10 ? 'Rất cao – che chắn kỹ' : 'Nguy hiểm – tránh ra nắng'; }
         function rainText(r) { return r < 20 ? 'Gần như không mưa' : r < 50 ? 'Có thể mưa nhẹ' : r < 80 ? 'Nhiều khả năng mưa' : 'Mưa gần như chắc chắn'; }
         function humText(h) { return h < 40 ? 'Khô hanh' : h < 70 ? 'Dễ chịu' : h < 85 ? 'Hơi ẩm' : 'Rất ẩm, nồm'; }
@@ -6915,7 +7014,7 @@
             if (!w) { $('wx-updated').textContent = 'chưa tải được thời tiết'; $('wx-today-grid').innerHTML = ''; return; }
             const at = new Date(w.at);
             $('wx-updated').textContent = 'cập nhật ' + String(at.getHours()).padStart(2, '0') + ':' + String(at.getMinutes()).padStart(2, '0');
-            $('wx-today-desc').innerHTML = wxIcon(w.code, w.isDay) + ' ' + classify(w.code)[0];
+            $('wx-today-desc').innerHTML = wxIcon(w.code, w.isDay, w.wind) + ' ' + classify(w.code)[0] + (w.wind >= 30 ? ' · gió mạnh' : '');
             $('wx-today-temp').textContent = Math.round(w.temp) + '°C';
             $('wx-today-hilo').textContent = (w.min != null ? 'Thấp ' + Math.round(w.min) + '°' : '') + (w.max != null ? ' · Cao ' + Math.round(w.max) + '°' : '');
             const hm = x => (typeof x === 'string' && x.length >= 16) ? x.slice(11, 16) : '--';
@@ -6939,7 +7038,7 @@
                 const al = amLich(dd, mm, yy);
                 return `<div class="wx-day">
                     <div class="leading-tight"><div class="text-[12px] font-bold text-slate-800">${name}</div><div class="text-[10px] text-slate-500">${dd}/${mm} <span class="text-amber-700">(${al.day}/${al.month})</span></div></div>
-                    <div class="ic">${wxIcon(x.code, true)}</div>
+                    <div class="ic">${wxIcon(x.code, true, x.wind)}</div>
                     <div class="min-w-0 leading-tight"><div class="text-[12px] font-semibold text-slate-700 truncate">${classify(x.code)[0]}</div>
                         <div class="text-[10px] text-slate-500 truncate"><i class="fa-solid fa-umbrella text-violet-500"></i> ${x.rain != null ? Math.round(x.rain) + '%' : '--'} · <i class="fa-solid fa-wind text-violet-500"></i> ${x.wind != null ? Math.round(x.wind) + ' km/h' : '--'}</div></div>
                     <div class="text-right whitespace-nowrap text-[12px] font-medium text-slate-500 tabular-nums">${Math.round(x.min)}° - ${Math.round(x.max)}°</div>
