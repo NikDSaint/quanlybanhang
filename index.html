@@ -5090,13 +5090,48 @@
                 customStorage.value = '';
                 customStorage.classList.add('hidden');
             }
+            window.applyPartsMode(false);
             const modal = document.getElementById('product-modal');
             if (modal) modal.classList.remove('hidden');
+        };
+
+        // Chọn hãng "Linh kiện": chỉ để lại Tên, Tình trạng, Giá nhập, Giá bán (kèm Hãng và Ngày nhập)
+        const PARTS_HIDE_IDS = ['form-warehouse', 'form-imei', 'form-ram', 'form-storage', 'form-battery', 'form-appearance', 'form-color', 'form-accessories', 'form-commission'];
+        window.applyPartsMode = function(clearValues) {
+            const isPart = document.getElementById('form-brand')?.value === 'Linh kiện';
+            PARTS_HIDE_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                const wrap = el && el.parentElement;
+                if (wrap) wrap.classList.toggle('hidden', isPart);
+            });
+            // hàng nào bị ẩn hết ô thì ẩn cả hàng
+            const rows = new Set(PARTS_HIDE_IDS.map(id => document.getElementById(id)?.parentElement?.parentElement).filter(Boolean));
+            rows.forEach(r => r.classList.toggle('hidden', isPart && [...r.children].every(c => c.classList.contains('hidden'))));
+            // hàng còn 2 ô thì chia đôi cho cân (ô Tên không bị hẹp); Ngày nhập dàn hết hàng
+            rows.forEach(r => {
+                const shown = [...r.children].filter(c => !c.classList.contains('hidden')).length;
+                r.style.gridTemplateColumns = isPart && shown > 0 && window.innerWidth >= 640 ? `repeat(${shown}, minmax(0, 1fr))` : '';
+            });
+            const title = document.getElementById('modal-title');
+            if (title && !document.getElementById('form-product-id')?.value) title.innerText = isPart ? 'Thêm Linh Kiện Vào Kho' : (document.getElementById('form-warehouse')?.value === 'PARTNER' ? 'Thêm Máy Mới Vào Kho Liên Kết' : 'Thêm Máy Mới Vào Kho');
+            const nameInput = document.getElementById('form-name');
+            if (nameInput) nameInput.placeholder = isPart ? 'VD: Màn hình iPhone 12 Pro Zin...' : 'Nhập tên máy...';
+            const condLabel = document.getElementById('form-condition')?.parentElement?.querySelector('label');
+            if (condLabel) condLabel.textContent = isPart ? 'Tình Trạng' : 'Tình Trạng Khác';
+            if (isPart) {
+                const wh = document.getElementById('form-warehouse'); if (wh) wh.value = 'STORE';
+                if (clearValues) {
+                    ['form-imei', 'form-battery', 'form-appearance', 'form-color', 'form-accessories', 'form-ram-custom', 'form-storage-custom'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                    ['form-ram', 'form-storage'].forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; el.dispatchEvent(new Event('change')); } });
+                    const cm = document.getElementById('form-commission'); if (cm) cm.value = '0';
+                }
+            }
         };
 
         window.handleBrandChange = function() {
             const sel = document.getElementById('form-brand');
             const customInput = document.getElementById('form-brand-custom');
+            window.applyPartsMode(true);
             if (!sel || !customInput) return;
             if (sel.value === 'CUSTOM') {
                 customInput.classList.remove('hidden');
@@ -5143,7 +5178,7 @@
             const idInput = document.getElementById('form-product-id');
             if (idInput) idInput.value = p.id;
             
-            const standardBrands = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme'];
+            const standardBrands = ['iPhone', 'Samsung', 'Xiaomi', 'Redmi', 'POCO', 'Huawei', 'Honor', 'Vivo', 'iQOO', 'OPPO', 'Realme', 'Linh kiện'];
             const brandSel = document.getElementById('form-brand');
             const customBrand = document.getElementById('form-brand-custom');
             if (brandSel) {
@@ -5209,6 +5244,7 @@
             const dateInput = document.getElementById('form-import-date');
             if (dateInput) dateInput.value = p.importedAt || new Date().toISOString().split('T')[0];
 
+            window.applyPartsMode(false);
             const modal = document.getElementById('product-modal');
             if (modal) modal.classList.remove('hidden');
         };
