@@ -4416,6 +4416,24 @@
                     }
                 });
             });
+            // Người bảo trợ chịu lương + thưởng của nhân viên mình bảo trợ: trừ vào HH bảo trợ
+            const sponsorNameOf = acc => {
+                if (!acc) return '';
+                if (acc.manager_id) { const m = accounts.find(a => a.id === acc.manager_id); if (m?.full_name) return m.full_name.trim(); }
+                return (acc.manager_name || '').trim();
+            };
+            Object.values(people).forEach(pp => { pp.sponsorGross = pp.sponsor; pp.staffPay = 0; });
+            payroll.forEach(r => {
+                if (!r.month || !monthInPeriod(r.month, 'comm')) return;
+                const pay = (Number(r.salary) || 0) + (Number(r.bonus) || 0);
+                if (!pay) return;
+                const acc = accounts.find(a => a.id === r.staff_id);
+                const sp = people[sponsorNameOf(acc)];
+                if (!sp || sp.accId === r.staff_id) return;
+                sp.sponsor -= pay; sp.staffPay += pay;
+                const row = monthRow(sp, r.month);
+                row.sponsor -= pay; row.pays = row.pays || []; row.pays.push({ name: acc?.full_name || r.staff_name || '--', salary: Number(r.salary) || 0, bonus: Number(r.bonus) || 0 });
+            });
             const totalIncome = pp => pp.earn + pp.sponsor + pp.salary + pp.bonus;
 
             const list = Object.values(people).sort((a, b) => (b.name === me) - (a.name === me) || b.sales - a.sales);
@@ -4463,6 +4481,13 @@
                         ${spon.length ? `
                             <div class="text-[9px] font-black uppercase tracking-wider text-amber-700 mb-0.5 ${own.length ? 'mt-2 pt-2 border-t border-dashed border-amber-200' : ''}"><i class="fa-solid fa-user-group mr-1"></i>Từ nhân viên bảo trợ (${spon.length})</div>
                             <div class="divide-y divide-slate-200/70">${spon.map(o => line(o, true, 'text-amber-600', 'bảo trợ')).join('')}</div>` : ''}
+                        ${(d.pays || []).length ? `
+                            <div class="text-[9px] font-black uppercase tracking-wider text-rose-700 mb-0.5 mt-2 pt-2 border-t border-dashed border-rose-200"><i class="fa-solid fa-money-check-dollar mr-1"></i>Trừ lương, thưởng NV bảo trợ</div>
+                            <div class="divide-y divide-slate-200/70">${d.pays.map(x => `
+                                <div class="flex items-start justify-between gap-2 py-1.5">
+                                    <div class="min-w-0"><div class="font-bold text-slate-800 truncate">${escapeHtml(x.name)}</div><div class="text-[10px] text-slate-500">Lương ${formatVND(x.salary)} · Thưởng ${formatVND(x.bonus)}</div></div>
+                                    <div class="font-black text-rose-600 shrink-0">−${formatVND(x.salary + x.bonus)}</div>
+                                </div>`).join('')}</div>` : ''}
                     </div>`;
             };
 
@@ -4479,7 +4504,7 @@
                 const selMonth = period === 'MONTH' ? `${year}-${String(document.getElementById('comm-filter-month')?.value || '').padStart(2, '0')}` : '';
                 const t = { count: 0, sales: 0, earn: 0, sponsor: 0, salary: 0, bonus: 0 };
                 const earnCell = d => lead
-                    ? `<div class="font-bold text-emerald-600">${formatVND(d.earn)}</div>${d.sponsor > 0 ? `<div class="text-[10px] font-semibold text-amber-600">+${formatVND(d.sponsor)} BT</div>` : ''}`
+                    ? `<div class="font-bold text-emerald-600">${formatVND(d.earn)}</div>${d.sponsor !== 0 ? `<div class="text-[10px] font-semibold ${d.sponsor > 0 ? 'text-amber-600' : 'text-rose-600'}">${d.sponsor > 0 ? '+' : '−'}${formatVND(Math.abs(d.sponsor))} BT</div>` : ''}`
                     : `<div class="font-black text-emerald-600">${formatVND(d.earn + d.salary + d.bonus)}</div>
                        <div class="text-[10px] text-purple-600">HH ${formatVND(d.earn)}</div>
                        ${d.salary ? `<div class="text-[10px] text-slate-500">Lương ${formatVND(d.salary)}</div>` : ''}
@@ -4489,7 +4514,7 @@
                     const [y, m] = ym.split('-');
                     const key = `${pp.name}|${ym}`;
                     const isOpen = expandedCommMonths.has(key);
-                    const hasOrders = d.own.length + d.spon.length > 0;
+                    const hasOrders = d.own.length + d.spon.length + (d.pays || []).length > 0;
                     return `<tr ${hasOrders ? `onclick="toggleCommMonth('${encodeURIComponent(key)}')" title="Bấm để ${isOpen ? 'thu gọn' : 'xem các máy đã bán'}"` : ''} class="${hasOrders ? 'cursor-pointer hover:bg-indigo-50/60' : ''} ${isOpen ? 'bg-indigo-50' : (ym === selMonth ? 'bg-purple-50' : '')}">
                         <td class="py-1.5 px-2 font-bold text-slate-700 whitespace-nowrap">
                             ${hasOrders ? `<i class="fa-solid fa-chevron-right text-[8px] mr-1 text-indigo-400 transition-transform ${isOpen ? 'rotate-90' : ''}"></i>` : ''}T${parseInt(m, 10)}/${y}
@@ -4547,12 +4572,13 @@
                     </div>
                     <div class="mt-3 flex justify-between text-xs"><span class="text-slate-400">Doanh số:</span><span class="font-bold text-slate-700">${formatVND(pp.sales)}</span></div>
                     <div class="mt-1 flex justify-between text-xs"><span class="text-slate-500 font-bold">${lead ? 'HH bán trực tiếp:' : 'Hoa hồng bán:'}</span><span class="font-bold ${lead ? 'text-emerald-600' : 'text-purple-600'}">${formatVND(pp.earn)}</span></div>
-                    ${lead && pp.sponsor > 0 ? `<div class="mt-1 flex justify-between text-xs"><span class="text-amber-600 font-bold">HH từ NV bảo trợ:</span><span class="font-bold text-amber-600">+${formatVND(pp.sponsor)}</span></div>` : ''}
+                    ${lead && (pp.sponsorGross > 0 || pp.staffPay > 0) ? `<div class="mt-1 flex justify-between text-xs"><span class="text-amber-600 font-bold">HH từ NV bảo trợ:</span><span class="font-bold text-amber-600">${pp.sponsor >= 0 ? '+' : '−'}${formatVND(Math.abs(pp.sponsor))}</span></div>
+                        ${pp.staffPay > 0 ? `<div class="flex justify-between text-[10.5px] text-slate-400 pl-2"><span>= HH bảo trợ ${formatVND(pp.sponsorGross)} − lương, thưởng NV ${formatVND(pp.staffPay)}</span></div>` : ''}` : ''}
                     ${!lead ? `
                         <div class="mt-1 flex justify-between text-xs"><span class="text-slate-500 font-bold">Lương tháng:</span><span class="font-bold text-slate-700">${pp.salary ? '+' + formatVND(pp.salary) : '<span class="text-slate-300 font-medium">chưa điền</span>'}</span></div>
                         <div class="mt-1 flex justify-between text-xs"><span class="text-slate-500 font-bold">Thưởng:</span><span class="font-bold text-amber-600">${pp.bonus ? '+' + formatVND(pp.bonus) : '<span class="text-slate-300 font-medium">0 ₫</span>'}</span></div>
                     ` : ''}
-                    ${!lead || pp.sponsor > 0 ? `<div class="mt-1 pt-1.5 border-t border-slate-100 flex justify-between text-xs"><span class="text-slate-800 font-black">Tổng thu nhập:</span><span class="font-black text-emerald-600 text-sm">${formatVND(totalIncome(pp))}</span></div>` : ''}
+                    ${!lead || pp.sponsorGross > 0 || pp.staffPay > 0 ? `<div class="mt-1 pt-1.5 border-t border-slate-100 flex justify-between text-xs"><span class="text-slate-800 font-black">Tổng thu nhập:</span><span class="font-black text-emerald-600 text-sm">${formatVND(totalIncome(pp))}</span></div>` : ''}
                     ${!lead && pp.advance ? `<div class="mt-1 flex justify-between text-xs"><span class="text-rose-600 font-bold">Đã ứng trước:</span><span class="font-bold text-rose-600">−${formatVND(pp.advance)}</span></div>
                         <div class="mt-1 flex justify-between text-xs"><span class="text-slate-800 font-black">Còn phải trả:</span><span class="font-black text-slate-900">${formatVND(totalIncome(pp) - pp.advance)}</span></div>` : ''}
                     ${canEditPayrollFor(acc) ? `<button onclick="event.stopPropagation(); openPayrollModal('${acc.id}')" class="mt-2.5 w-full py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-money-check-dollar"></i> Điền lương & thưởng</button>` : ''}
