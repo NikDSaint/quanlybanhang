@@ -2524,7 +2524,7 @@
 
     <!-- MODAL: LƯƠNG & THƯỞNG NHÂN VIÊN -->
     <div id="payroll-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[60] flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 flex flex-col">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]">
             <div class="mh-grad bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-2.5">
                     <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-sm"><i class="fa-solid fa-money-check-dollar"></i></div>
@@ -2535,27 +2535,41 @@
                 </div>
                 <button type="button" onclick="closePayrollModal()" class="text-emerald-100 hover:text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-emerald-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form onsubmit="handlePayrollSubmit(event)" class="p-5 space-y-3.5">
+            <form onsubmit="handlePayrollSubmit(event)" class="p-5 space-y-3.5 overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="payroll-staff-id">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tháng <span class="text-rose-500">*</span></label>
                     <input type="month" id="payroll-month" required onchange="fillPayrollForm()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-semibold">
                 </div>
+                <div id="payroll-tier" class="text-[11px] rounded-xl px-3 py-2 bg-emerald-50 text-emerald-800 flex items-center justify-between gap-2">
+                    <span id="payroll-tier-text">--</span>
+                    <button type="button" onclick="applyPayrollTier()" class="shrink-0 px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-700 font-bold text-[11px]"><i class="fa-solid fa-rotate-left mr-1"></i>Theo bảng</button>
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Lương tháng (VNĐ)</label>
-                        <input type="text" id="payroll-salary" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+                        <input type="text" id="payroll-salary" oninput="formatPriceInput(this); updatePayrollTotal()" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Thưởng (VNĐ)</label>
-                        <input type="text" id="payroll-bonus" oninput="formatPriceInput(this)" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
+                        <input type="text" id="payroll-bonus" oninput="formatPriceInput(this); updatePayrollTotal()" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-bold">
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Ghi chú</label>
                     <input type="text" id="payroll-note" placeholder="VD: thưởng doanh số, phụ cấp xăng..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
-                <p id="payroll-commission-hint" class="text-[11px] text-slate-500 bg-slate-50 rounded-xl px-3 py-2">--</p>
+                <!-- Ứng trước lương -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700">Ứng trước lương</label>
+                        <button type="button" onclick="addPayrollAdvance()" class="px-2.5 py-1 rounded-full bg-white border border-rose-200 text-rose-600 font-bold text-[11px]"><i class="fa-solid fa-plus mr-1"></i>Thêm lần ứng</button>
+                    </div>
+                    <div id="payroll-advances" class="space-y-1.5"></div>
+                    <p id="payroll-adv-empty" class="text-[11px] text-slate-400 italic">Chưa ứng lần nào trong tháng này.</p>
+                </div>
+                <div id="payroll-summary" class="text-[12px] rounded-xl px-3 py-2 bg-slate-50 space-y-0.5"></div>
+                <p id="payroll-commission-hint" class="hidden"></p>
                 <div class="pt-2 flex justify-end space-x-2 border-t border-slate-100">
                     <button type="button" onclick="closePayrollModal()" class="px-3.5 py-2 border border-slate-300 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50">Hủy</button>
                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
@@ -3010,7 +3024,8 @@
                             month: x.month || '',
                             salary: Number(x.salary) || 0,
                             bonus: Number(x.bonus) || 0,
-                            note: x.note || ''
+                            note: x.note || '',
+                            advances: Array.isArray(x.advances) ? x.advances.map(a => ({ date: a.date || '', amount: Number(a.amount) || 0, note: a.note || '' })) : []
                         });
                     });
                     payroll = list;
@@ -3067,23 +3082,92 @@
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         };
 
+        // Bảng lương theo số máy bán trong tháng (lương cứng + thưởng KPI)
+        const PAY_TIERS = [
+            { min: 20, salary: 4000000, bonus: 2000000, label: 'Từ 20 máy' },
+            { min: 15, salary: 3000000, bonus: 1000000, label: '15 - 19 máy' },
+            { min: 10, salary: 2500000, bonus: 500000, label: '10 - 14 máy' },
+            { min: 6, salary: 2500000, bonus: 0, label: '6 - 9 máy' },
+            { min: 0, salary: 1000000, bonus: 0, label: 'Dưới 6 máy' }
+        ];
+        const payTierFor = n => PAY_TIERS.find(t => n >= t.min);
+        function staffMonthStats(staffId, ym) {
+            const acc = getStaffAccounts().find(a => a.id === staffId);
+            const name = (acc?.full_name || '').trim();
+            const sold = products.filter(p => p.status === 'SOLD' && (p.seller || '').trim() === name && String(p.soldAt).startsWith(ym));
+            return { count: sold.length, comm: sold.reduce((sum, p) => sum + (Number(p.commission) || 0), 0) };
+        }
+        const payAdvTotal = rec => (rec?.advances || []).reduce((s, a) => s + (Number(a.amount) || 0), 0);
+        const fmtNum = v => v ? new Intl.NumberFormat('vi-VN').format(v) : '';
+
+        function advanceRow(a) {
+            const today = new Date().toISOString().slice(0, 10);
+            return `<div class="pay-adv flex items-center gap-1.5">
+                <input type="date" class="pay-adv-date w-[42%] px-2 py-1.5 text-xs border border-slate-300 rounded-xl" value="${a?.date || today}">
+                <input type="text" inputmode="numeric" class="pay-adv-amount flex-1 min-w-0 px-2 py-1.5 text-xs border border-slate-300 rounded-xl font-bold text-rose-600" placeholder="Số tiền" value="${fmtNum(a?.amount)}" oninput="formatPriceInput(this); updatePayrollTotal()">
+                <button type="button" onclick="this.closest('.pay-adv').remove(); updatePayrollTotal()" class="w-7 h-7 shrink-0 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-rose-600 flex items-center justify-center" title="Xóa lần ứng này"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+            </div>`;
+        }
+        window.addPayrollAdvance = function() {
+            document.getElementById('payroll-advances').insertAdjacentHTML('beforeend', advanceRow(null));
+            const rows = document.querySelectorAll('#payroll-advances .pay-adv-amount');
+            rows[rows.length - 1]?.focus();
+            window.updatePayrollTotal();
+        };
+        function readAdvances() {
+            return [...document.querySelectorAll('#payroll-advances .pay-adv')].map(r => ({
+                date: r.querySelector('.pay-adv-date').value,
+                amount: parseNumberInput(r.querySelector('.pay-adv-amount').value),
+                note: ''
+            })).filter(a => a.amount > 0);
+        }
+        window.applyPayrollTier = function() {
+            const st = staffMonthStats(document.getElementById('payroll-staff-id').value, document.getElementById('payroll-month').value);
+            const t = payTierFor(st.count);
+            document.getElementById('payroll-salary').value = fmtNum(t.salary);
+            document.getElementById('payroll-bonus').value = fmtNum(t.bonus) || '0';
+            window.updatePayrollTotal();
+        };
+        window.updatePayrollTotal = function() {
+            const staffId = document.getElementById('payroll-staff-id').value;
+            const ym = document.getElementById('payroll-month').value;
+            const st = staffMonthStats(staffId, ym);
+            const salary = parseNumberInput(document.getElementById('payroll-salary').value);
+            const bonus = parseNumberInput(document.getElementById('payroll-bonus').value);
+            const adv = readAdvances().reduce((s, a) => s + a.amount, 0);
+            const total = st.comm + salary + bonus;
+            const row = (k, v, cls) => `<div class="flex justify-between"><span class="text-slate-500">${k}</span><span class="font-bold ${cls || 'text-slate-700'}">${v}</span></div>`;
+            document.getElementById('payroll-summary').innerHTML =
+                row('Hoa hồng bán (tự tính)', formatVND(st.comm), 'text-purple-600') +
+                row('Lương cứng + thưởng', formatVND(salary + bonus)) +
+                row('Tổng lương', formatVND(total), 'text-slate-900') +
+                (adv ? row('Đã ứng trước', '−' + formatVND(adv), 'text-rose-600') : '') +
+                `<div class="flex justify-between pt-1 mt-1 border-t border-slate-200"><span class="font-black text-slate-800">Còn phải trả</span><span class="font-black text-emerald-600">${formatVND(total - adv)}</span></div>`;
+            document.getElementById('payroll-adv-empty').classList.toggle('hidden', document.querySelectorAll('#payroll-advances .pay-adv').length > 0);
+        };
+
         window.fillPayrollForm = function() {
             const staffId = document.getElementById('payroll-staff-id').value;
             const ym = document.getElementById('payroll-month').value;
             const rec = getPayroll(staffId, ym);
-            const fmt = v => v ? new Intl.NumberFormat('vi-VN').format(v) : '';
-            document.getElementById('payroll-salary').value = fmt(rec?.salary);
-            document.getElementById('payroll-bonus').value = fmt(rec?.bonus);
-            document.getElementById('payroll-note').value = rec?.note || '';
-            // Gợi ý: hoa hồng bán hàng tháng đó (tự tính, không cần điền)
-            const acc = getStaffAccounts().find(a => a.id === staffId);
-            const name = (acc?.full_name || '').trim();
-            const comm = products.filter(p => p.status === 'SOLD' && (p.seller || '').trim() === name && String(p.soldAt).startsWith(ym))
-                .reduce((sum, p) => sum + (Number(p.commission) || 0), 0);
+            const st = staffMonthStats(staffId, ym);
+            const t = payTierFor(st.count);
             const [yy, mm] = (ym || '-').split('-');
-            document.getElementById('payroll-commission-hint').innerText = ym
-                ? `Hoa hồng bán hàng T${parseInt(mm, 10)}/${yy}: ${formatVND(comm)} (tự tính từ đơn đã bán, không cần điền)`
-                : '';
+            document.getElementById('payroll-tier-text').innerHTML = ym
+                ? `T${parseInt(mm, 10)}/${yy} bán <b>${st.count} máy</b> → mức <b>${t.label}</b>: lương ${formatVND(t.salary)}, thưởng ${formatVND(t.bonus)}`
+                : '--';
+            if (rec) {
+                // Đã lưu trước đó: giữ số đã điền (có thể đã sửa tay)
+                document.getElementById('payroll-salary').value = fmtNum(rec.salary);
+                document.getElementById('payroll-bonus').value = fmtNum(rec.bonus) || '0';
+            } else {
+                // Chưa lưu: tự điền theo bảng
+                document.getElementById('payroll-salary').value = fmtNum(t.salary);
+                document.getElementById('payroll-bonus').value = fmtNum(t.bonus) || '0';
+            }
+            document.getElementById('payroll-note').value = rec?.note || '';
+            document.getElementById('payroll-advances').innerHTML = (rec?.advances || []).map(advanceRow).join('');
+            window.updatePayrollTotal();
         };
 
         window.handlePayrollSubmit = async function(e) {
@@ -3100,7 +3184,8 @@
                 month: ym,
                 salary: parseNumberInput(document.getElementById('payroll-salary').value),
                 bonus: parseNumberInput(document.getElementById('payroll-bonus').value),
-                note: document.getElementById('payroll-note').value.trim()
+                note: document.getElementById('payroll-note').value.trim(),
+                advances: readAdvances()
             };
             payroll = payroll.filter(r => r.id !== rec.id).concat([rec]);
             localStorage.setItem(LOCAL_PAYROLL_KEY, JSON.stringify(payroll));
@@ -4282,7 +4367,7 @@
             Object.values(people).forEach(pp => {
                 if (pp.role !== 'staff' || !pp.accId) return;
                 payroll.filter(r => r.staff_id === pp.accId && r.month).forEach(r => {
-                    if (monthInPeriod(r.month, 'comm')) { pp.salary += r.salary; pp.bonus += r.bonus; }
+                    if (monthInPeriod(r.month, 'comm')) { pp.salary += r.salary; pp.bonus += r.bonus; pp.advance = (pp.advance || 0) + payAdvTotal(r); }
                     if (monthInPeriod(r.month, 'comm')) {
                         const row = monthRow(pp, r.month); row.salary += r.salary; row.bonus += r.bonus;
                     }
@@ -4425,6 +4510,8 @@
                         <div class="mt-1 flex justify-between text-xs"><span class="text-slate-500 font-bold">Thưởng:</span><span class="font-bold text-amber-600">${pp.bonus ? '+' + formatVND(pp.bonus) : '<span class="text-slate-300 font-medium">0 ₫</span>'}</span></div>
                     ` : ''}
                     ${!lead || pp.sponsor > 0 ? `<div class="mt-1 pt-1.5 border-t border-slate-100 flex justify-between text-xs"><span class="text-slate-800 font-black">Tổng thu nhập:</span><span class="font-black text-emerald-600 text-sm">${formatVND(totalIncome(pp))}</span></div>` : ''}
+                    ${!lead && pp.advance ? `<div class="mt-1 flex justify-between text-xs"><span class="text-rose-600 font-bold">Đã ứng trước:</span><span class="font-bold text-rose-600">−${formatVND(pp.advance)}</span></div>
+                        <div class="mt-1 flex justify-between text-xs"><span class="text-slate-800 font-black">Còn phải trả:</span><span class="font-black text-slate-900">${formatVND(totalIncome(pp) - pp.advance)}</span></div>` : ''}
                     ${canEditPayrollFor(acc) ? `<button onclick="event.stopPropagation(); openPayrollModal('${acc.id}')" class="mt-2.5 w-full py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-money-check-dollar"></i> Điền lương & thưởng</button>` : ''}
                     ${open ? monthlyTable(pp, lead) : ''}
                 </div>`;
