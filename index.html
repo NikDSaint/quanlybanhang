@@ -7454,7 +7454,14 @@
             const t = e.changedTouches[0], st = tStart; tStart = null;
             if (Math.abs(t.clientX - st.x) > 10 || Math.abs(t.clientY - st.y) > 10) return;
             e.preventDefault();
-            if (owner === st.sel) close(); else open(st.sel);
+            if (owner === st.sel) { close(); return; }
+            // Đang gõ ở ô khác (bàn phím đang mở): cất bàn phím trước rồi mới mở bảng,
+            // tránh bảng vừa mở đã bị đóng vì màn hình co giãn khi bàn phím thu lại
+            const ae = document.activeElement;
+            if (ae && ae !== st.sel && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae.type !== 'checkbox') {
+                ae.blur();
+                setTimeout(() => open(st.sel), 280);
+            } else open(st.sel);
         }, { capture: true, passive: false });
         // Bàn phím
         document.addEventListener('keydown', e => {
@@ -7470,9 +7477,22 @@
             const sel = document.activeElement;
             if (eligible(sel) && (e.key === 'Enter' || e.key === ' ' || (e.altKey && e.key === 'ArrowDown'))) { e.preventDefault(); e.stopPropagation(); open(sel); }
         }, true);
-        // Cuộn trang / đổi cỡ cửa sổ: đóng bảng (trừ khi đang cuộn trong bảng)
-        window.addEventListener('scroll', e => { if (menu && !menu.contains(e.target)) close(); }, true);
-        window.addEventListener('resize', close);
+        // Cuộn trang / đổi cỡ (bàn phím điện thoại bật tắt cũng làm đổi cỡ): bảng chạy theo ô chọn,
+        // chỉ đóng khi ô chọn đã trôi khỏi màn hình hoặc xoay ngang/dọc máy
+        let lastW = window.innerWidth;
+        function follow(e) {
+            if (!menu || !owner) return;
+            if (e && e.target && e.target.nodeType === 1 && menu.contains(e.target)) return;
+            const r = owner.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > window.innerHeight || !owner.offsetParent) { close(); return; }
+            place(owner);
+        }
+        window.addEventListener('scroll', follow, true);
+        window.addEventListener('resize', () => {
+            if (Math.abs(window.innerWidth - lastW) > 40) { lastW = window.innerWidth; close(); return; }
+            lastW = window.innerWidth; follow();
+        });
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', () => follow());
     })();
     </script>
 </body>
